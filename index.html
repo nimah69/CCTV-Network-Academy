@@ -209,6 +209,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 </main>
 </div>
 <script src="js/academy-data.js"></script>
+<script src="js/calculations.js"></script>
 <script>
 const chapters = window.CCTVAcademyData.chapters;
 const icons=["⌘","◉","▦","⬡","⌑","↻","◇","▧","⌕","▣","∴","☑","☷","☏"];
@@ -261,7 +262,7 @@ function applyToolPreset(name){
 }
 function calculateLink(){
  const load=calcNum("linkLoad",0.1,1000000),speed=calcNum("linkSpeed",1,1000000),limit=calcNum("linkLimit",1,100);const out=$("#linkResult");if([load,speed,limit].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
- const pct=load/speed*100,remaining=Math.max(0,speed-load),status=pct>limit?"status-bad":pct>limit*.8?"status-warn":"status-good";const advice=pct>limit?"بالاتر از حد طراحی است؛ ظرفیت لینک یا تقسیم ترافیک را بازبینی کن.":pct>limit*.8?"به حد طراحی نزدیک است؛ ترافیک سایر سرویس‌ها را هم بررسی کن.":"در محدوده حد طراحی واردشده است؛ ظرفیت واقعی تجهیزات را هم بررسی کن.";
+ const result=window.CCTVCalculations.link(load,speed,limit),pct=result.percent,remaining=result.remaining,status=result.status,advice=result.advice;
  out.innerHTML="اشغال برآوردی لینک: <b class='"+status+"'>"+pct.toFixed(1)+"٪</b><br>ظرفیت اسمی باقی‌مانده: <b>"+remaining.toFixed(1)+" Mbps</b><br>"+advice;
 }
 
@@ -273,19 +274,19 @@ function calcNum(id,min,max){
 function calculatePoE(){
  const n=calcNum("poeCount",1,1000),w=calcNum("poeWatts",0.1,200),r=calcNum("poeReserve",0,100);
  const out=$("#poeResult");if([n,w,r].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
- const base=n*w,total=base*(1+r/100);
+ const {base,total}=window.CCTVCalculations.poe(n,w,r);
  out.innerHTML="مصرف پایه: <b>"+base.toFixed(1)+" وات</b><br>با ذخیره "+r+"٪: <b>"+total.toFixed(1)+" وات</b><br>سوئیچ را با بودجه توان PoE کل بالاتر از این مقدار و توان مجاز هر پورت انتخاب کن.";
 }
 function calculateBandwidth(){
  const n=calcNum("bwCount",1,1000),rate=calcNum("bwRate",0.1,500),r=calcNum("bwReserve",0,100);
  const out=$("#bwResult");if([n,rate,r].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
- const base=n*rate,total=base*(1+r/100);
- out.innerHTML="مجموع نرخ تصویر: <b>"+base.toFixed(1)+" Mbps</b><br>با حاشیه "+r+"٪: <b>"+total.toFixed(1)+" Mbps</b><br>معادل تقریبی: <b>"+(total/1000).toFixed(2)+" Gbps</b><br>این مقدار را با ظرفیت واقعی لینک‌ها، uplink سوئیچ، NVR و ترافیک هم‌زمان مقایسه کن.";
+ const {base,total,gigabits}=window.CCTVCalculations.bandwidth(n,rate,r);
+ out.innerHTML="مجموع نرخ تصویر: <b>"+base.toFixed(1)+" Mbps</b><br>با حاشیه "+r+"٪: <b>"+total.toFixed(1)+" Mbps</b><br>معادل تقریبی: <b>"+gigabits.toFixed(2)+" Gbps</b><br>این مقدار را با ظرفیت واقعی لینک‌ها، uplink سوئیچ، NVR و ترافیک هم‌زمان مقایسه کن.";
 }
 function calculateStorage(){
  const n=calcNum("hddCount",1,1000),rate=calcNum("hddRate",0.1,500),days=calcNum("hddDays",1,365);
  const out=$("#hddResult");if([n,rate,days].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
- const tb=n*rate*10.8*days/1000,withHeadroom=tb*1.1;
+ const {tb,withHeadroom}=window.CCTVCalculations.storage(n,rate,days,10);
  out.innerHTML="ظرفیت داده تخمینی: <b>"+tb.toFixed(2)+" TB</b><br>با ۱۰٪ حاشیه: <b>"+withHeadroom.toFixed(2)+" TB</b><br>برای طراحی نهایی، ظرفیت قابل استفاده دیسک، RAID در صورت وجود، فرمت ضبط و نرخ بیت واقعی را لحاظ کن.";
 }
 function homeHTML(showAll=false){
