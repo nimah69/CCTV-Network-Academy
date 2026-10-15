@@ -28,7 +28,8 @@ chapters.forEach((scenarios,chapterIndex)=>{
   titles.add(scenario.title);
  });
 });
-const inline=[...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/gi)].map(match=>match[1]);
-assert.ok(inline.length>0,"Application inline script must exist");
-inline.forEach((source,index)=>new vm.Script(source,{filename:"index.html:inline-"+index}));
+const inlineStart=html.indexOf("<script>\\n");
+const inlineEnd=html.lastIndexOf("</script>");
+assert.ok(inlineStart>=0&&inlineEnd>inlineStart,"Application inline script must exist");
+new vm.Script(html.slice(inlineStart+8,inlineEnd),{filename:"index.html:inline-script"});
 console.log("Chapter labs checks passed: 14 chapters, 70 practical scenarios, schematic paths, accessible choices and script syntax.");
