@@ -2,7 +2,7 @@ name: Validate academy content and JavaScript
 
 on:
   push:
-    branches: [main, improve-learning-quality, improve-quiz-quality, interactive-workshops-suite, audit-and-improve-2026, workshops-visual-lab-2026, phase1-stability]
+    branches: [main, improve-learning-quality, improve-quiz-quality, interactive-workshops-suite, audit-and-improve-2026, workshops-visual-lab-2026, phase1-stability, visual-schematic-lab-2026]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -26,4 +26,4 @@ jobs:
           node tests/workshops-check.mjs
           node tests/calculations-check.mjs
           node tests/chapter-labs-check.mjs
-          node tests/offline-readiness-check.mjs
+          node tests/offline-readiness-check.mjs\n          node tests/schematics-check.mjs
