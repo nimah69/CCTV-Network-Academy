@@ -2,7 +2,7 @@ name: Validate academy content and JavaScript
 
 on:
   push:
-    branches: [main, improve-learning-quality, improve-quiz-quality, interactive-workshops-suite, audit-and-improve-2026]
+    branches: [main, improve-learning-quality, improve-quiz-quality, interactive-workshops-suite, audit-and-improve-2026, workshops-visual-lab-2026]
   pull_request:
     branches: [main]
   workflow_dispatch:
