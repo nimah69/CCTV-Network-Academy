@@ -150,7 +150,7 @@ function pct(i){return state.progress.done.includes(i)?100:0}
 function totalQuestions(){return chapters.reduce((n,c)=>n+c.quiz.length,0)}
 function allQuiz(){return chapters.flatMap((c,ci)=>c.quiz.map((q,qi)=>({...q,chapter:ci,qi,tag:c.title})))}
 function go(view,idx){state.view=view;if(idx!==undefined)state.chapter=idx;state.quizAnswers={};state.quizSubmitted=false;render();$("#sidebar").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
-function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else root.innerHTML=homeHTML(state.view==="all");wire()}
+function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="chapterQuiz")root.innerHTML=quizHTML(false);else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else root.innerHTML=homeHTML(state.view==="all");wire()}
 function homeHTML(showAll=false){
 const done=state.progress.done.length, percent=Math.round(done/chapters.length*100);
 const filtered=chapters.map((c,i)=>({...c,i})).filter(c=>!state.query||[c.title,c.desc,c.intro,c.sections.map(s=>s.join(" ")).join(" ")].join(" ").toLowerCase().includes(state.query.toLowerCase()));
