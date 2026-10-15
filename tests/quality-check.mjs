@@ -33,7 +33,7 @@ for (const [chapterIndex, chapter] of chapters.entries()) {
     assert.ok(Array.isArray(question.o) && question.o.length === 4, where + ": expected four options");
     assert.equal(new Set(question.o.map((option) => String(option).trim().toLocaleLowerCase())).size, 4, where + ": options must be unique");
     assert.ok(Number.isInteger(question.a) && question.a >= 0 && question.a < 4, where + ": answer index is invalid");
-    assert.ok(typeof question.e === "string" && question.e.trim().length >= 25, where + ": explanation is missing or too short");
+    assert.ok(typeof question.e === "string" && question.e.trim().length >= 25, where + ": explanation is missing or too short; question=" + question.q + "; explanation=" + String(question.e));
     answerPositions[question.a]++;
 
     if (question.kind === "سناریوی کاربردی" || question.kind === "سواد منبع") scenarioCount++;
