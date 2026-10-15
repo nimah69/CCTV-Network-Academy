@@ -2,10 +2,10 @@
 
 var chapterLabTests=[
  {id:"link",label:"کابل و اتصال فیزیکی",icon:"↔",keys:["کابل","لینک","سوئیچ","پورت","uplink","فیبر","ethernet","متصل","قطع","طول مسیر"]},
- {id:"address",label:"IP و VLAN",icon:"⌘",keys:["ip","آدرس","vlan","شبکه","gateway","دروازه","dhcp","ping","arp","زیرشبکه","روتر"]},
- {id:"power",label:"توان و PoE",icon:"ϟ",keys:["poe","توان","برق","تغذیه","ریست","خاموش","ir","ups","وات","افت مسیر"]},
- {id:"video",label:"جریان و کیفیت تصویر",icon:"▣",keys:["تصویر","ویدئو","stream","کدک","h.264","h.265","لنز","چهره","نور","wdr","hlc","fps","bitrate","نرخ بیت"]},
- {id:"record",label:"ضبط، زمان و دیسک",icon:"◷",keys:["nvr","dvr","ضبط","بازپخش","هارد","hdd","ذخیره","زمان","ntp","آرشیو","raid","روز نگهداری"]}
+ {id:"address",label:"آدرس‌دهی شبکه",icon:"⌘",keys:["ip","آدرس","vlan","شبکه","gateway","دروازه","dhcp","ping","arp","زیرشبکه","روتر"]},
+ {id:"power",label:"برق و توان دوربین",icon:"ϟ",keys:["poe","توان","برق","تغذیه","ریست","خاموش","ir","ups","وات","افت مسیر"]},
+ {id:"video",label:"خود تصویر و کیفیت آن",icon:"▣",keys:["تصویر","ویدئو","stream","کدک","h.264","h.265","لنز","چهره","نور","wdr","hlc","fps","bitrate","نرخ بیت"]},
+ {id:"record",label:"ضبط، ساعت و هارد",icon:"◷",keys:["nvr","dvr","ضبط","بازپخش","هارد","hdd","ذخیره","زمان","ntp","آرشیو","raid","روز نگهداری"]}
 ];
 
 function labNodeDiagnosticClass(node,diagnostics){
@@ -22,11 +22,11 @@ function chapterLabDiagnosticHTML(s,key,diagnostics){
  var text=(s.title+" "+s.context+" "+s.why+" "+s.clue+" "+s.nodes.join(" ")+" "+s.options.join(" ")).toLowerCase();
  var rows=chapterLabTests.map(function(test){
   var prior=diagnostics[test.id]||{},relevant=test.keys.some(function(k){return text.indexOf(k.toLowerCase())!==-1});
-  var status=prior.tested?(prior.fault?"<b class='diag-bad'>خرابی شبیه‌سازی‌شده پیدا شد</b>":"<b class='diag-good'>آزمون بدون خرابی شبیه‌سازی‌شده</b>"):"<span class='diag-pending'>آزمون اجرا نشده</span>";
-  return '<div class="diag-row"><div class="diag-info"><b>'+test.icon+' '+test.label+'</b><small>'+(relevant?"به موضوع این سناریو مرتبط است":"آزمون کمکی؛ ارتباط مستقیم آن در این سناریو تأیید نشده")+'</small><span>'+status+'</span></div><div class="diag-actions"><button type="button" class="diag-btn '+(prior.fault?"diag-selected":"")+'" onclick="setChapterLabFault(\''+test.id+'\',true)" aria-pressed="'+String(!!prior.fault)+'">ایجاد خرابی</button><button type="button" class="diag-btn" onclick="runChapterLabDiagnostic(\''+test.id+'\')">اجرای آزمون</button><button type="button" class="diag-btn diag-clear" onclick="setChapterLabFault(\''+test.id+'\',false)">رفع خرابی</button></div></div>';
+  var status=prior.tested?(prior.fault?"<b class='diag-bad'>آزمون، مشکل فرضی را پیدا کرد</b>":"<b class='diag-good'>در این آزمون، مشکل فرضی فعالی پیدا نشد</b>"):"<span class='diag-pending'>هنوز آزمایش نشده</span>";
+  return '<div class="diag-row"><div class="diag-info"><b>'+test.icon+' '+test.label+'</b><small>'+(relevant?"به موضوع این سناریو مرتبط است":"آزمون کمکی؛ ارتباط مستقیم آن در این سناریو تأیید نشده")+'</small><span>'+status+'</span></div><div class="diag-actions"><button type="button" class="diag-btn '+(prior.fault?"diag-selected":"")+'" onclick="setChapterLabFault(\''+test.id+'\',true)" aria-pressed="'+String(!!prior.fault)+'">ایجاد مشکل فرضی</button><button type="button" class="diag-btn" onclick="runChapterLabDiagnostic(\''+test.id+'\')">آزمایش کن</button><button type="button" class="diag-btn diag-clear" onclick="setChapterLabFault(\''+test.id+'\',false)">برطرف کن</button></div></div>';
  }).join("");
  var count=chapterLabTests.filter(function(t){return diagnostics[t.id]&&diagnostics[t.id].tested}).length;
- return styles+'<section class="lab-simulator"><div class="lab-sim-head"><div><span class="lab-sim-kicker">FAULT INJECTION · شبیه‌ساز</span><h3>آزمایشگاه عیب‌یابی مرحله‌ای</h3><p>خرابی فرضی بساز، آزمون مرتبط را اجرا کن و تغییر وضعیت را ببین.</p></div><span class="lab-sim-count">'+count+' از ۵ آزمون</span></div><div class="lab-diag-list">'+rows+'</div><div class="lab-sim-foot" aria-live="polite">این نتایج کاملاً شبیه‌سازی‌شده‌اند؛ هیچ داده‌ای از تجهیزات واقعی خوانده نمی‌شود. برای سناریوهای کم‌ارتباط، نتیجه فقط تمرین روش آزمون است.</div><button type="button" class="diag-reset-all" onclick="resetChapterLabDiagnostics()">پاک‌کردن همه خرابی‌ها و نتایج این سناریو</button></section>';
+ return styles+'<section class="lab-simulator"><div class="lab-sim-head"><div><span class="lab-sim-kicker">شبیه‌ساز تمرینی</span><h3>یک خرابی فرضی ایجاد کن و راه تشخیصش را یاد بگیر</h3><p>این بخش مثل یک میز تمرین است؛ چیزی را روی دوربین واقعی قطع یا تغییر نمی‌دهد.</p></div><span class="lab-sim-count">'+count+' از ۵ آزمون</span></div><div class="lab-diag-list">'+rows+'</div><div class="lab-sim-foot" aria-live="polite">نتیجه‌ها ساختگی و آموزشی‌اند؛ برنامه به دوربین، سوئیچ یا NVR واقعی وصل نیست. نتیجه فقط وضعیت داخل همین تمرین را نشان می‌دهد.</div><button type="button" class="diag-reset-all" onclick="resetChapterLabDiagnostics()">شروع دوباره آزمایش‌های این سناریو</button></section>';
 }
 function chapterLabHTML(){
  var chapter=state.chapter, bank=window.CCTVChapterLabs||[], scenarios=bank[chapter]||[], c=chapters[chapter];
