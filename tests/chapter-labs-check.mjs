@@ -15,6 +15,7 @@ assert.ok(uiSource.includes("function chapterLabDiagnosticHTML"),"Interactive di
 assert.ok(uiSource.includes("function setChapterLabFault"),"Fault injection control must exist");
 assert.ok(uiSource.includes("function runChapterLabDiagnostic"),"Diagnostic test action must exist");
 assert.ok(uiSource.includes("function resetChapterLabDiagnostics"),"Per-scenario simulator reset must exist");
+assert.ok(uiSource.includes("function labNodeDiagnosticClass"),"Schematic nodes must reflect simulated fault/test states");
 assert.ok(uiSource.includes("aria-pressed"),"Fault toggle must expose its state accessibly");
 assert.ok(uiSource.includes("@media(max-width:540px)"),"Simulator must include narrow-screen layout");
 const simulator={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,progress:{labs:{}}},saveProgress(){},render(){},esc(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");},console};
