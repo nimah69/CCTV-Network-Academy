@@ -50,4 +50,16 @@ assert.ok(scenarioCount >= 28, "Expected at least 28 explicitly labeled applied 
 assert.equal(sourceQuestionCount, 2, "Exactly two questions should be labeled as rewritten from the PDF quiz section");
 assert.ok(generatedStemPatterns.size >= 6, "Supplemental questions should use varied stems, not one repeated template");
 assert.ok(answerPositions.every((count) => count >= 20), "Correct answer positions should be reasonably distributed");
+
+// Guard the production calculator formulas and a few known reference cases.
+assert.ok(appScript.includes("const base=n*w,total=base*(1+r/100);"), "PoE calculator formula changed unexpectedly");
+assert.ok(appScript.includes("const base=n*rate,total=base*(1+r/100);"), "Bandwidth calculator formula changed unexpectedly");
+assert.ok(appScript.includes("const tb=n*rate*10.8*days/1000,withHeadroom=tb*1.1;"), "Storage calculator formula changed unexpectedly");
+const poeReference = 8 * 12 * (1 + 25 / 100);
+const bandwidthReference = 16 * 4 * (1 + 30 / 100);
+const storageReferenceTB = 8 * 4 * 10.8 * 14 / 1000;
+assert.equal(poeReference, 120, "PoE reference case should be 120 W");
+assert.ok(Math.abs(bandwidthReference - 83.2) < 1e-9, "Bandwidth reference case should be 83.2 Mbps");
+assert.ok(Math.abs(storageReferenceTB - 4.8384) < 1e-9, "Storage reference case should be 4.8384 TB before headroom");
+assert.ok(Math.abs(storageReferenceTB * 1.1 - 5.32224) < 1e-9, "Storage reference case should be 5.32224 TB with 10% headroom");
 console.log(JSON.stringify({ status: "passed", chapters: chapters.length, questions: total, scenarios: scenarioCount, sourceQuestions: sourceQuestionCount, generatedStemPatterns: generatedStemPatterns.size, answerPositions }, null, 2));
