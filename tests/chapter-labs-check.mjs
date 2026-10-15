@@ -12,6 +12,7 @@ const sandbox={window:{},console};vm.createContext(sandbox);vm.runInContext(bank
 const groups=sandbox.window.CCTVChapterLabs;
 assert.equal(groups.length,14,"14 chapters must exist");
 assert.equal(groups.flat().length,70,"All 70 scenarios must exist");
+assert.ok(groups.flat().every(s=>!/^قدم بعدی/.test(s.clue)), "Clues must not duplicate the UI's next-step prefix");
 groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter must have five scenarios");scenarios.forEach((s,i)=>{
  assert.ok(s.title.startsWith("تمرین"),"Every scenario needs a meaningful title");
  assert.ok(s.context&&s.check&&s.why&&s.clue,"Every scenario needs clear content");
