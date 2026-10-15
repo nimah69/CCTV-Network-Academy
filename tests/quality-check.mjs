@@ -21,6 +21,7 @@ let scenarioCount = 0;
 let sourceQuestionCount = 0;
 const answerPositions = [0, 0, 0, 0];
 const generatedStemPatterns = new Set();
+const uniqueQuestionTexts = new Set();
 
 for (const [chapterIndex, chapter] of chapters.entries()) {
   assert.ok(chapter.title && chapter.title.trim(), "Chapter " + (chapterIndex + 1) + " needs a title");
@@ -30,6 +31,9 @@ for (const [chapterIndex, chapter] of chapters.entries()) {
   for (const [questionIndex, question] of chapter.quiz.entries()) {
     const where = 'Chapter "' + chapter.title + '", question ' + (questionIndex + 1);
     assert.ok(typeof question.q === "string" && question.q.trim().length >= 15, where + ": question text is missing");
+    const normalizedQuestion = question.q.trim().toLocaleLowerCase().replace(/\\s+/g, " ");
+    assert.ok(!uniqueQuestionTexts.has(normalizedQuestion), where + ": duplicate question text: " + question.q);
+    uniqueQuestionTexts.add(normalizedQuestion);
     assert.ok(Array.isArray(question.o) && question.o.length === 4, where + ": expected four options");
     assert.equal(new Set(question.o.map((option) => String(option).trim().toLocaleLowerCase())).size, 4, where + ": options must be unique");
     assert.ok(Number.isInteger(question.a) && question.a >= 0 && question.a < 4, where + ": answer index is invalid");
