@@ -38,7 +38,9 @@ jobs:
         with:
           node-version: 20
       - name: Validate JavaScript and question bank
-        run: node tests/quality-check.mjs
+        run: |
+          set -e
+          for f in tests/*.mjs; do echo "== $f"; node "$f"; done
   deploy:
     needs: [build, quality]
     environment:

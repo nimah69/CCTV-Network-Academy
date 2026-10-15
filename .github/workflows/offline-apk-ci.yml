@@ -9,7 +9,6 @@ on:
       - "js/**"
       - "tests/**"
       - "android/**"
-      - ".github/workflows/android-apk.yml"
       - ".github/workflows/offline-apk-ci.yml"
 
 permissions:
@@ -22,8 +21,10 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Run academy quality checks
-        run: node tests/quality-check.mjs
+      - name: Run all academy quality checks
+        run: |
+          set -e
+          for f in tests/*.mjs; do echo "== $f"; node "$f"; done
 
       - name: Bundle local website files
         run: |
