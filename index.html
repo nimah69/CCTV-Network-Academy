@@ -425,13 +425,13 @@ ${state.quizSubmitted?`<div class="result"><h2 style="margin:0 0 5px">نتیجه
 <div class="quiz-toolbar">${state.quizSubmitted?'<button class="primary" onclick="retryQuiz()">تلاش دوباره</button>':'<button class="primary" onclick="submitQuiz('+comprehensive+')">ثبت پاسخ‌ها و مشاهده نتیجه</button>'}<button class="secondary" onclick="go('lesson',${state.chapter})">بازگشت به درس</button></div></section>`;
 }
 function savedHTML(){const list=chapters.map((c,i)=>({...c,i})).filter(c=>state.progress.done.includes(c.i));return `<div class="section-head"><div><h2>ادامه یادگیری</h2><p>فصل‌هایی که به‌عنوان مطالعه‌شده علامت زده‌اید.</p></div></div>${list.length?'<div class="course-grid">'+list.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">✓</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>تکمیل‌شده</span><div class="progress"><i style="width:100%"></i></div></div></div></button>`).join("")+'</div>':'<div class="panel empty">هنوز فصلی را تکمیل نکرده‌اید. از داشبورد یک فصل را باز کنید و پس از مطالعه آن را علامت بزنید.</div>'}<div class="lesson-actions"><button class="secondary" onclick="resetProgress()">پاک‌کردن پیشرفت ذخیره‌شده</button></div>`}
-function wire(){document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>go(b.dataset.view));}
+function wire(){document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{go(b.dataset.view);$("#sidebar").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");});}
 function markDone(i){if(!state.progress.done.includes(i))state.progress.done.push(i);saveProgress();render()}
 function submitQuiz(comprehensive){state.quizSubmitted=true;const qs=comprehensive?allQuiz():chapters[state.chapter].quiz.map(q=>q);if(!comprehensive){const score=qs.reduce((n,q,i)=>n+(Number(state.quizAnswers[i])===q.a?1:0),0);state.progress.scores[state.chapter]=score;if(score===qs.length&&!state.progress.done.includes(state.chapter))state.progress.done.push(state.chapter);saveProgress()}render()}
 function retryQuiz(){state.quizAnswers={};state.quizSubmitted=false;render()}
 function resetProgress(){if(confirm("پیشرفت ذخیره‌شده این دوره روی همین دستگاه پاک شود؟")){state.progress={done:[],scores:{}};saveProgress();render()}}
 $("#searchInput").addEventListener("input",e=>{state.query=e.target.value;state.view="all";render()});
-$("#menuBtn").addEventListener("click",()=>$("#sidebar").classList.toggle("open"));
+$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").addEventListener("click",()=>{const opened=$("#sidebar").classList.toggle("open");$("#menuBtn").setAttribute("aria-expanded",String(opened));});
 render();
 </script>
 </body>
