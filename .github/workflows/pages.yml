@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: 20
       - name: Validate JavaScript and question bank
-        run: node tests/quality-check.mjs
+        run: |\n          node tests/quality-check.mjs\n          node tests/workshops-check.mjs\n          node tests/calculations-check.mjs\n          node tests/chapter-labs-check.mjs\n          node tests/offline-readiness-check.mjs\n          node tests/schematics-check.mjs
   deploy:
     needs: [build, quality]
     environment:
