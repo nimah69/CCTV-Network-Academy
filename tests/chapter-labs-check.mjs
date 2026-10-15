@@ -13,9 +13,13 @@ const groups=sandbox.window.CCTVChapterLabs;
 assert.equal(groups.length,14,"14 chapters must exist");
 assert.equal(groups.flat().length,70,"All 70 scenarios must exist");
 groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter must have five scenarios");scenarios.forEach((s,i)=>{
- assert.ok(s.title.startsWith("تمرین ساده:"),"All scenario titles must be rewritten");
+ assert.ok(s.title.startsWith("تمرین"),"Every scenario needs a meaningful title");
  assert.ok(s.context&&s.check&&s.why&&s.clue,"Every scenario needs clear content");
  assert.equal(s.options.length,3);assert.ok(s.answer>=0&&s.answer<3);
+ const visibleText=[s.title,s.context,s.check,s.why,s.clue,...s.options,s.simulator.prompt,s.simulator.pass,s.simulator.fail,s.simulator.next].join(" ");
+ assert.ok(!/…|\.{3,}|کدک(?:\s+کدک)+|پاسخ پاسخ شبکه|Fنور مادون‌قرمزmware/.test(visibleText),`Scenario ${c+1}:${i+1} contains truncated or corrupted text`);
+ assert.ok(s.options.every(option=>option.length>=8&&option.length<=180),`Scenario ${c+1}:${i+1} has an implausibly short or long answer option`);
+ assert.notEqual(s.simulator.pass,s.simulator.fail,"Simulator outcomes must be distinguishable");
  assert.ok(s.simulator.prompt&&s.simulator.pass&&s.simulator.fail&&s.simulator.next,"Each scenario needs a working simulator path");
  assert.ok(s.nodes.length===3,"Each scenario uses the new three-step model");
 });});
