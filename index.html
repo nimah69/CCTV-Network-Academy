@@ -94,6 +94,11 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .diagram-card pre{direction:ltr;text-align:left;white-space:pre;overflow-x:auto;max-width:100%;background:#07111e;color:#b9f4e7;border:1px solid #263d55;border-radius:9px;padding:12px;font:12px/1.7 ui-monospace,Consolas,monospace}
 .diagram-card ul{padding-right:20px;font-size:12px;color:#c5d5e8}
 .diagram-card li{margin:5px 0}
+.technical-detail{margin-top:12px;padding:12px;border:1px solid #29445e;border-radius:10px;background:#0a1929}
+.technical-detail h4{margin:12px 0 5px;color:#7ddfe8;font-size:12px}
+.technical-detail h4:first-child{margin-top:0}
+.technical-detail ul{margin:5px 0 10px;padding-right:18px}
+.technical-detail li{margin:6px 0;line-height:1.8}
 .diagram-note{font-size:11px!important;color:#8ea6c1!important}
 @media(max-width:620px){.diagram-grid{grid-template-columns:1fr}.diagram-card pre{font-size:11px}}
 /* Per-question teach-back explanation */
@@ -455,11 +460,54 @@ const diagramPatterns=[
 {keys:["vlan","acl","فایروال","firewall","جداسازی"],title:"جداسازی شبکه دوربین‌ها",diagram:"[دوربین‌ها] ── VLAN دوربین‌ها ──┐\n                                ├── [Firewall/ACL] ── [NVR/مدیریت مجاز]\n[شبکه کاربران] ─ VLAN کاربران ───┘",meaning:"VLAN جداسازی منطقی ایجاد می‌کند؛ اما کنترل اینکه کدام دستگاه به کدام سرویس دسترسی داشته باشد باید با سیاست‌های مسیریابی و ACL/Firewall تنظیم شود.",checks:["پورت‌ها و VLAN هر دستگاه را بررسی کن.","فقط مبدأها و مقصدها و پورت‌های لازم را مجاز کن.","پس از اعمال قانون، دسترسی مجاز و غیرمجاز را هر دو آزمایش کن."],note:"قواعد واقعی به مدل سوئیچ، روتر و نیازهای سامانه وابسته‌اند."},
 {keys:["ip","آدرس","dhcp","subnet","شبکه"],title:"الگوی عیب‌یابی ارتباط IP",diagram:"[برق و لینک] → [IP/Subnet] → [Gateway/VLAN] → [سرویس/پورت] → [تصویر/ضبط]",meaning:"از لایه فیزیکی به تنظیمات شبکه و سپس سرویس برنامه حرکت کن. موفقیت Ping به‌تنهایی ثابت نمی‌کند سرویس ویدئو یا ضبط سالم است.",checks:["لینک و تغذیه را اول بررسی کن.","IP تکراری، Subnet و Gateway را بررسی کن.","ورود به رابط دستگاه، نمایش زنده و ضبط را جداگانه آزمایش کن."],note:"این مسیر راهنمای اولیه است؛ شواهد هر مرحله را ثبت کن."}
 ];
+function technicalDetailHTML(p){
+ const t=(p.title+" "+p.diagram).toLowerCase();
+ let ports=[], alternatives=[], faults=[];
+ if(t.includes("poe")){
+  ports=["سوئیچ: پورت RJ45 با برچسب PoE/PoE+؛ پورت Uplink معمولاً برای اتصال به شبکه یا NVR است و لزوماً PoE نیست.","دوربین: پورت Ethernet/RJ45؛ برق فقط در صورت پشتیبانی استاندارد سازگار تأمین می‌شود."];
+  alternatives=["سوئیچ PoE → دوربین؛ یا سوئیچ معمولی + PoE Injector سازگار → دوربین.","اگر دوربین PoE ندارد، از منبع تغذیه مطابق مشخصات سازنده استفاده کن."];
+  faults=["لینک هست ولی دوربین روشن نیست: بودجه توان PoE، استاندارد و کابل را بررسی کن.","دوربین روشن است ولی دیده نمی‌شود: VLAN، IP/Subnet، پورت سوئیچ و سازگاری NVR را بررسی کن."];
+ }else if(t.includes("nvr")){
+  ports=["NVR: پورت LAN برای شبکه؛ پورت‌های اختصاصی PoE در بعضی مدل‌ها شبکه جداگانه‌ای دارند.","HDD: اتصال داخلی SATA و برق مخصوص؛ مانیتور ممکن است به HDMI/VGA وصل شود."];
+  alternatives=["دوربین‌ها از سوئیچ مستقل به LAN شبکه و NVR وصل شوند؛ یا در مدل پشتیبانی‌شده به پورت‌های PoE داخلی NVR متصل شوند."];
+  faults=["تصویر زنده هست ولی ضبط نیست: وضعیت HDD، زمان‌بندی، فضای دیسک و تنظیم ضبط را بررسی کن.","دوربین آنلاین نیست: مسیر شبکه، آدرس‌دهی و اعتبارنامه را جداگانه بررسی کن."];
+ }else if(t.includes("راه دور")||t.includes("remote")){
+  ports=["روتر: WAN به اینترنت و LAN به شبکه داخلی؛ نام و شماره پورت‌ها بین مدل‌ها متفاوت است.","برای VPN فقط سرویس و پورت‌های لازم را طبق راهنمای سازنده و سیاست امنیتی باز کن."];
+  alternatives=["VPN به شبکه مجاز یا سرویس ابری رسمی سازنده، در صورت پشتیبانی؛ از بازکردن مستقیم پورت‌های مدیریتی خودداری کن."];
+  faults=["داخل شبکه کار می‌کند اما بیرون نه: اینترنت، DNS، Gateway، VPN/Cloud و ساعت دستگاه را بررسی کن.","از بیرون قابل دسترس است ولی ناامن: دسترسی عمومی را ببند و رمزها، MFA و به‌روزرسانی را بررسی کن."];
+ }else if(t.includes("آنالوگ")){
+  ports=["دوربین: خروجی ویدئوی BNC؛ DVR: ورودی‌های BNC کانال 1، 2 و ...؛ خروجی HDMI/VGA برای نمایشگر.","برق دوربین از ورودی تغذیه مجزا و با ولتاژ/قطبیت مطابق مشخصات دستگاه است."];
+  alternatives=["برای کابل‌کشی ترکیبی، کابل کواکسیال به‌همراه زوج برق یا کابل ترکیبی استاندارد؛ طول و کیفیت باید با نوع سیگنال سازگار باشد."];
+  faults=["تصویر سیاه/نویز: برق، BNC، اتصال زمین، کابل و انتخاب فرمت ویدئو را بررسی کن.","فقط یک کانال خراب است: دوربین سالم را موقتاً به کانال دیگر منتقل کن تا خرابی دوربین/کابل از DVR تفکیک شود."];
+ }else if(t.includes("فیبر")){
+  ports=["SFP: ماژول باید با نوع پورت، سرعت، فیبر، طول موج و کانکتور سازگار باشد.","در لینک دوبخشی، TX یک سر باید به RX سر مقابل برسد؛ ماژول BiDi شرایط جفت مخصوص خود را دارد."];
+  alternatives=["سوئیچ دارای SFP مستقیم؛ یا دو مبدل رسانه‌ای سازگار در دو سر لینک."];
+  faults=["لینک بالا نمی‌آید: نوع فیبر، سرعت ماژول، طول موج، جفت TX/RX و تمیزی کانکتورها را بررسی کن.","از ابزار اندازه‌گیری نوری مناسب استفاده کن؛ به انتهای فیبر نگاه نکن."];
+ }else if(t.includes("بی‌سیم")){
+  ports=["پورت Ethernet رادیو معمولاً به PoE Injector یا پورت PoE سازگار وصل می‌شود؛ پورت LAN Injector به سوئیچ/روتر می‌رود.","پین‌آوت و ولتاژ PoE غیراستاندارد را بدون تأیید سازنده استفاده نکن."];
+  alternatives=["Bridge شفاف لایه ۲ یا لینک مسیریابی‌شده لایه ۳؛ انتخاب به طرح آدرس‌دهی و تجهیزات وابسته است."];
+  faults=["لینک رادیویی برقرار است ولی شبکه عبور نمی‌کند: حالت Bridge/Router، VLAN، DHCP و تنظیمات دو سر را بررسی کن.","افت سرعت: دید مسیر، تداخل، هم‌راستایی، کانال و کیفیت سیگنال را بسنج."];
+ }else if(t.includes("تغذیه")){
+  ports=["خروجی UPS باید با ورودی برق تجهیزات سازگار باشد؛ توان واقعی و بار لحظه‌ای را بررسی کن.","سوئیچ PoE و NVR را فقط در محدوده توان مجاز UPS وصل کن."];
+  alternatives=["برای تجهیزات حساس، UPS جداگانه یا مدار پشتیبان طراحی‌شده؛ ظرفیت باتری باید بر اساس زمان پشتیبانی محاسبه شود."];
+  faults=["خاموشی زودهنگام: عمر باتری، بار کل، توان UPS و زمان شارژ را بررسی کن.","UPS آلارم می‌دهد: راهنمای همان مدل و شرایط بار/باتری را ملاک قرار بده."];
+ }else if(t.includes("جداسازی")){
+  ports=["پورت access معمولاً عضو یک VLAN است؛ trunk می‌تواند چند VLAN را با برچسب 802.1Q حمل کند.","قابلیت‌ها و شیوه تنظیم VLAN/ACL به مدل سوئیچ و روتر بستگی دارد."];
+  alternatives=["شبکه دوربین در VLAN جدا با ACL محدود؛ یا جداسازی فیزیکی شبکه در پروژه‌هایی که سخت‌گیری بیشتری لازم است."];
+  faults=["دستگاه IP می‌گیرد اما سرویس ندارد: VLAN پورت، trunk، gateway و قوانین ACL/Firewall را بررسی کن.","پس از تغییر، دسترسی مجاز و مسدود بودن مسیرهای غیرمجاز را آزمایش کن."];
+ }else{
+  ports=["RJ45/Ethernet: لینک فیزیکی؛ IP/Subnet: آدرس‌دهی؛ Gateway: خروج از subnet؛ DNS: نام دامنه.","شماره پورت سرویس را از تنظیمات و مستندات دستگاه بگیر؛ شماره‌های پیش‌فرض ممکن است تغییر کرده باشند."];
+  alternatives=["ابتدا مسیر محلی و مستقیم را تست کن؛ سپس سوئیچ/VLAN، روتر و سرویس برنامه را مرحله‌به‌مرحله اضافه کن."];
+  faults=["لینک خاموش: برق و کابل؛ لینک روشن ولی دسترسی نیست: IP/Subnet/VLAN؛ رابط باز می‌شود ولی تصویر نیست: سرویس، کدک، مجوز و سازگاری را بررسی کن."];
+ }
+ const list=a=>'<ul>'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+ return '<div class="technical-detail"><h4>پورت‌ها و برچسب‌های مهم</h4>'+list(ports)+'<h4>مسیر یا راه‌حل جایگزین</h4>'+list(alternatives)+'<h4>خطاهای رایج و مسیر تشخیص</h4>'+list(faults)+'</div>';
+}
 function diagramHTML(c){
  const text=(c.title+" "+c.desc+" "+c.sections.map(x=>x.join(" ")).join(" ")).toLowerCase();
  const matches=diagramPatterns.map(p=>({...p,score:p.keys.reduce((n,k)=>n+(text.includes(k.toLowerCase())?1:0),0)})).filter(p=>p.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
  const chosen=matches.length?matches:[diagramPatterns[diagramPatterns.length-1]];
- return '<section class="supplement"><h2>الگوهای متنی تجهیزات و اتصال‌ها</h2><p class="lesson-intro">شماتیک‌ها برای فهم مسیر ارتباط هستند، نه نقشه اجرایی مقیاس‌دار. جزئیات نهایی را با مدل تجهیزات و شرایط پروژه تطبیق بده.</p><div class="diagram-grid">'+chosen.map(p=>'<article class="diagram-card"><h3>'+esc(p.title)+'</h3><pre>'+esc(p.diagram)+'</pre><p><b>چطور کار می‌کند؟</b> '+esc(p.meaning)+'</p><b>چک‌لیست نصب و عیب‌یابی</b><ul>'+p.checks.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p class="diagram-note">'+esc(p.note)+'</p></article>').join('')+'</div></section>';
+ return '<section class="supplement"><h2>الگوهای متنی تجهیزات و اتصال‌ها</h2><p class="lesson-intro">شماتیک‌ها آموزشی‌اند و نقشه اجرایی مقیاس‌دار نیستند. نام دقیق پورت‌ها، توان، سرعت و روش اتصال را با مدل دستگاه و راهنمای سازنده تطبیق بده.</p><div class="diagram-grid">'+chosen.map(p=>'<article class="diagram-card"><h3>'+esc(p.title)+'</h3><pre>'+esc(p.diagram)+'</pre><p><b>چطور کار می‌کند؟</b> '+esc(p.meaning)+'</p><b>چک‌لیست نصب و عیب‌یابی</b><ul>'+p.checks.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+technicalDetailHTML(p)+'<p class="diagram-note">'+esc(p.note)+'</p></article>').join('')+'</div></section>';
 }
 function lessonHTML(){
 const c=chapters[state.chapter];return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　فصل ${state.chapter+1} از ${chapters.length}</div><article class="panel"><span class="pill">صفحات منبع: ${c.pages}</span><h1 class="lesson-title">${esc(c.title)}</h1><p class="lesson-intro">${esc(c.intro)}</p><div class="lesson-content">${c.sections.map(s=>`<h3>${esc(s[0])}</h3><p>${esc(s[1])}</p>`).join("")}<div class="callout"><b>نکته کاربردی:</b> ${esc(c.tips)}</div>${diagramHTML(c)}<section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>${c.supplemental.items.map((s,i)=>`<details class="supplement-item" ${i===0?"open":""}><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</section></div><div class="lesson-actions"><button class="primary" onclick="go('chapterQuiz',${state.chapter})">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone(${state.chapter})">${state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده"}</button><button class="secondary" onclick="go('lesson',${Math.max(0,state.chapter-1)})" ${state.chapter===0?"disabled":""}>فصل قبلی</button><button class="secondary" onclick="go('lesson',${Math.min(chapters.length-1,state.chapter+1)})" ${state.chapter===chapters.length-1?"disabled":""}>فصل بعدی</button></div></article>`;
