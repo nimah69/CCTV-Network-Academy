@@ -1,0 +1,24 @@
+name: Validate academy content and JavaScript
+
+on:
+  push:
+    branches: [main, improve-learning-quality]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate JavaScript and question bank
+        run: node tests/quality-check.mjs
