@@ -214,15 +214,24 @@ const chapters = window.CCTVAcademyData.chapters;
 const icons=["⌘","◉","▦","⬡","⌑","↻","◇","▧","⌕","▣","∴","☑","☷","☏"];
 const $=s=>document.querySelector(s);
 const storeKey="cctvAcademyProgressV1";
-let state={view:"home",chapter:0,quizAnswers:{},quizSubmitted:false,query:"",progress:loadProgress()};
+let state={view:"home",chapter:0,quizAnswers:{},quizSubmitted:false,quizQuestions:[],query:"",progress:loadProgress()};
 function loadProgress(){try{return JSON.parse(localStorage.getItem(storeKey))||{done:[],scores:{}}}catch(e){return{done:[],scores:{}}}}
 function saveProgress(){try{localStorage.setItem(storeKey,JSON.stringify(state.progress))}catch(e){}}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function pct(i){return state.progress.done.includes(i)?100:0}
 function totalQuestions(){return chapters.reduce((n,c)=>n+c.quiz.length,0)}
 function allQuiz(){return chapters.flatMap((c,ci)=>c.quiz.map((q,qi)=>({...q,chapter:ci,qi,tag:c.title})))}
+function shuffleArray(items){const result=items.slice();for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}return result}
+function shuffleQuestion(q){const options=shuffleArray(q.o.map((text,index)=>({text,index})));return {...q,o:options.map(item=>item.text),a:options.findIndex(item=>item.index===q.a)}}
+function buildChapterQuiz(chapterIndex){return chapters[chapterIndex].quiz.map((q,qi)=>shuffleQuestion({...q,chapter:chapterIndex,qi,tag:chapters[chapterIndex].title}))}
+function buildComprehensiveQuiz(){
+ const byChapter=chapters.map((c,ci)=>({ci,ordered:shuffleArray(c.quiz.map((q,qi)=>({...q,chapter:ci,qi,tag:c.title})))}));
+ const selected=byChapter.flatMap(entry=>entry.ordered.slice(0,2));
+ shuffleArray(byChapter).slice(0,2).forEach(entry=>selected.push(entry.ordered[2]));
+ return shuffleArray(selected).map(shuffleQuestion);
+}
 function closeSidebar(){$("#sidebar").classList.remove("open");$("#sidebarBackdrop").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").setAttribute("aria-label","بازکردن منو");}
-function go(view,idx){state.view=view;if(idx!==undefined)state.chapter=idx;state.quizAnswers={};state.quizSubmitted=false;document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));render();closeSidebar();window.scrollTo({top:0,behavior:"smooth"})}
+function go(view,idx){state.view=view;if(idx!==undefined)state.chapter=idx;state.quizAnswers={};state.quizSubmitted=false;if(view==="quiz")state.quizQuestions=buildComprehensiveQuiz();else if(view==="chapterQuiz")state.quizQuestions=buildChapterQuiz(state.chapter);else state.quizQuestions=[];document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));render();closeSidebar();window.scrollTo({top:0,behavior:"smooth"})}
 function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="chapterQuiz")root.innerHTML=quizHTML(false);else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else if(state.view==="tools")root.innerHTML=calculatorHTML();else root.innerHTML=homeHTML(state.view==="all");wire()}
 function calculatorHTML(){
  return `<section class="tools-hero"><div class="tools-kicker">CCTV DESIGN LAB • ابزارهای مهندسی</div><h1>آزمایشگاه تعاملی طراحی دوربین و شبکه</h1><p>با چند ورودی ساده، بودجه توان، ترافیک شبکه و فضای ذخیره‌سازی را برآورد کن. سناریوی آماده را انتخاب کن یا مقادیر پروژه خودت را وارد کن؛ نتیجه‌ها برای طراحی اولیه‌اند و جای مشخصات واقعی تجهیزات را نمی‌گیرند.</p></section>
@@ -405,7 +414,7 @@ function explanationHTML(q){
   return '<details class="answer-explanation"><summary>مشاهده پاسخ تشریحی و تمرین مفهومی</summary><div class="explanation-body"><p><b>پاسخ صحیح:</b> '+answer+'</p><p><b>مفهوم و دلیل پاسخ:</b></p><p>'+detail.replace(/\r?\n/g,"<br>").replace(/\\n/g,"<br>")+'</p><div class="practice-task"><p><b>تمرین همین سؤال:</b> فرض کن همکارت گزینه «'+distractor+'» را انتخاب کرده است. با زبان خودت توضیح بده چرا این گزینه پاسخ دقیق سؤال نیست و پاسخ «'+answer+'» چگونه به خواسته سؤال مربوط می‌شود.</p><label class="practice-label">پاسخت را قبل از دیدن راهنما بنویس:</label><textarea class="practice-input" rows="3" placeholder="دلیل خودت را بنویس…"></textarea><details class="practice-guide"><summary>راهنمای بررسی پاسخ من</summary><p>بررسی کن که آیا (۱) مفهوم اصلی را درست تعریف کرده‌ای، (۲) توضیح داده‌ای چرا پاسخ صحیح با صورت سؤال سازگار است، و (۳) روشن کرده‌ای چرا گزینه دیگر به مفهوم متفاوتی اشاره می‌کند یا سؤال را پاسخ نمی‌دهد.</p><p><b>نکته کلیدی:</b> '+detail.replace(/\n/g,"<br>")+'</p></details></div></div></details>';
 }
 function quizHTML(comprehensive=false){
-const qs=comprehensive?allQuiz():chapters[state.chapter].quiz.map((q,qi)=>({...q,chapter:state.chapter,qi,tag:chapters[state.chapter].title}));
+const qs=state.quizQuestions.length?state.quizQuestions:(comprehensive?buildComprehensiveQuiz():buildChapterQuiz(state.chapter));
 const title=comprehensive?"آزمون جامع دوره":"آزمون فصل: "+chapters[state.chapter].title;
 let score=0;if(state.quizSubmitted)qs.forEach((q,i)=>{if(Number(state.quizAnswers[i])===q.a)score++});
 return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　آزمون</div><section class="panel"><span class="pill">${comprehensive?"آزمون همه فصل‌ها":"آزمون فصل"}</span><h1 class="lesson-title">${title}</h1><p class="lesson-intro">برای هر پرسش یک گزینه انتخاب کنید. پس از ثبت، پاسخ صحیح و توضیح نمایش داده می‌شود.</p><div id="questions">${qs.map((q,i)=>`<div class="quiz-question"><h3>${i+1}. ${esc(q.q)}</h3><div class="muted" style="font-size:10px;margin-bottom:7px">نوع پرسش: ${esc(q.kind||"پرسش دانشی")}</div>${comprehensive?'<div class="muted" style="font-size:10px;margin-bottom:7px">فصل: '+esc(q.tag)+'</div>':""}${q.o.map((op,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}" ${state.quizAnswers[i]===String(j)?"checked":""} ${state.quizSubmitted?"disabled":""} onchange="state.quizAnswers[${i}]=this.value"><span>${esc(op)}</span></label>`).join("")}${explanationHTML(q)}${state.quizSubmitted?`<div class="feedback ${Number(state.quizAnswers[i])===q.a?"good":"bad"}">${Number(state.quizAnswers[i])===q.a?"پاسخ درست است.":"پاسخ درست: "+esc(q.o[q.a])+"."} پس از مشاهده توضیح تشریحی، نکته‌های اصلی را مرور کنید.</div>`:""}</div>`).join("")}</div>
@@ -415,8 +424,8 @@ ${state.quizSubmitted?`<div class="result"><h2 style="margin:0 0 5px">نتیجه
 function savedHTML(){const list=chapters.map((c,i)=>({...c,i})).filter(c=>state.progress.done.includes(c.i));return `<div class="section-head"><div><h2>ادامه یادگیری</h2><p>فصل‌هایی که به‌عنوان مطالعه‌شده علامت زده‌اید.</p></div></div>${list.length?'<div class="course-grid">'+list.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">✓</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>تکمیل‌شده</span><div class="progress"><i style="width:100%"></i></div></div></div></button>`).join("")+'</div>':'<div class="panel empty">هنوز فصلی را تکمیل نکرده‌اید. از داشبورد یک فصل را باز کنید و پس از مطالعه آن را علامت بزنید.</div>'}<div class="lesson-actions"><button class="secondary" onclick="resetProgress()">پاک‌کردن پیشرفت ذخیره‌شده</button></div>`}
 function wire(){document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>go(b.dataset.view));}
 function markDone(i){if(!state.progress.done.includes(i))state.progress.done.push(i);saveProgress();render()}
-function submitQuiz(comprehensive){state.quizSubmitted=true;const qs=comprehensive?allQuiz():chapters[state.chapter].quiz.map(q=>q);if(!comprehensive){const score=qs.reduce((n,q,i)=>n+(Number(state.quizAnswers[i])===q.a?1:0),0);state.progress.scores[state.chapter]=score;if(score===qs.length&&!state.progress.done.includes(state.chapter))state.progress.done.push(state.chapter);saveProgress()}render()}
-function retryQuiz(){state.quizAnswers={};state.quizSubmitted=false;render()}
+function submitQuiz(comprehensive){state.quizSubmitted=true;const qs=state.quizQuestions;if(!comprehensive){const score=qs.reduce((n,q,i)=>n+(Number(state.quizAnswers[i])===q.a?1:0),0);state.progress.scores[state.chapter]=score;if(score===qs.length&&!state.progress.done.includes(state.chapter))state.progress.done.push(state.chapter);saveProgress()}render()}
+function retryQuiz(){state.quizAnswers={};state.quizSubmitted=false;state.quizQuestions=state.view==="quiz"?buildComprehensiveQuiz():buildChapterQuiz(state.chapter);render()}
 function resetProgress(){if(confirm("پیشرفت ذخیره‌شده این دوره روی همین دستگاه پاک شود؟")){state.progress={done:[],scores:{}};saveProgress();render()}}
 $("#searchInput").addEventListener("input",e=>{state.query=e.target.value;state.view="all";render()});
 $("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").addEventListener("click",()=>{const opened=$("#sidebar").classList.toggle("open");$("#sidebarBackdrop").classList.toggle("open",opened);$("#menuBtn").setAttribute("aria-expanded",String(opened));$("#menuBtn").setAttribute("aria-label",opened?"بستن منو":"بازکردن منو");});
