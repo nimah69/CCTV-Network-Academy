@@ -12,5 +12,5 @@ const scenarioBlock=scripts[0].match(/const scenarios=\[([\s\S]*?)\n\];/);
 assert.ok(scenarioBlock,"Scenario bank must exist");
 assert.equal((scenarioBlock[1].match(/title:"/g)||[]).length,12,"Expected 12 troubleshooting scenarios");
 assert.ok(html.includes("localStorage"),"Workshop progress should persist locally");
-assert.ok(html.includes("application"),"Page should be a standalone static app");
+assert.ok(!html.includes("https://") && !html.includes("http://"),"Workshop page should not require external services");
 console.log("Interactive workshops checks passed: 8 workshops, 12 troubleshooting scenarios, script syntax and key interactions.");
