@@ -59,7 +59,7 @@ assert.equal(total, 350, "Expected 350 questions in total");
 assert.ok(scenarioCount >= 28, "Expected at least 28 explicitly labeled applied scenarios");
 assert.equal(sourceQuestionCount, 16, "All 16 source quiz questions (PDF questions 145–160) must be represented");
 const sourceQuiz = chapters[12].quiz.filter((question) => question.kind === "بازنویسی پرسش‌های جزوه");
-assert.deepEqual(sourceQuiz.map((question) => question.sourceId).sort((a, b) => a - b), Array.from({length: 16}, (_, i) => i + 145), "Source question IDs must cover PDF questions 145–160 exactly");
+assert.equal(JSON.stringify(sourceQuiz.map((question) => question.sourceId).sort((a, b) => a - b)), JSON.stringify(Array.from({length: 16}, (_, i) => i + 145)), "Source question IDs must cover PDF questions 145–160 exactly");
 const expectedSourceAnswers = new Map([[145,"Authentication"],[146,"Authorization"],[147,"RAID"],[148,"TIA-942"],[149,"IEEE 802.3af"],[150,"VLAN"],[151,"فشرده‌سازی ویدئو"],[152,"اختلاف شدید روشنایی"],[153,"نور بسیار شدید"],[154,"IR Cut"],[155,"IP6X"],[156,"غوطه‌وری موقت"],[157,"STP"],[158,"هماهنگ‌سازی زمان"],[159,"میزان داده قابل از دست رفتن"],[160,"هدف زمان بازیابی"]]);
 for (const question of sourceQuiz) assert.ok(question.o[question.a].includes(expectedSourceAnswers.get(question.sourceId)), "Incorrect source answer key for PDF question " + question.sourceId);
 assert.ok(generatedStemPatterns.size >= 6, "Supplemental questions should use varied stems, not one repeated template");
@@ -84,7 +84,7 @@ assert.ok(appScript.includes("function exportProgress") && appScript.includes("f
 assert.ok(appScript.includes("function buildComprehensiveQuiz") && appScript.includes("function shuffleQuestion"), "Randomized quiz generation must be available");
 assert.ok(appScript.includes("state.progress.wrongQuestions"), "Incorrect answers must be persisted for review");
 assert.ok(appScript.includes("منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)"), "Verified source and PDF page references must be displayed");
-assert.deepEqual(chapters.map((chapter) => chapter.pages), ["۱–۴","۵–۱۵","۱۶–۲۹","۳۰–۳۳","۳۳–۳۵","۳۶","۳۶–۳۷","۳۷–۳۸","۳۸–۴۰","۴۱–۴۵","۴۱–۴۲","۴۲–۴۳","۴۳–۴۴","۴۴–۴۵"], "Chapter page references must match the 45-page source PDF");
+assert.equal(JSON.stringify(chapters.map((chapter) => chapter.pages)), JSON.stringify(["۱–۴","۵–۱۵","۱۶–۲۹","۳۰–۳۳","۳۳–۳۵","۳۶","۳۶–۳۷","۳۷–۳۸","۳۸–۴۰","۴۱–۴۵","۴۱–۴۲","۴۲–۴۳","۴۳–۴۴","۴۴–۴۵"]), "Chapter page references must match the 45-page source PDF");
 const chapterText = (index) => [chapters[index].title, ...chapters[index].sections.flat(), ...chapters[index].supplemental.items.flat(), ...chapters[index].quiz.flatMap((question) => [question.q, ...question.o, question.e])].join(" ");
 assert.match(chapterText(3), /Tamper Detection|دسترسی فیزیکی/, "Physical-security chapter must contain physical-security content");
 assert.doesNotMatch(chapterText(3), /RAID/, "Backup/RAID content must not be misplaced in the physical-security chapter");
