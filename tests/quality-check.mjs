@@ -8,6 +8,8 @@ assert.ok(scripts.length > 0, "index.html must contain a JavaScript script");
 const appScript = scripts.find((script) => script.includes("const chapters = window.CCTVAcademyData.chapters;"));
 assert.ok(appScript, "Could not find the main application script");
 new vm.Script(appScript, { filename: "index.html:inline-script" });
+assert.ok(html.includes('<script src="js/calculations.js"></script>'), "Pure calculator module must be loaded by the page");
+assert.ok(["poe(n,w,r)", "bandwidth(n,rate,r)", "storage(n,rate,days,10)", "link(load,speed,limit)"].every((call) => appScript.includes("window.CCTVCalculations." + call)), "UI calculators must call the pure calculation module");
 
 const dataSource = fs.readFileSync("js/academy-data.js", "utf8");
 new vm.Script(dataSource, { filename: "js/academy-data.js" });
@@ -72,7 +74,6 @@ for (const chapterIndex of [0, 1, 2, 8]) {
   }
 }
 
-assert.equal("cctvAcademyProgressV1", "cctvAcademyProgressV1", "Storage key compatibility reference");
 assert.ok(appScript.includes('const storeKey="cctvAcademyProgressV1";'), "Existing localStorage key must remain unchanged");
 assert.ok(appScript.includes("function normalizeProgress"), "Legacy progress data must be normalized without discarding existing fields");
 assert.ok(appScript.includes("function exportProgress") && appScript.includes("function importProgressFile"), "JSON progress export/import must be available");
