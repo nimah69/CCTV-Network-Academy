@@ -40,7 +40,7 @@ function link(loadMbps,speedMbps,limitPercent){
 function ipv4ToNumber(value){
   if(typeof value!=="string"||value.trim()==="")throw new TypeError("آدرس IPv4 را وارد کن.");
   const parts=value.trim().split(".");
-  if(parts.length!==4||parts.some(part=>!/^\\d{1,3}$/.test(part)||Number(part)>255))throw new TypeError("آدرس IPv4 معتبر نیست؛ چهار بخش ۰ تا ۲۵۵ وارد کن.");
+  if(parts.length!==4||parts.some(part=>!/^\d{1,3}$/.test(part)||Number(part)>255))throw new TypeError("آدرس IPv4 معتبر نیست؛ چهار بخش ۰ تا ۲۵۵ وارد کن.");
   return parts.reduce((number,part)=>(number*256+Number(part))>>>0,0)>>>0;
 }
 function ipv4ToText(number){return [(number>>>24)&255,(number>>>16)&255,(number>>>8)&255,number&255].join(".")}
