@@ -535,7 +535,7 @@ const longestCandidates=questionEntries.map(entry=>{
  return {...entry,gap:lengths[q.a]-otherMax,spread:Math.max(...lengths)-Math.min(...lengths)};
 }).filter(entry=>entry.gap>=0&&entry.gap<=10&&(!focusedChapters.has(entry.chapterIndex)||entry.spread<=27)).sort((a,b)=>a.gap-b.gap);
 if(longestCandidates.length<89)throw new Error("Not enough low-gap questions to balance option lengths safely: "+longestCandidates.length);
-for(const entry of longestCandidates.slice(0,89)){
+for(const entry of longestCandidates.slice(0,100)){
  const q=entry.question,lengths=q.o.map(option=>option.length);
  let wrongIndex=-1,wrongLength=-1;
  for(let i=0;i<q.o.length;i++)if(i!==q.a&&lengths[i]>wrongLength){wrongLength=lengths[i];wrongIndex=i}
