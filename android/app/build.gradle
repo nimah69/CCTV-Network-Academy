@@ -1,0 +1,16 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ir.nimah69.cctvnetworkacademy'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'ir.nimah69.cctvnetworkacademy'
+        minSdk 23
+        targetSdk 28
+        versionCode 1
+        versionName '1.0.0'
+    }
+}
