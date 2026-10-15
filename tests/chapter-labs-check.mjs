@@ -9,40 +9,53 @@ assert.ok(html.includes('<script src="js/chapter-labs.js"></script>'),"Scenario 
 assert.ok(html.includes('<script src="js/chapter-lab-ui.js"></script>'),"Chapter lab UI must load before app");
 assert.ok(html.includes('state.view==="chapterLab"'),"Router must render the chapter lab view");
 assert.ok(html.includes("ورود به آزمایشگاه تعاملی فصل"),"Each lesson must provide a lab launch action");
-assert.ok(html.includes('labs:p.labs&&typeof p.labs==="object"'),"Lab progress must be persisted in progress data");
 new vm.Script(uiSource,{filename:"js/chapter-lab-ui.js"});
-assert.ok(uiSource.includes("function chapterLabDiagnosticHTML"),"Interactive diagnostic simulator must render");
-assert.ok(uiSource.includes("function setChapterLabFault"),"Fault injection control must exist");
-assert.ok(uiSource.includes("function runChapterLabDiagnostic"),"Diagnostic test action must exist");
-assert.ok(uiSource.includes("function resetChapterLabDiagnostics"),"Per-scenario simulator reset must exist");
-assert.ok(uiSource.includes("function labNodeDiagnosticClass"),"Schematic nodes must reflect simulated fault/test states");
-assert.ok(uiSource.includes("aria-pressed"),"Fault toggle must expose its state accessibly");
-assert.ok(uiSource.includes("@media(max-width:540px)"),"Simulator must include narrow-screen layout");
-const simulator={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,progress:{labs:{}}},saveProgress(){},render(){},esc(v){return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");},console};
-vm.createContext(simulator);
-vm.runInContext(uiSource,simulator,{filename:"js/chapter-lab-ui.js"});
-simulator.setChapterLabFault("link",true);
-assert.equal(simulator.state.progress.labs["0:0"].diagnostics.link.fault,true,"Fault injection should be persisted");
-simulator.runChapterLabDiagnostic("link");
-assert.equal(simulator.state.progress.labs["0:0"].diagnostics.link.tested,true,"Running a diagnostic should record a test result");
-assert.equal(simulator.state.progress.labs["0:0"].diagnostics.link.fault,true,"Diagnostic should preserve the injected fault state");
-simulator.setChapterLabFault("link",false);
-assert.equal(simulator.state.progress.labs["0:0"].diagnostics.link.fault,false,"Fault should be removable");
-simulator.resetChapterLabDiagnostics();
-assert.deepEqual(Object.keys(simulator.state.progress.labs["0:0"].diagnostics),[],"Reset should clear simulator state for the current scenario");
+assert.ok(uiSource.includes("function chapterLabSimulatorHTML"),"The guided simulator must render");
+assert.ok(uiSource.includes("function selectLabSimulatorNode"),"The learner must be able to select a path component");
+assert.ok(uiSource.includes("function setLabSimulatorOutcome"),"The learner must be able to record an observation");
+assert.ok(uiSource.includes("معنی چند اصطلاح این تمرین"),"Plain-language glossary must be available");
+assert.ok(!uiSource.includes("function setChapterLabFault"),"Confusing fault-injection controls must be removed");
+const context={
+ window:{CCTVChapterLabs:[]},
+ state:{chapter:0,labScenario:0,labDraft:null,labSimNode:0,labSimOutcome:"",progress:{labs:{},done:[]}},
+ chapters:[{title:"فصل آزمایشی"}],
+ saveProgress(){},render(){},alert(){},console
+};
+vm.createContext(context);
+vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
+const demoScenario={title:"آزمون",context:"دوربین تصویر ندارد",options:["بررسی IP","تعویض NVR","افزایش رزولوشن"],answer:0,why:"ابتدا ارتباط را بررسی کن",clue:"یک مورد را تغییر بده",nodes:["رایانه","سوئیچ","دوربین IP"]};
+context.window.CCTVChapterLabs=[Array.from({length:5},(_,i)=>({...demoScenario,title:"آزمون "+i}))];
+context.state.progress.labs={};
+const rendered=context.chapterLabHTML();
+assert.ok(rendered.includes("میز بررسی عیب‌یابی"),"Chapter lab should render the new guided simulator");
+assert.ok(rendered.includes("معنی چند اصطلاح این تمرین"),"The rendered scenario should expose its glossary");
+assert.ok(rendered.includes("در محل نصب بودی"),"The scenario decision should use plain-language instructions");
+assert.ok(!rendered.includes("ایجاد مشکل فرضی"),"The old confusing fault-injection UI must not appear");
+const advice=context.chapterLabAdvice("سوئیچ PoE");
+assert.ok(advice.steps.length>=3,"Every component should show an actionable checklist");
+context.selectLabSimulatorNode(1);
+assert.equal(context.state.labSimNode,1,"Selecting a path node must update simulator state");
+context.setLabSimulatorOutcome("ok");
+assert.equal(context.state.labSimOutcome,"ok","Simulator observations must update state");
+context.state.labDraft=0;
+context.runChapterLabScenario();
+assert.equal(context.state.progress.labs["0:0"].correct,true,"A correct scenario decision must be recorded");
+context.retryChapterLabScenario(0);
+assert.equal(context.state.progress.labs["0:0"],undefined,"Retry must reset the selected scenario");
 const sandbox={window:{},console};
-vm.runInNewContext(bankSource,sandbox,{filename:"js/chapter-labs.js"});
+vm.createContext(sandbox);
+vm.runInContext(bankSource,sandbox,{filename:"js/chapter-labs.js"});
 const chapters=sandbox.window.CCTVChapterLabs;
 assert.equal(chapters.length,14,"There must be a practical lab for each of 14 chapters");
 chapters.forEach((scenarios,chapterIndex)=>{
  assert.equal(scenarios.length,5,"Chapter "+(chapterIndex+1)+" must have exactly 5 scenarios");
  const titles=new Set();
  scenarios.forEach((scenario,scenarioIndex)=>{
-  assert.ok(scenario.title&&scenario.context&&scenario.why&&scenario.clue,"Scenario needs title, context, explanation and clue");
+  assert.ok(scenario.title&&scenario.context&&scenario.why&&scenario.clue,"Scenario needs title, context, explanation and next step");
   assert.equal(scenario.options.length,3,"Each scenario must provide 3 choices");
   assert.ok(Number.isInteger(scenario.answer)&&scenario.answer>=0&&scenario.answer<scenario.options.length,"Correct option index must be valid");
-  assert.ok(Array.isArray(scenario.nodes)&&scenario.nodes.length>=3,"Scenario needs a schematic path with at least 3 nodes");
-  assert.ok(scenario.options.every(option=>typeof option==="string"&&option.length>10),"Scenario options must be meaningful text");
+  assert.ok(Array.isArray(scenario.nodes)&&scenario.nodes.length>=3,"Scenario needs a path with at least 3 components");
+  assert.ok(scenario.options.every(option=>typeof option==="string"&&option.length>10),"Each option must contain meaningful text");
   assert.ok(!titles.has(scenario.title),"Scenario titles should be unique within each chapter");
   titles.add(scenario.title);
  });
@@ -51,4 +64,4 @@ const inlineStart=html.indexOf("<script>");
 const inlineEnd=html.lastIndexOf("</script>");
 assert.ok(inlineStart>=0&&inlineEnd>inlineStart,"Application inline script must exist");
 new vm.Script(html.slice(inlineStart+8,inlineEnd),{filename:"index.html:inline-script"});
-console.log("Chapter labs checks passed: 14 chapters, 70 scenarios, script syntax, fault injection, diagnostic state persistence and reset.");
+console.log("Chapter labs checks passed: 14 chapters, 70 scenarios, guided simulator, plain-language glossary, decision recording and retry.");
