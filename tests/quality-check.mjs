@@ -118,6 +118,16 @@ assert.equal(link.remaining, 60, "Remaining nominal link capacity should be 60 M
 assert.equal(link.status, "status-good", "Occupancy below the warning threshold should be marked good");
 assert.equal(calculations.link(80, 100, 70).status, "status-bad", "Occupancy above the design limit should be marked bad");
 
+const figuresSource = fs.readFileSync("js/figures.js", "utf8");
+new vm.Script(figuresSource, { filename: "js/figures.js" });
+assert.ok(figuresSource.includes("fig-compare-title") && figuresSource.includes("fig-compare-detail"), "Comparison diagrams must separate titles and descriptions into distinct rows");
+assert.ok(figuresSource.includes("max-width:420px") && figuresSource.includes("font-size:14px"), "Figure styles must include legible narrow-screen typography");
+assert.ok(figuresSource.includes("Vazirmatn") && figuresSource.includes("Noto Sans Arabic"), "Figure typography must prefer Persian/Arabic-capable fonts with offline fallbacks");
+assert.ok(html.includes("Mobile visual refresh") && html.includes("font-size:16px"), "Lesson typography must remain readable on mobile");
+const workshopsHtml = fs.readFileSync("workshops.html", "utf8");
+assert.ok(workshopsHtml.includes("Mobile diagram and typography redesign") && workshopsHtml.includes("grid-template-columns:minmax(0,1fr)"), "Workshop diagrams must stack cleanly on narrow screens");
+assert.ok(workshopsHtml.includes("overflow-wrap:anywhere"), "Long diagram labels must wrap instead of causing horizontal overflow");
+
 console.log(JSON.stringify({
   status: "passed",
   chapters: chapters.length,
