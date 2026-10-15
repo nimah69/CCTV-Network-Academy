@@ -5,15 +5,15 @@ import vm from "node:vm";
 const html = fs.readFileSync("index.html", "utf8");
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
 assert.ok(scripts.length > 0, "index.html must contain a JavaScript script");
-const appScript = scripts.find((script) => script.includes("const chapters = ["));
-assert.ok(appScript, "Could not find the embedded academy data and app script");
+const appScript = scripts.find((script) => script.includes("const chapters = window.CCTVAcademyData.chapters;"));
+assert.ok(appScript, "Could not find the main application script");
 new vm.Script(appScript, { filename: "index.html:inline-script" });
 
-const dataStart = appScript.indexOf("const chapters = [");
-const dataEnd = appScript.indexOf("const icons=");
-assert.ok(dataStart >= 0 && dataEnd > dataStart, "Could not isolate academy data");
-const dataSource = appScript.slice(dataStart, dataEnd) + "\nchapters;";
-const chapters = new vm.Script(dataSource, { filename: "academy-data-validation.js" }).runInNewContext();
+const dataSource = fs.readFileSync("js/academy-data.js", "utf8");
+new vm.Script(dataSource, { filename: "js/academy-data.js" });
+const sandbox = { window: {} };
+new vm.Script(dataSource, { filename: "js/academy-data.js" }).runInNewContext(sandbox);
+const chapters = sandbox.window.CCTVAcademyData.chapters;
 
 assert.equal(chapters.length, 14, "Expected exactly 14 learning chapters");
 let total = 0;
