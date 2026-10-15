@@ -1,4 +1,5 @@
 name: Build Offline Android APK
+# Bundles the exact current academy sources into the APK at build time.
 
 on:
   workflow_dispatch:
