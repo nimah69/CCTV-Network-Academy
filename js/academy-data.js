@@ -362,7 +362,7 @@ chapters.forEach((c,ci)=>{
     const options=distractors.slice();
     options.splice(answerIndex,0,correct);
     c.quiz.push({
-      q:questionStems[n%questionStems.length](concept.title),
+      q:n<concepts.length?questionStems[n%questionStems.length](concept.title):n<concepts.length*2?"در یک پروژه واقعی، چگونه باید «"+concept.title+"» را ارزیابی کرد؟":"برای تأیید عملی «"+concept.title+"»، کدام آزمون مناسب‌تر است؟",
       o:options,
       a:answerIndex,
       e:"مفهوم اصلی: "+concept.summary+"\n\nدر عمل، این اصل را در شرایط واقعی پروژه بررسی کنید و نتیجه را با مشاهده، اندازه‌گیری یا مستندات معتبر تأیید کنید.",
