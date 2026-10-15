@@ -77,6 +77,19 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
 
+
+/* Per-question teach-back explanation */
+.answer-explanation{margin-top:12px;border:1px solid #2b5871;border-radius:12px;background:#0c1b2b;overflow:hidden}
+.answer-explanation summary{cursor:pointer;list-style:none;padding:12px 14px;min-height:46px;display:flex;align-items:center;gap:9px;color:#79e6e9;font-size:12px;font-weight:bold}
+.answer-explanation summary::-webkit-details-marker{display:none}
+.answer-explanation summary:before{content:"＋";display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#16384b;color:#7ce8e4;font-size:16px;flex-shrink:0}
+.answer-explanation[open] summary:before{content:"−"}
+.explanation-body{padding:0 14px 14px;color:#d5e4f5;font-size:13px;line-height:1.95}
+.explanation-body p{margin:8px 0}
+.explanation-body b{color:#f0f8ff}
+.explanation-tip{padding:10px 12px;border-right:3px solid var(--teal);background:#102f34;border-radius:8px}
+.quiz-question h3{line-height:1.8}
+@media(max-width:520px){.answer-explanation summary{padding:11px;font-size:11px}.explanation-body{padding:0 11px 12px;font-size:12px}}
 </style>
 </head>
 <body>
@@ -357,35 +370,35 @@ const practicalExamples = [
 chapters.forEach((c,i)=>{ c.supplemental.items.push(...practicalExamples[i]); });
 
 // بانک تکمیلی پرسش‌ها؛ تعداد نهایی هر فصل دقیقاً ۲۵ سؤال خواهد بود.
-const questionStems = [
-t=>"کدام بخش از درس مستقیماً به موضوع «"+t+"» مربوط است؟",
-t=>"برای مرور موضوع «"+t+"» در این فصل، کدام عنوان را باید انتخاب کنید؟",
-t=>"کدام مبحث با مسئله «"+t+"» ارتباط مستقیم‌تری دارد؟",
-t=>"اگر در پروژه پرسشی درباره «"+t+"» مطرح شود، کدام بخش این فصل مرتبط‌تر است؟",
-t=>"کدام عنوان، موضوع «"+t+"» را پوشش می‌دهد؟"
-];
+function shortenOption(text){
+  const clean=String(text||"").replace(/\s+/g," ").trim();
+  if(clean.length<=145)return clean;
+  const cut=clean.slice(0,142);
+  const boundary=cut.lastIndexOf(" ");
+  return (boundary>95?cut.slice(0,boundary):cut)+"…";
+}
 chapters.forEach((c,ci)=>{
   const concepts=[...c.sections.map(x=>({title:x[0],summary:x[1]})),...c.supplemental.items.map(x=>({title:x[0],summary:x[1]}))];
   let n=0;
   while(c.quiz.length<25){
     const concept=concepts[n%concepts.length];
-    const others=concepts.filter(x=>x.title!==concept.title).map(x=>x.title);
+    const others=concepts.filter(x=>x.title!==concept.title&&x.summary!==concept.summary);
     const distractors=[];
     for(let k=0;k<others.length&&distractors.length<3;k++){
       const candidate=others[(n*3+k+ci)%others.length];
-      if(candidate!==concept.title&&!distractors.includes(candidate))distractors.push(candidate);
+      const option=shortenOption(candidate.summary);
+      if(option!==shortenOption(concept.summary)&&!distractors.includes(option))distractors.push(option);
     }
-    while(distractors.length<3)distractors.push(["مدیریت کاربران","ثبت مستندات","آزمون عملکرد"][distractors.length]);
-    const options=[concept.title,...distractors];
+    while(distractors.length<3)distractors.push(["این موضوع فقط به نام‌گذاری تجهیزات مربوط است.","این موضوع به‌تنهایی سلامت کل سامانه را تضمین می‌کند.","برای این موضوع نیازی به آزمون عملی نیست."][distractors.length]);
+    const correct=shortenOption(concept.summary);
     const answerIndex=(n*7+ci)%4;
-    const shuffled=options.slice();
-    const correct=shuffled.shift();
-    shuffled.splice(answerIndex,0,correct);
+    const options=distractors.slice();
+    options.splice(answerIndex,0,correct);
     c.quiz.push({
-      q:questionStems[n%questionStems.length](concept.title),
-      o:shuffled,
+      q:"کدام گزاره درباره «"+concept.title+"» از نظر فنی درست‌تر است؟",
+      o:options,
       a:answerIndex,
-      e:"این پرسش بر مفهوم «"+concept.title+"» تمرکز دارد. "+concept.summary
+      e:"مفهوم اصلی: "+concept.summary+"\n\nدر عمل، این اصل را در شرایط واقعی پروژه بررسی کنید و نتیجه را با مشاهده، اندازه‌گیری یا مستندات معتبر تأیید کنید."
     });
     n++;
   }
@@ -416,11 +429,16 @@ return `<section class="welcome"><div class="eyebrow">مسیر یادگیری �
 function lessonHTML(){
 const c=chapters[state.chapter];return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　فصل ${state.chapter+1} از ${chapters.length}</div><article class="panel"><span class="pill">صفحات منبع: ${c.pages}</span><h1 class="lesson-title">${esc(c.title)}</h1><p class="lesson-intro">${esc(c.intro)}</p><div class="lesson-content">${c.sections.map(s=>`<h3>${esc(s[0])}</h3><p>${esc(s[1])}</p>`).join("")}<div class="callout"><b>نکته کاربردی:</b> ${esc(c.tips)}</div><section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>${c.supplemental.items.map((s,i)=>`<details class="supplement-item" ${i===0?"open":""}><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</section></div><div class="lesson-actions"><button class="primary" onclick="go('chapterQuiz',${state.chapter})">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone(${state.chapter})">${state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده"}</button><button class="secondary" onclick="go('lesson',${Math.max(0,state.chapter-1)})" ${state.chapter===0?"disabled":""}>فصل قبلی</button><button class="secondary" onclick="go('lesson',${Math.min(chapters.length-1,state.chapter+1)})" ${state.chapter===chapters.length-1?"disabled":""}>فصل بعدی</button></div></article>`;
 }
+function explanationHTML(q){
+  const answer=esc(q.o[q.a]);
+  const detail=esc(q.e||"برای این سؤال توضیح تکمیلی ثبت نشده است. پاسخ صحیح را با تعریف مفهوم و کاربرد آن در پروژه تطبیق دهید.");
+  return '<details class="answer-explanation"><summary>مشاهده پاسخ تشریحی و یادگیری مفهوم</summary><div class="explanation-body"><p><b>پاسخ صحیح:</b> '+answer+'</p><p><b>توضیح مفهومی:</b></p><p>'+detail.replace(/\n/g,"<br>")+'</p><p class="explanation-tip"><b>تمرین کاربردی:</b> یک نمونه از نصب، پیکربندی یا عیب‌یابی واقعی پیدا کنید و بررسی کنید این مفهوم چگونه در تصمیم فنی شما اثر می‌گذارد.</p></div></details>';
+}
 function quizHTML(comprehensive=false){
 const qs=comprehensive?allQuiz():chapters[state.chapter].quiz.map((q,qi)=>({...q,chapter:state.chapter,qi,tag:chapters[state.chapter].title}));
 const title=comprehensive?"آزمون جامع دوره":"آزمون فصل: "+chapters[state.chapter].title;
 let score=0;if(state.quizSubmitted)qs.forEach((q,i)=>{if(Number(state.quizAnswers[i])===q.a)score++});
-return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　آزمون</div><section class="panel"><span class="pill">${comprehensive?"آزمون همه فصل‌ها":"آزمون فصل"}</span><h1 class="lesson-title">${title}</h1><p class="lesson-intro">برای هر پرسش یک گزینه انتخاب کنید. پس از ثبت، پاسخ صحیح و توضیح نمایش داده می‌شود.</p><div id="questions">${qs.map((q,i)=>`<div class="quiz-question"><h3>${i+1}. ${esc(q.q)}</h3>${comprehensive?'<div class="muted" style="font-size:10px;margin-bottom:7px">فصل: '+esc(q.tag)+'</div>':""}${q.o.map((op,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}" ${state.quizAnswers[i]===String(j)?"checked":""} ${state.quizSubmitted?"disabled":""} onchange="state.quizAnswers[${i}]=this.value"><span>${esc(op)}</span></label>`).join("")}${state.quizSubmitted?`<div class="feedback ${Number(state.quizAnswers[i])===q.a?"good":"bad"}">${Number(state.quizAnswers[i])===q.a?"پاسخ درست است.":"پاسخ درست: "+esc(q.o[q.a])+"."} ${esc(q.e)}</div>`:""}</div>`).join("")}</div>
+return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　آزمون</div><section class="panel"><span class="pill">${comprehensive?"آزمون همه فصل‌ها":"آزمون فصل"}</span><h1 class="lesson-title">${title}</h1><p class="lesson-intro">برای هر پرسش یک گزینه انتخاب کنید. پس از ثبت، پاسخ صحیح و توضیح نمایش داده می‌شود.</p><div id="questions">${qs.map((q,i)=>`<div class="quiz-question"><h3>${i+1}. ${esc(q.q)}</h3>${comprehensive?'<div class="muted" style="font-size:10px;margin-bottom:7px">فصل: '+esc(q.tag)+'</div>':""}${q.o.map((op,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}" ${state.quizAnswers[i]===String(j)?"checked":""} ${state.quizSubmitted?"disabled":""} onchange="state.quizAnswers[${i}]=this.value"><span>${esc(op)}</span></label>`).join("")}${explanationHTML(q)}${state.quizSubmitted?`<div class="feedback ${Number(state.quizAnswers[i])===q.a?"good":"bad"}">${Number(state.quizAnswers[i])===q.a?"پاسخ درست است.":"پاسخ درست: "+esc(q.o[q.a])+"."} پس از مشاهده توضیح تشریحی، نکته‌های اصلی را مرور کنید.</div>`:""}</div>`).join("")}</div>
 ${state.quizSubmitted?`<div class="result"><h2 style="margin:0 0 5px">نتیجه: ${score} از ${qs.length}</h2><p style="margin:0;font-size:13px">درصد پاسخ درست: ${Math.round(score/qs.length*100)}٪</p><div class="progress" style="margin-top:12px;height:8px"><i style="width:${Math.round(score/qs.length*100)}%"></i></div></div>`:""}
 <div class="quiz-toolbar">${state.quizSubmitted?'<button class="primary" onclick="retryQuiz()">تلاش دوباره</button>':'<button class="primary" onclick="submitQuiz('+comprehensive+')">ثبت پاسخ‌ها و مشاهده نتیجه</button>'}<button class="secondary" onclick="go('lesson',${state.chapter})">بازگشت به درس</button></div></section>`;
 }
