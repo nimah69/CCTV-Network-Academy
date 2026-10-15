@@ -28,7 +28,7 @@ chapters.forEach((scenarios,chapterIndex)=>{
   titles.add(scenario.title);
  });
 });
-const inlineStart=html.indexOf("<script>\\n");
+const inlineStart=html.indexOf("<script>");
 const inlineEnd=html.lastIndexOf("</script>");
 assert.ok(inlineStart>=0&&inlineEnd>inlineStart,"Application inline script must exist");
 new vm.Script(html.slice(inlineStart+8,inlineEnd),{filename:"index.html:inline-script"});
