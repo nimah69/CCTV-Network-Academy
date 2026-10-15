@@ -57,7 +57,11 @@ for (const [chapterIndex, chapter] of chapters.entries()) {
 
 assert.equal(total, 350, "Expected 350 questions in total");
 assert.ok(scenarioCount >= 28, "Expected at least 28 explicitly labeled applied scenarios");
-assert.equal(sourceQuestionCount, 5, "All five questions from the PDF quiz section should be labeled as rewritten from the source");
+assert.equal(sourceQuestionCount, 16, "All 16 source quiz questions (PDF questions 145–160) must be represented");
+const sourceQuiz = chapters[12].quiz.filter((question) => question.kind === "بازنویسی پرسش‌های جزوه");
+assert.deepEqual(sourceQuiz.map((question) => question.sourceId).sort((a, b) => a - b), Array.from({length: 16}, (_, i) => i + 145), "Source question IDs must cover PDF questions 145–160 exactly");
+const expectedSourceAnswers = new Map([[145,"Authentication"],[146,"Authorization"],[147,"RAID"],[148,"TIA-942"],[149,"IEEE 802.3af"],[150,"VLAN"],[151,"فشرده‌سازی ویدئو"],[152,"اختلاف شدید روشنایی"],[153,"نور بسیار شدید"],[154,"IR Cut"],[155,"IP6X"],[156,"غوطه‌وری موقت"],[157,"STP"],[158,"هماهنگ‌سازی زمان"],[159,"میزان داده قابل از دست رفتن"],[160,"هدف زمان بازیابی"]]);
+for (const question of sourceQuiz) assert.ok(question.o[question.a].includes(expectedSourceAnswers.get(question.sourceId)), "Incorrect source answer key for PDF question " + question.sourceId);
 assert.ok(generatedStemPatterns.size >= 6, "Supplemental questions should use varied stems, not one repeated template");
 assert.ok(answerPositions.every((count) => count >= Math.ceil(total * 0.20) && count <= Math.floor(total * 0.30)), "Each correct-answer position must occur between 20% and 30% of the bank");
 assert.ok(longestCorrectOptions <= Math.floor(total * 0.35), "The correct answer must not be the longest option in more than 35% of questions");
@@ -79,7 +83,18 @@ assert.ok(appScript.includes("function normalizeProgress"), "Legacy progress dat
 assert.ok(appScript.includes("function exportProgress") && appScript.includes("function importProgressFile"), "JSON progress export/import must be available");
 assert.ok(appScript.includes("function buildComprehensiveQuiz") && appScript.includes("function shuffleQuestion"), "Randomized quiz generation must be available");
 assert.ok(appScript.includes("state.progress.wrongQuestions"), "Incorrect answers must be persisted for review");
-assert.ok(appScript.includes("ارجاع صفحه تأیید نشده"), "Unverified source page references must be labeled");
+assert.ok(appScript.includes("منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)"), "Verified source and PDF page references must be displayed");
+assert.deepEqual(chapters.map((chapter) => chapter.pages), ["۱–۴","۵–۱۵","۱۶–۲۹","۳۰–۳۳","۳۳–۳۵","۳۶","۳۶–۳۷","۳۷–۳۸","۳۸–۴۰","۴۱–۴۵","۴۱–۴۲","۴۲–۴۳","۴۳–۴۴","۴۴–۴۵"], "Chapter page references must match the 45-page source PDF");
+const chapterText = (index) => [chapters[index].title, ...chapters[index].sections.flat(), ...chapters[index].supplemental.items.flat(), ...chapters[index].quiz.flatMap((question) => [question.q, ...question.o, question.e])].join(" ");
+assert.match(chapterText(3), /Tamper Detection|دسترسی فیزیکی/, "Physical-security chapter must contain physical-security content");
+assert.doesNotMatch(chapterText(3), /RAID/, "Backup/RAID content must not be misplaced in the physical-security chapter");
+assert.match(chapterText(4), /Firmware|VPN|Firewall/, "Cybersecurity chapter must contain cybersecurity content");
+assert.doesNotMatch(chapterText(4), /فیبر نوری|کابل مسی|طول کانال اترنت/, "Cabling/fiber content must not be misplaced in the cybersecurity chapter");
+assert.match(chapterText(5), /RPO|RAID|Backup/, "Backup and recovery chapter must contain recovery content");
+assert.doesNotMatch(chapterText(5), /فیبر نوری|کابل مسی|VPN همراه/, "Cabling/remote-access questions must not be misplaced in the backup chapter");
+assert.match(chapterText(6), /تهدید|آسیب‌پذیری|Risk/, "Risk chapter must contain risk concepts");
+assert.match(chapterText(7), /TIA-942|NIST|ISO/, "Standards chapter must contain standards content");
+assert.match(chapterText(8), /Packet Loss|Ping|Offline/, "Troubleshooting chapter must contain diagnostic content");
 
 const calculatorSource = fs.readFileSync("js/calculations.js", "utf8");
 new vm.Script(calculatorSource, { filename: "js/calculations.js" });
