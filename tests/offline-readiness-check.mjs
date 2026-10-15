@@ -8,7 +8,7 @@ const localFiles = new Set();
 
 function resolveLocalReference(reference, page) {
   const clean = reference.split(/[?#]/, 1)[0];
-  if (!clean || clean.startsWith("#") || /^(?:data:|blob:|https?:|//|mailto:|tel:)/i.test(clean)) return null;
+  if (!clean || clean.startsWith("#") || clean.startsWith("//") || /^(?:data:|blob:|https?:|mailto:|tel:)/i.test(clean)) return null;
   const decoded = decodeURIComponent(clean);
   return path.posix.normalize(path.posix.join(path.posix.dirname(page), decoded)).replace(/^\.\//, "");
 }
