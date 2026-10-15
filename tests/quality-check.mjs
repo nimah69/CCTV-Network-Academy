@@ -23,24 +23,24 @@ const answerPositions = [0, 0, 0, 0];
 const generatedStemPatterns = new Set();
 
 for (const [chapterIndex, chapter] of chapters.entries()) {
-  assert.ok(chapter.title && chapter.title.trim(), \`Chapter \${chapterIndex + 1} needs a title\`);
-  assert.equal(chapter.quiz.length, 25, \`Chapter "\${chapter.title}" must contain exactly 25 questions\`);
+  assert.ok(chapter.title && chapter.title.trim(), "Chapter " + (chapterIndex + 1) + " needs a title");
+  assert.equal(chapter.quiz.length, 25, 'Chapter "' + chapter.title + '" must contain exactly 25 questions');
   total += chapter.quiz.length;
 
   for (const [questionIndex, question] of chapter.quiz.entries()) {
-    const where = \`Chapter "\${chapter.title}", question \${questionIndex + 1}\`;
-    assert.ok(typeof question.q === "string" && question.q.trim().length >= 15, \`\${where}: question text is missing\`);
-    assert.ok(Array.isArray(question.o) && question.o.length === 4, \`\${where}: expected four options\`);
-    assert.equal(new Set(question.o.map((option) => String(option).trim().toLocaleLowerCase())).size, 4, \`\${where}: options must be unique\`);
-    assert.ok(Number.isInteger(question.a) && question.a >= 0 && question.a < 4, \`\${where}: answer index is invalid\`);
-    assert.ok(typeof question.e === "string" && question.e.trim().length >= 25, \`\${where}: explanation is missing or too short\`);
+    const where = 'Chapter "' + chapter.title + '", question ' + (questionIndex + 1);
+    assert.ok(typeof question.q === "string" && question.q.trim().length >= 15, where + ": question text is missing");
+    assert.ok(Array.isArray(question.o) && question.o.length === 4, where + ": expected four options");
+    assert.equal(new Set(question.o.map((option) => String(option).trim().toLocaleLowerCase())).size, 4, where + ": options must be unique");
+    assert.ok(Number.isInteger(question.a) && question.a >= 0 && question.a < 4, where + ": answer index is invalid");
+    assert.ok(typeof question.e === "string" && question.e.trim().length >= 25, where + ": explanation is missing or too short");
     answerPositions[question.a]++;
 
     if (question.kind === "سناریوی کاربردی" || question.kind === "سواد منبع") scenarioCount++;
     if (question.kind === "بازنویسی پرسش‌های جزوه") sourceQuestionCount++;
     if (question.kind === "تمرین مفهومی تکمیلی") {
       generatedStemPatterns.add(question.q.replace(/«.*?»/g, "«موضوع»"));
-      assert.ok(!question.o.some((option) => option.includes("این موضوع فقط به نام‌گذاری تجهیزات مربوط است.")), \`\${where}: fallback distractor found\`);
+      assert.ok(!question.o.some((option) => option.includes("این موضوع فقط به نام‌گذاری تجهیزات مربوط است.")), where + ": fallback distractor found");
     }
   }
 }
