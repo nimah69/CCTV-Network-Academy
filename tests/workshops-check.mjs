@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import vm from "node:vm";
+const html=fs.readFileSync("workshops.html","utf8");
+assert.ok(html.includes('<html lang="fa" dir="rtl">'),"Workshop page must be Persian RTL");
+for(const id of ["trouble","topology","poe","subnet","storage","cable","security","capstone"]) assert.ok(html.includes('id="'+id+'"'),"Missing workshop: "+id);
+for(const id of ["scenarioChoices","checkTopology","calcPoe","calcSubnet","calcStorage","recommendCable","scoreSecurity","buildReport","downloadReport","printReport"]) assert.ok(html.includes('id="'+id+'"'),"Missing interaction: "+id);
+const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
+assert.equal(scripts.length,1,"Expected one workshop application script");
+new vm.Script(scripts[0],{filename:"workshops.html:inline-script"});
+const scenarioBlock=scripts[0].match(/const scenarios=\[([\s\S]*?)\n\];/);
+assert.ok(scenarioBlock,"Scenario bank must exist");
+assert.equal((scenarioBlock[1].match(/title:"/g)||[]).length,12,"Expected 12 troubleshooting scenarios");
+assert.ok(html.includes("localStorage"),"Workshop progress should persist locally");
+assert.ok(!html.includes("https://") && !html.includes("http://"),"Workshop page should not require external services");
+console.log("Interactive workshops checks passed: 8 workshops, 12 troubleshooting scenarios, script syntax and key interactions.");
