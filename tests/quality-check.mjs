@@ -47,7 +47,7 @@ for (const [chapterIndex, chapter] of chapters.entries()) {
 
 assert.equal(total, 350, "Expected 350 questions in total");
 assert.ok(scenarioCount >= 28, "Expected at least 28 explicitly labeled applied scenarios");
-assert.equal(sourceQuestionCount, 2, "Exactly two questions should be labeled as rewritten from the PDF quiz section");
+assert.equal(sourceQuestionCount, 5, "All five questions from the PDF quiz section should be labeled as rewritten from the source");
 assert.ok(generatedStemPatterns.size >= 6, "Supplemental questions should use varied stems, not one repeated template");
 assert.ok(answerPositions.every((count) => count >= 20), "Correct answer positions should be reasonably distributed");
 
