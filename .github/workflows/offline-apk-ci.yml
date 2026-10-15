@@ -6,11 +6,13 @@ on:
     paths:
       - "index.html"
       - "workshops.html"
+      - "schematics.html"
       - "js/**"
       - "tests/**"
       - "android/**"
       - ".github/workflows/android-apk.yml"
       - ".github/workflows/offline-apk-ci.yml"
+      - ".github/workflows/quality.yml"
 
 permissions:
   contents: read
@@ -23,15 +25,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run academy quality checks
-        run: node tests/quality-check.mjs
+        run: |
+          node tests/quality-check.mjs
+          node tests/workshops-check.mjs
+          node tests/calculations-check.mjs
+          node tests/chapter-labs-check.mjs
+          node tests/offline-readiness-check.mjs
+          node tests/schematics-check.mjs
 
       - name: Bundle local website files
         run: |
           mkdir -p android/app/src/main/assets/academy/js
-          cp index.html workshops.html android/app/src/main/assets/academy/
+          cp index.html workshops.html schematics.html android/app/src/main/assets/academy/
           cp js/*.js android/app/src/main/assets/academy/js/
           test -s android/app/src/main/assets/academy/index.html
           test -s android/app/src/main/assets/academy/workshops.html
+          test -s android/app/src/main/assets/academy/schematics.html
           test -s android/app/src/main/assets/academy/js/academy-data.js
           test -s android/app/src/main/assets/academy/js/calculations.js
           test -s android/app/src/main/assets/academy/js/chapter-labs.js

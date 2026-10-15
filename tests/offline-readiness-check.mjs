@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const pages = ["index.html", "workshops.html"];
+const pages = ["index.html", "workshops.html", "schematics.html"];
 const localFiles = new Set();
 
 function resolveLocalReference(reference, page) {
