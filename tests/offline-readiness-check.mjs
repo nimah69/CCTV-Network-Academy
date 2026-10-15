@@ -57,6 +57,18 @@ assert.ok(workshopHtml.includes("localStorage"),
 assert.ok(!/\b(?:fetch|XMLHttpRequest)\s*\(/.test(mainHtml + workshopHtml),
   "Core pages should not require network requests for their initial content");
 
+
+const javaSource = fs.readFileSync(path.join(root, "android/app/src/main/java/ir/nimah69/cctvnetworkacademy/MainActivity.java"), "utf8");
+for (const token of ["@JavascriptInterface", "saveTextFile", "addJavascriptInterface(", "onShowFileChooser", "parseResult", "file:///android_asset/academy/"]) {
+  assert.ok(javaSource.includes(token), `MainActivity.java must include ${token}`);
+}
+const exportStart = mainHtml.indexOf("function exportProgress");
+const exportEnd = mainHtml.indexOf("function importProgressFile", exportStart);
+assert.ok(exportStart >= 0 && exportEnd > exportStart, "Could not isolate exportProgress");
+const exportFunction = mainHtml.slice(exportStart, exportEnd);
+assert.ok(exportFunction.includes("AndroidBridge") && exportFunction.indexOf("AndroidBridge") < exportFunction.indexOf("createObjectURL"),
+  "exportProgress must attempt AndroidBridge before browser Blob fallback");
+
 console.log(JSON.stringify({
   status: "passed",
   pagesChecked: pages.length,

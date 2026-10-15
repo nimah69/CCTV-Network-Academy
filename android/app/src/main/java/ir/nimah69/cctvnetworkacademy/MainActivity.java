@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
     private String pendingMimeType;
     private ValueCallback<Uri[]> fileChooserCallback;
 
-    private final class AndroidBridge {
+    public final class AndroidBridge {
         @JavascriptInterface
         public void saveTextFile(final String fileName, final String mimeType, final String content) {
             runOnUiThread(() -> {
