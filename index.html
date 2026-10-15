@@ -59,9 +59,14 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .footer{color:#8498b5}
 .side-note{background:#0c1727;border-color:#293a52}
 .nav button{min-height:44px}
+.sidebar-close{display:none}
+.sidebar-backdrop{display:none}
 @media(max-width:850px){
- .side{background:#080f1c;border-left:1px solid #2b3e58}
+ .side{background:#080f1c;border-left:1px solid #2b3e58;padding-top:64px}
  .side.open{box-shadow:-18px 0 50px #0008}
+ .sidebar-close{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:7px;min-height:42px;padding:7px 12px;border:1px solid #344761;border-radius:10px;background:#142238;color:#e7effb;font-size:13px}
+ .sidebar-close:first-letter{font-size:20px}
+ .sidebar-backdrop.open{display:block;position:fixed;inset:0;z-index:19;background:#020712a8;backdrop-filter:blur(2px)}
  .wrap{padding-bottom:30px}
  .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
@@ -94,6 +99,19 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .diagram-card pre{direction:ltr;text-align:left;white-space:pre;overflow-x:auto;max-width:100%;background:#07111e;color:#b9f4e7;border:1px solid #263d55;border-radius:9px;padding:12px;font:12px/1.7 ui-monospace,Consolas,monospace}
 .diagram-card ul{padding-right:20px;font-size:12px;color:#c5d5e8}
 .diagram-card li{margin:5px 0}
+.calculator-section{margin-top:30px}
+.calculator-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.calculator-card{min-width:0;border:1px solid #29445e;border-radius:14px;padding:15px;background:#0c192a}
+.calculator-card h3{margin:0 0 6px;color:#86e7ef;font-size:14px}
+.calculator-card>p{font-size:12px;color:#aebfd5;margin:0 0 13px}
+.calc-fields{display:grid;gap:9px;margin:12px 0}
+.calc-fields label{display:grid;gap:4px;color:#c5d5e8;font-size:11px}
+.calc-fields input{width:100%;min-width:0;border:1px solid #344b66;border-radius:8px;background:#081322;color:#f0f6ff;padding:9px;font-size:13px}
+.calc-fields input[aria-invalid=true]{border-color:#ff8292}
+.calc-result{margin-top:12px;min-height:88px;border-radius:9px;background:#10283a;border:1px solid #2a4b63;padding:11px;font-size:12px;line-height:2;color:#cfe9f4}
+.calc-result b{color:#7ce8e4}
+.calc-disclaimer{font-size:11px!important;color:#93a9c4!important;margin-top:12px}
+@media(max-width:980px){.calculator-grid{grid-template-columns:1fr}}
 .technical-detail{margin-top:12px;padding:12px;border:1px solid #29445e;border-radius:10px;background:#0a1929}
 .technical-detail h4{margin:12px 0 5px;color:#7ddfe8;font-size:12px}
 .technical-detail h4:first-child{margin-top:0}
@@ -117,7 +135,9 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 </head>
 <body>
 <div class="app">
+<div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 <aside class="side" id="sidebar">
+  <button class="sidebar-close" id="closeMenuBtn" type="button" aria-label="بستن منو" title="بستن منو">× <span>بستن منو</span></button>
   <div class="brand"><div class="brand-icon">◈</div><div><strong>آکادمی شبکه و نظارت تصویری</strong><small>یادگیری مرحله‌به‌مرحله • نسخه آزمایشی</small></div></div>
   <div><div class="side-label">فضای یادگیری</div><nav class="nav">
     <button class="active" data-view="home"><span>⌂</span> داشبورد یادگیری</button>
@@ -438,13 +458,46 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 function pct(i){return state.progress.done.includes(i)?100:0}
 function totalQuestions(){return chapters.reduce((n,c)=>n+c.quiz.length,0)}
 function allQuiz(){return chapters.flatMap((c,ci)=>c.quiz.map((q,qi)=>({...q,chapter:ci,qi,tag:c.title})))}
-function go(view,idx){state.view=view;if(idx!==undefined)state.chapter=idx;state.quizAnswers={};state.quizSubmitted=false;render();$("#sidebar").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"})}
+function closeSidebar(){$("#sidebar").classList.remove("open");$("#sidebarBackdrop").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").setAttribute("aria-label","بازکردن منو");}
+function go(view,idx){state.view=view;if(idx!==undefined)state.chapter=idx;state.quizAnswers={};state.quizSubmitted=false;render();closeSidebar();window.scrollTo({top:0,behavior:"smooth"})}
 function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="chapterQuiz")root.innerHTML=quizHTML(false);else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else root.innerHTML=homeHTML(state.view==="all");wire()}
+function calculatorHTML(){
+ return `<section class="supplement calculator-section"><div class="section-head"><div><h2>کارگاه محاسبات طراحی CCTV</h2><p>تخمین اولیه توان PoE، پهنای باند شبکه و ظرفیت ذخیره‌سازی</p></div><span class="pill">ابزار تعاملی</span></div>
+ <div class="calculator-grid">
+ <article class="calculator-card"><h3>۱. بودجه توان PoE</h3><p>مصرف هر دوربین را از مشخصات فنی دستگاه وارد کن.</p><div class="calc-fields"><label>تعداد دوربین<input id="poeCount" type="number" min="1" max="1000" value="8"></label><label>توان هر دوربین (وات)<input id="poeWatts" type="number" min="0.1" max="200" step="0.1" value="8"></label><label>ذخیره توان (%)<input id="poeReserve" type="number" min="0" max="100" value="20"></label></div><button class="primary" onclick="calculatePoE()">محاسبه توان</button><div class="calc-result" id="poeResult" aria-live="polite">برای دیدن نتیجه، محاسبه را بزن.</div></article>
+ <article class="calculator-card"><h3>۲. پهنای باند شبکه</h3><p>نرخ هر دوربین را بر اساس رزولوشن، فریم‌ریت و کدک تخمین بزن یا از تنظیمات واقعی بردار.</p><div class="calc-fields"><label>تعداد دوربین<input id="bwCount" type="number" min="1" max="1000" value="8"></label><label>نرخ هر دوربین (Mbps)<input id="bwRate" type="number" min="0.1" max="500" step="0.1" value="4"></label><label>حاشیه شبکه (%)<input id="bwReserve" type="number" min="0" max="100" value="25"></label></div><button class="primary" onclick="calculateBandwidth()">محاسبه پهنای باند</button><div class="calc-result" id="bwResult" aria-live="polite">برای دیدن نتیجه، محاسبه را بزن.</div></article>
+ <article class="calculator-card"><h3>۳. ظرفیت هارد برای ضبط</h3><p>تخمین ضبط پیوسته با نرخ ثابت؛ تشخیص حرکت، صدا و سربار می‌توانند نتیجه واقعی را تغییر دهند.</p><div class="calc-fields"><label>تعداد دوربین<input id="hddCount" type="number" min="1" max="1000" value="8"></label><label>نرخ هر دوربین (Mbps)<input id="hddRate" type="number" min="0.1" max="500" step="0.1" value="4"></label><label>روزهای نگهداری<input id="hddDays" type="number" min="1" max="365" value="14"></label></div><button class="primary" onclick="calculateStorage()">محاسبه ظرفیت</button><div class="calc-result" id="hddResult" aria-live="polite">برای دیدن نتیجه، محاسبه را بزن.</div></article>
+ </div><p class="calc-disclaimer">این نتایج تخمین طراحی هستند، نه تضمین سازگاری. برای انتخاب نهایی، توان خروجی واقعی سوئیچ و محدودیت هر پورت، نرخ بیت اندازه‌گیری‌شده، ظرفیت قابل استفاده هارد و شرایط ضبط را بررسی کن.</p></section>`;
+}
+function calcNum(id,min,max){
+ const el=document.getElementById(id),v=el?Number(el.value):NaN;
+ if(!Number.isFinite(v)||v<min||v>max){if(el)el.setAttribute("aria-invalid","true");return null}
+ el.removeAttribute("aria-invalid");return v;
+}
+function calculatePoE(){
+ const n=calcNum("poeCount",1,1000),w=calcNum("poeWatts",0.1,200),r=calcNum("poeReserve",0,100);
+ const out=$("#poeResult");if([n,w,r].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const base=n*w,total=base*(1+r/100);
+ out.innerHTML="مصرف پایه: <b>"+base.toFixed(1)+" وات</b><br>با ذخیره "+r+"٪: <b>"+total.toFixed(1)+" وات</b><br>سوئیچ را با بودجه توان PoE کل بالاتر از این مقدار و توان مجاز هر پورت انتخاب کن.";
+}
+function calculateBandwidth(){
+ const n=calcNum("bwCount",1,1000),rate=calcNum("bwRate",0.1,500),r=calcNum("bwReserve",0,100);
+ const out=$("#bwResult");if([n,rate,r].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const base=n*rate,total=base*(1+r/100);
+ out.innerHTML="مجموع نرخ تصویر: <b>"+base.toFixed(1)+" Mbps</b><br>با حاشیه "+r+"٪: <b>"+total.toFixed(1)+" Mbps</b><br>این مقدار را با ظرفیت واقعی لینک‌ها، uplink سوئیچ، NVR و ترافیک هم‌زمان مقایسه کن.";
+}
+function calculateStorage(){
+ const n=calcNum("hddCount",1,1000),rate=calcNum("hddRate",0.1,500),days=calcNum("hddDays",1,365);
+ const out=$("#hddResult");if([n,rate,days].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const tb=n*rate*10.8*days/1000,withHeadroom=tb*1.1;
+ out.innerHTML="ظرفیت داده تخمینی: <b>"+tb.toFixed(2)+" TB</b><br>با ۱۰٪ حاشیه: <b>"+withHeadroom.toFixed(2)+" TB</b><br>برای طراحی نهایی، ظرفیت قابل استفاده دیسک، RAID در صورت وجود، فرمت ضبط و نرخ بیت واقعی را لحاظ کن.";
+}
 function homeHTML(showAll=false){
 const done=state.progress.done.length, percent=Math.round(done/chapters.length*100);
 const filtered=chapters.map((c,i)=>({...c,i})).filter(c=>!state.query||[c.title,c.desc,c.intro,c.sections.map(s=>s.join(" ")).join(" ")].join(" ").toLowerCase().includes(state.query.toLowerCase()));
 return `<section class="welcome"><div class="eyebrow">مسیر یادگیری • شبکه، CCTV و امنیت</div><h1>مهارتت را از مبانی تا طراحی و عیب‌یابی بساز</h1><p>دوره‌ای ساختاریافته بر پایه جزوه آمادگی آزمون و مصاحبه افتا، با درس‌های خلاصه، آزمون فصل‌به‌فصل و ذخیره پیشرفت روی همین دستگاه.</p><button class="primary" onclick="go('lesson',${state.progress.done.length<chapters.length?chapters.findIndex((c,i)=>!state.progress.done.includes(i)):0})">ادامه یادگیری ←</button></section>
 <div class="stats"><div class="stat"><div class="stat-icon">▤</div><div><small>فصل‌های دوره</small><strong>${chapters.length}</strong></div></div><div class="stat"><div class="stat-icon">✓</div><div><small>فصل‌های تکمیل‌شده</small><strong>${done}</strong></div></div><div class="stat"><div class="stat-icon">◷</div><div><small>پیشرفت دوره</small><strong>${percent}٪</strong></div></div></div>
+${!showAll?calculatorHTML():""}
 <div class="section-head"><div><h2>${showAll?"فهرست همه فصل‌ها":"مسیر آموزشی"}</h2><p>هر فصل شامل درس خلاصه و آزمون مخصوص همان فصل است.</p></div><span class="pill">${filtered.length} فصل</span></div>
 <div class="course-grid">${filtered.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">${c.icon}</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>صفحات ${c.pages}</span><div class="progress"><i style="width:${pct(c.i)}%"></i></div><span>${pct(c.i)?"تکمیل":"شروع درس"}</span></div></div></button>`).join("")||'<div class="empty">فصلی با این عبارت پیدا نشد.</div>'}</div>
 <div class="footer">محتوا خلاصه‌سازی آموزشی از PDF پیوست است. پیشرفت فقط در حافظه محلی همین مرورگر ذخیره می‌شود.</div>`;
@@ -528,13 +581,16 @@ ${state.quizSubmitted?`<div class="result"><h2 style="margin:0 0 5px">نتیجه
 <div class="quiz-toolbar">${state.quizSubmitted?'<button class="primary" onclick="retryQuiz()">تلاش دوباره</button>':'<button class="primary" onclick="submitQuiz('+comprehensive+')">ثبت پاسخ‌ها و مشاهده نتیجه</button>'}<button class="secondary" onclick="go('lesson',${state.chapter})">بازگشت به درس</button></div></section>`;
 }
 function savedHTML(){const list=chapters.map((c,i)=>({...c,i})).filter(c=>state.progress.done.includes(c.i));return `<div class="section-head"><div><h2>ادامه یادگیری</h2><p>فصل‌هایی که به‌عنوان مطالعه‌شده علامت زده‌اید.</p></div></div>${list.length?'<div class="course-grid">'+list.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">✓</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>تکمیل‌شده</span><div class="progress"><i style="width:100%"></i></div></div></div></button>`).join("")+'</div>':'<div class="panel empty">هنوز فصلی را تکمیل نکرده‌اید. از داشبورد یک فصل را باز کنید و پس از مطالعه آن را علامت بزنید.</div>'}<div class="lesson-actions"><button class="secondary" onclick="resetProgress()">پاک‌کردن پیشرفت ذخیره‌شده</button></div>`}
-function wire(){document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{go(b.dataset.view);$("#sidebar").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");});}
+function wire(){document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>go(b.dataset.view));}
 function markDone(i){if(!state.progress.done.includes(i))state.progress.done.push(i);saveProgress();render()}
 function submitQuiz(comprehensive){state.quizSubmitted=true;const qs=comprehensive?allQuiz():chapters[state.chapter].quiz.map(q=>q);if(!comprehensive){const score=qs.reduce((n,q,i)=>n+(Number(state.quizAnswers[i])===q.a?1:0),0);state.progress.scores[state.chapter]=score;if(score===qs.length&&!state.progress.done.includes(state.chapter))state.progress.done.push(state.chapter);saveProgress()}render()}
 function retryQuiz(){state.quizAnswers={};state.quizSubmitted=false;render()}
 function resetProgress(){if(confirm("پیشرفت ذخیره‌شده این دوره روی همین دستگاه پاک شود؟")){state.progress={done:[],scores:{}};saveProgress();render()}}
 $("#searchInput").addEventListener("input",e=>{state.query=e.target.value;state.view="all";render()});
-$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").addEventListener("click",()=>{const opened=$("#sidebar").classList.toggle("open");$("#menuBtn").setAttribute("aria-expanded",String(opened));});
+$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").addEventListener("click",()=>{const opened=$("#sidebar").classList.toggle("open");$("#sidebarBackdrop").classList.toggle("open",opened);$("#menuBtn").setAttribute("aria-expanded",String(opened));$("#menuBtn").setAttribute("aria-label",opened?"بستن منو":"بازکردن منو");});
+$("#closeMenuBtn").addEventListener("click",closeSidebar);
+$("#sidebarBackdrop").addEventListener("click",closeSidebar);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSidebar()});
 render();
 </script>
 </body>
