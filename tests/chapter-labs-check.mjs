@@ -23,7 +23,8 @@ const context={
 };
 vm.createContext(context);
 vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
-context.window.CCTVChapterLabs=[[{title:"آزمون",context:"دوربین تصویر ندارد",options:["بررسی IP","تعویض NVR","افزایش رزولوشن"],answer:0,why:"ابتدا ارتباط را بررسی کن",clue:"یک مورد را تغییر بده",nodes:["رایانه","سوئیچ","دوربین IP"]}]];
+const demoScenario={title:"آزمون",context:"دوربین تصویر ندارد",options:["بررسی IP","تعویض NVR","افزایش رزولوشن"],answer:0,why:"ابتدا ارتباط را بررسی کن",clue:"یک مورد را تغییر بده",nodes:["رایانه","سوئیچ","دوربین IP"]};
+context.window.CCTVChapterLabs=[Array.from({length:5},(_,i)=>({...demoScenario,title:"آزمون "+i}))];
 context.state.progress.labs={};
 const rendered=context.chapterLabHTML();
 assert.ok(rendered.includes("میز بررسی عیب‌یابی"),"Chapter lab should render the new guided simulator");
