@@ -26,4 +26,5 @@ jobs:
           node tests/workshops-check.mjs
           node tests/calculations-check.mjs
           node tests/chapter-labs-check.mjs
-          node tests/offline-readiness-check.mjs\n          node tests/schematics-check.mjs
+          node tests/offline-readiness-check.mjs
+          node tests/schematics-check.mjs
