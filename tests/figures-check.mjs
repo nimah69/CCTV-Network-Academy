@@ -49,7 +49,7 @@ assert.match(semanticFlow,/fig-node-data/,"Flow nodes must visually identify dat
 assert.match(semanticFlow,/fig-node-power/,"Flow nodes must visually identify power roles");
 const timeline=api.render({...sample,type:"timeline",items:[{label:"مرحله اول",detail:"توضیح فارسی"}]});
 assert.match(timeline,/x="298" y="22" text-anchor="end"/,"Timeline labels must be aligned for Persian RTL");
-assert.ok(css.includes('.fig-legend .power::before{content:"▲"') && css.includes('.fig-legend .good::before{content:"✓"'),"Legend must use distinct semantic symbols, not only colored lines");
+assert.ok(css.includes(".fig-legend .power::before{content:'▲'") && css.includes(".fig-legend .good::before{content:'✓'"),"Legend must use distinct semantic symbols, not only colored lines");
 const bits=api.render(bank.byChapter["1"].find(x=>x.id==="ch1-bits"));
 assert.match(bits,/شبکه \(N\)/,"Subnet diagram must identify network bits");
 assert.match(bits,/میزبان \(H\)/,"Subnet diagram must identify host bits");
