@@ -16,6 +16,7 @@ on:
       - "tests/**"
       - "android/**"
       - ".github/workflows/offline-apk-ci.yml"
+      - ".github/workflows/pages.yml"
 
 permissions:
   contents: read
