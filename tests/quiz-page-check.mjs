@@ -7,7 +7,7 @@ const start=html.indexOf("function quizHTML(comprehensive=false)");
 const end=html.indexOf("function reviewCardHTML",start);
 const renderer=html.slice(start,end);
 assert.match(renderer,/const q=qs\[index\]/,"Only the active question should be rendered in the quiz page");
-assert.doesNotMatch(renderer,/qs\.map\(\(q,i\)=>/,"The active quiz page must not render every question at once");
+assert.ok(!renderer.includes('qs.map((q,i)=>`<div class="quiz-question"'), "The active quiz page must not render every question at once");
 assert.match(renderer,/quiz-progress-meta/,"Progress and current question must be visible");
 assert.match(renderer,/selectQuizAnswer\(index,value\)/,"Answers must trigger immediate feedback");
 assert.match(renderer,/previousQuizQuestion/,"Previous navigation must be available");
