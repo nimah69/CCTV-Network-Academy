@@ -135,6 +135,25 @@ assert.ok(!workshopsHtml.includes("font-size:8px") && !workshopsHtml.includes("f
 assert.ok(workshopsHtml.includes("Mobile diagram and typography redesign") && workshopsHtml.includes("grid-template-columns:minmax(0,1fr)"), "Workshop diagrams must stack cleanly on narrow screens");
 assert.ok(workshopsHtml.includes("overflow-wrap:anywhere"), "Long diagram labels must wrap instead of causing horizontal overflow");
 
+
+assert.match(html, /function chapterOneLearningHTML\(\)/, "Chapter one must use the new card-based visual learning experience");
+assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):''/, "The new visual experience must be limited to chapter one and must not restore legacy diagrams in other chapters");
+assert.match(html, /function chapterOneStepContent\(step\)/, "Chapter one must provide explanatory step-by-step guidance");
+assert.match(html, /function setChapterOneStep\(step\)/, "Chapter one step navigation must be interactive");
+assert.match(html, /function runChapterOneScenario\(kind\)/, "Chapter one must provide a scenario-based diagnostic interaction");
+assert.match(html, /data-ch1-scenario="ping"/, "The diagnostic mission must include a successful-ping/no-image scenario");
+assert.match(html, /data-ch1-step="2"/, "The learning flow must expose all three steps");
+assert.match(html, /aria-live="polite"/, "Interactive feedback must be announced accessibly");
+assert.match(html, /این یک شبیه‌سازی آموزشی است/, "The interface must distinguish simulated guidance from real device measurements");
+assert.match(html, /\.ch1-equipment-grid\{grid-template-columns:1fr\}/, "Equipment cards must stack on narrow mobile screens");
+assert.match(html, /\.ch1-scenario-options\{grid-template-columns:1fr\}/, "Scenario options must stack on narrow mobile screens");
+const ch1Start = html.indexOf("function chapterOneLearningHTML()");
+const ch1End = html.indexOf("function lessonHTML()", ch1Start);
+assert.ok(ch1Start >= 0 && ch1End > ch1Start, "Could not isolate the chapter-one visual learning renderer");
+const ch1Renderer = html.slice(ch1Start, ch1End);
+assert.doesNotMatch(ch1Renderer, /<svg\b|<table\b|https?:\/\//i, "The new chapter-one experience must avoid SVG/table diagrams and external dependencies");
+assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ضبط‌کننده / NVR"].every(label => ch1Renderer.includes(label)), "Equipment cards must explain the four core network roles");
+
 console.log(JSON.stringify({
   status: "passed",
   chapters: chapters.length,
