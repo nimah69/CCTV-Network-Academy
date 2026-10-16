@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1220">
+<meta name="theme-color" content="#101827">
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -433,8 +433,8 @@ return '<section class="ch1-learning" aria-labelledby="ch1-learning-title"><div 
 
 
 function chapterVisualStepHTML(c,step){
-const s=c.sections[step]||c.sections[0];
-return '<div class="cv-step-content"><span class="cv-step-kicker">گام '+(step+1)+' از '+c.sections.length+'</span><h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p><div class="cv-practice-note"><b>ارتباط با کار واقعی</b><p>'+esc(c.tips)+'</p></div><div class="cv-step-actions"><button class="secondary" type="button" onclick="setChapterVisualStep('+(step-1)+')" '+(step===0?'disabled':'')+'>گام قبلی</button><button class="primary" type="button" onclick="setChapterVisualStep('+(step+1)+')" '+(step===c.sections.length-1?'disabled':'')+'>'+(step===c.sections.length-1?'پایان مرور':'گام بعدی')+'</button></div></div>';
+const q=(c.quiz||[])[step];if(!q)return '<div class="cv-step-content"><p>برای این فصل پرسش مروری ثبت نشده است.</p></div>';
+return '<div class="cv-step-content cv-review-step"><span class="cv-step-kicker">مرور بازیابی · پرسش '+(step+1)+' از '+Math.min(c.sections.length,(c.quiz||[]).length)+'</span><h4>'+esc(q.q)+'</h4><p>پیش از دیدن پاسخ، گزینه‌ای را انتخاب کن و سعی کن دلیل انتخابت را به یاد بیاوری.</p><div class="cv-answer-grid">'+q.o.map((o,i)=>'<button type="button" data-cv-answer="'+i+'" data-cv-question="'+step+'" aria-pressed="false" onclick="checkChapterVisualAnswer('+i+','+step+')"><span>'+String.fromCharCode(65+i)+'</span>'+esc(o)+'</button>').join('')+'</div><div id="cv-review-feedback-'+step+'" class="cv-quiz-feedback" aria-live="polite">پس از انتخاب، پاسخ درست و توضیح آموزشی نمایش داده می‌شود.</div><div class="cv-step-actions"><button class="secondary" type="button" onclick="setChapterVisualStep('+(step-1)+')" '+(step===0?'disabled':'')+'>پرسش قبلی</button><button class="primary" type="button" onclick="setChapterVisualStep('+(step+1)+')" '+(step===Math.min(c.sections.length,(c.quiz||[]).length)-1?'disabled':'')+'>'+(step===Math.min(c.sections.length,(c.quiz||[]).length)-1?'پایان مرور':'پرسش بعدی')+'</button></div></div>';
 }
 function setChapterVisualStep(step){
 const c=chapters[state.chapter];if(!c||!c.sections||!c.sections.length)return;
@@ -445,21 +445,21 @@ document.querySelectorAll("[data-cv-step]").forEach(b=>{const active=Number(b.da
 const progress=document.getElementById("cv-step-progress");
 if(progress)progress.style.width=(((state.chVisualStep+1)/c.sections.length)*100)+"%";
 }
-function checkChapterVisualAnswer(choice){
-const c=chapters[state.chapter],q=c&&c.quiz&&c.quiz[0];if(!q)return;
+function checkChapterVisualAnswer(choice,questionIndex=5){
+const c=chapters[state.chapter],q=c&&c.quiz&&c.quiz[questionIndex];if(!q)return;
 state.chVisualAnswer=Number(choice);
-const out=document.getElementById("cv-quiz-feedback");
+const out=document.getElementById(questionIndex===5?"cv-quiz-feedback":"cv-review-feedback-"+questionIndex);
 if(out){const ok=state.chVisualAnswer===q.a;out.className="cv-quiz-feedback "+(ok?"is-correct":"is-wrong");out.innerHTML="<b>"+(ok?"درست است؛ آفرین!":"هنوز درست نیست؛ پاسخ را بررسی کن.")+"</b><p>"+esc(q.e||"برای یادگیری بیشتر، توضیح پاسخ را مرور کن.")+"</p><p>پاسخ درست: <strong>"+esc(q.o[q.a])+"</strong></p>";}
-document.querySelectorAll("[data-cv-answer]").forEach(b=>{b.classList.toggle("chosen",Number(b.dataset.cvAnswer)===state.chVisualAnswer);b.setAttribute("aria-pressed",String(Number(b.dataset.cvAnswer)===state.chVisualAnswer))});
+document.querySelectorAll('[data-cv-answer][data-cv-question="'+questionIndex+'"]').forEach(b=>{b.classList.toggle("chosen",Number(b.dataset.cvAnswer)===state.chVisualAnswer);b.setAttribute("aria-pressed",String(Number(b.dataset.cvAnswer)===state.chVisualAnswer))});
 }
 function chapterVisualLearningHTML(c,chapterIndex){
 const sections=Array.isArray(c.sections)?c.sections:[];
-const q=c.quiz&&c.quiz[0];
+const q=c.quiz&&c.quiz[5];
 state.chVisualStep=0;state.chVisualAnswer=null;
 return '<section class="chapter-visual" aria-labelledby="cv-title"><header class="cv-hero"><span class="cv-eyebrow">VISUAL LEARNING LAB · فصل '+(chapterIndex+1)+'</span><h2 id="cv-title">'+esc(c.title)+'؛ از مفهوم تا اقدام</h2><p>مطالب این فصل به کارت‌های خوانا، مرور مرحله‌ای و یک تمرین کوتاه تبدیل شده‌اند. روی هر مفهوم بزن تا توضیحش باز شود.</p><div class="cv-hero-meta"><span>'+sections.length+' مفهوم اصلی</span><span>مرور مرحله‌ای</span><span>تمرین فوری</span></div></header>'+
 '<section class="cv-block"><div class="cv-section-head"><span class="cv-section-number">۰۱</span><div><h3>مفاهیم کلیدی فصل</h3><p>هر کارت یک مفهوم مستقل است؛ برای مطالعه روی عنوان آن بزن.</p></div></div><div class="cv-concept-grid">'+sections.map((s,i)=>'<details class="cv-concept"><summary><span class="cv-concept-index">'+String(i+1).padStart(2,"0")+'</span><b>'+esc(s[0])+'</b><span class="cv-open-mark" aria-hidden="true">+</span></summary><p>'+esc(s[1])+'</p><small>مفهوم '+(i+1)+' از '+sections.length+'</small></details>').join("")+'</div></section>'+
-'<section class="cv-block"><div class="cv-section-head"><span class="cv-section-number">۰۲</span><div><h3>مرور هدایت‌شده</h3><p>گام‌ها را یکی‌یکی باز کن تا نکته و کاربرد هر بخش را بخوانی.</p></div></div><div class="cv-step-nav" role="group" aria-label="گام‌های مرور">'+sections.map((s,i)=>'<button type="button" data-cv-step="'+i+'" onclick="setChapterVisualStep('+i+')" class="'+(i===0?"active":"")+'" aria-current="'+(i===0?"step":"false")+'"><span>'+(i+1)+'</span><b>'+esc(s[0])+'</b></button>').join("")+'</div><div class="cv-progress-track" aria-hidden="true"><span id="cv-step-progress" style="width:'+(sections.length?100/sections.length:0)+'%"></span></div><div id="cv-step-panel" aria-live="polite">'+chapterVisualStepHTML(c,0)+'</div></section>'+
-(q?'<section class="cv-block cv-quiz-block"><div class="cv-section-head"><span class="cv-section-number">۰۳</span><div><h3>چالش سریع</h3><p>قبل از دیدن توضیح، گزینه‌ای را که درست می‌دانی انتخاب کن.</p></div></div><p class="cv-question">'+esc(q.q)+'</p><div class="cv-answer-grid">'+q.o.map((o,i)=>'<button type="button" data-cv-answer="'+i+'" aria-pressed="false" onclick="checkChapterVisualAnswer('+i+')"><span>'+String.fromCharCode(65+i)+'</span>'+esc(o)+'</button>').join("")+'</div><div id="cv-quiz-feedback" class="cv-quiz-feedback" aria-live="polite">پس از انتخاب پاسخ، توضیح و پاسخ صحیح نمایش داده می‌شود.</div></section>':'')+
+'<section class="cv-block"><div class="cv-section-head"><span class="cv-section-number">۰۲</span><div><h3>مرور هدایت‌شده</h3><p>در هر گام یک پرسش متفاوت را پاسخ بده؛ سپس توضیح پاسخ و دلیل گزینه درست را بررسی کن.</p></div></div><div class="cv-step-nav" role="group" aria-label="گام‌های مرور">'+sections.map((s,i)=>'<button type="button" data-cv-step="'+i+'" onclick="setChapterVisualStep('+i+')" class="'+(i===0?"active":"")+'" aria-current="'+(i===0?"step":"false")+'"><span>'+(i+1)+'</span><b>پرسش '+(i+1)+'</b></button>').join("")+'</div><div class="cv-progress-track" aria-hidden="true"><span id="cv-step-progress" style="width:'+(sections.length?100/sections.length:0)+'%"></span></div><div id="cv-step-panel" aria-live="polite">'+chapterVisualStepHTML(c,0)+'</div></section>'+
+(q?'<section class="cv-block cv-quiz-block"><div class="cv-section-head"><span class="cv-section-number">۰۳</span><div><h3>چالش سریع</h3><p>قبل از دیدن توضیح، گزینه‌ای را که درست می‌دانی انتخاب کن.</p></div></div><p class="cv-question">'+esc(q.q)+'</p><div class="cv-answer-grid">'+q.o.map((o,i)=>'<button type="button" data-cv-answer="'+i+'" aria-pressed="false" onclick="checkChapterVisualAnswer('+i+',5)"><span>'+String.fromCharCode(65+i)+'</span>'+esc(o)+'</button>').join("")+'</div><div id="cv-quiz-feedback" class="cv-quiz-feedback" aria-live="polite">پس از انتخاب پاسخ، توضیح و پاسخ صحیح نمایش داده می‌شود.</div></section>':'')+
 '<p class="cv-simulation-note">این بخش ابزار آموزشی است؛ نتیجه‌ای از تجهیزات واقعی نمی‌خواند و جایگزین آزمایش میدانی یا دستورالعمل سازنده نیست.</p></section>';
 }
 function lessonHTML(){
@@ -773,6 +773,87 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
 .chapter-visual .cv-quiz-feedback.is-wrong { color: #92400e; }
 
 @media(prefers-reduced-motion:reduce){.cv-progress-track span{transition:none}}
+
+
+/* Design-system pass 1: unify legacy light components with the existing Cyber Academy palette. */
+:root{
+  --bg:#101827;--panel:#1b293b;--ink:#e8f0fb;--muted:#a6b5ca;--line:#304158;
+  --nav:#0b1220;--nav2:#18283e;--brand:#55a8ff;--brand2:#55d6d0;--teal:#55d6d0;
+  --soft:#20364d;--good:#4ade80;--bad:#fb7185;--shadow:0 12px 30px #02081740;
+  color-scheme:dark;
+}
+html{background:var(--bg);scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Vazirmatn,IRANSans,Tahoma,"Segoe UI",sans-serif;font-size:15px;line-height:1.85;overflow-wrap:anywhere}
+.top{background:#101827ed;border-bottom-color:#304158}
+.search input,.hamb{background:#172438;color:var(--ink);border-color:#354961}
+.search input::placeholder{color:#93a5bd}
+.course,.panel,.stat,.secondary,.cv-step-nav button,.cv-answer-grid button{
+  background:var(--panel);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow)
+}
+.course:hover,.cv-step-nav button:hover,.cv-answer-grid button:hover{border-color:#55d6d0;background:#20364b}
+.course-icon,.stat-icon{background:#20364b;color:#75e4df}
+.course p,.stat small,.panel p{color:var(--muted)}
+.chapter-lab-launch{background:linear-gradient(125deg,#17283c,#1b2940);border-color:#35536a;color:var(--ink)}
+.chapter-lab-launch p{color:#b5c6d9}
+.lab-node{background:#17283b;border-color:#35516a;color:#e8f0fb}
+.tool-panel .calc-fields input,.tool-panel .calc-fields input[aria-invalid=true]{
+  background:#111d2e;color:var(--ink);border-color:#3a526c
+}
+.tool-panel .calc-fields input::placeholder{color:#8fa3bd}
+.feedback.bad,.feedback-incorrect,.cv-quiz-feedback.is-wrong{
+  background:#3a202b;border-color:#82404e;color:#ffc0c9
+}
+.secondary:hover{border-color:var(--brand2);background:#22374c}
+button,input,select,textarea{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{
+  outline:3px solid #55d6d0;outline-offset:3px
+}
+.course,.stat,.panel,.chapter-lab-launch,.lab-node,.cv-step-nav button,.cv-answer-grid button{
+  min-width:0;overflow-wrap:anywhere
+}
+img,svg,canvas,video{max-width:100%}
+@media(max-width:850px){
+  .side{background:#0b1220;border-left:1px solid #304158;padding-top:64px}
+  .hamb{min-width:42px;min-height:42px;align-items:center;justify-content:center}
+  .top{padding-inline:12px;gap:10px}
+  .wrap{padding-inline:14px;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+}
+@media(max-width:520px){
+  body{font-size:15px}
+  .welcome{border-radius:18px}
+  .welcome p,.course p{font-size:12px}
+  .section-head h2{font-size:18px}
+  .course{padding:14px;gap:11px}
+  .course-icon{width:39px;height:39px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+
+/* Keep the chapter-visual components internally consistent: dark surfaces need light text. */
+.chapter-visual .cv-block,
+.chapter-visual .cv-concept,
+.chapter-visual .cv-concept summary,
+.chapter-visual .cv-step-nav button,
+.chapter-visual .cv-question,
+.chapter-visual .cv-answer-grid button{
+  background:#1b293b;color:#e8f0fb;border-color:#304158;
+}
+.chapter-visual .cv-concept summary b,
+.chapter-visual .cv-section-head h3{color:#e8f0fb}
+.chapter-visual .cv-concept>p,
+.chapter-visual .cv-concept small,
+.chapter-visual .cv-section-head p{color:#a6b5ca}
+.chapter-visual .cv-concept[open] summary,
+.chapter-visual .cv-step-nav button.active,
+.chapter-visual .cv-answer-grid button.chosen{
+  background:#203b50;color:#f2fbff;border-color:#55d6d0;
+}
+.chapter-visual .cv-quiz-feedback{background:#17283b;color:#dbe8f5;border-color:#304158}
+.chapter-visual .cv-quiz-feedback.is-correct{background:#15382f;color:#a7f3d0;border-color:#28785f}
+.chapter-visual .cv-quiz-feedback.is-wrong{background:#3a202b;color:#ffc0c9;border-color:#82404e}
 
 </style><a class="workshops-launch" href="workshops.html" aria-label="ورود به کارگاه‌های تعاملی">🧪 کارگاه‌های تعاملی</a>
 </body>

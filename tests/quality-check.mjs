@@ -158,7 +158,12 @@ assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ض
 assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
 assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):chapterVisualLearningHTML\(c,state\.chapter\)/, "All chapter lessons must render the new visual learning experience");
 assert.match(html, /function setChapterVisualStep\(step\)/, "All-chapter step navigation must work");
-assert.match(html, /function checkChapterVisualAnswer\(choice\)/, "All-chapter quick checks must provide feedback");
+assert.match(html, /function checkChapterVisualAnswer\(choice,questionIndex=5\)/, "Review and quick-challenge answers must select the correct question");
+const guidedRenderer = html.slice(html.indexOf("function chapterVisualStepHTML"), html.indexOf("function setChapterVisualStep"));
+assert.ok(guidedRenderer.includes("const q=(c.quiz||[])[step]"), "Guided review must use quiz questions, not repeat concept explanations");
+assert.ok(!guidedRenderer.includes("esc(s[1])"), "Guided review must not render the same explanatory text as key concepts");
+assert.ok(guidedRenderer.includes("data-cv-question") && guidedRenderer.includes("cv-review-feedback-"), "Each guided-review question must have isolated answer state and feedback");
+assert.ok(html.includes("const q=c.quiz&&c.quiz[5];"), "The quick challenge must use a different question from the guided review");
 assert.match(html, /cv-concept-grid/, "Chapter concepts must be presented as responsive cards");
 assert.match(html, /aria-live="polite"/, "Chapter learning feedback must be announced accessibly");
 assert.match(html, /این بخش ابزار آموزشی است/, "The shared chapter module must disclose simulation limitations");
