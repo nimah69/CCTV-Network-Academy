@@ -16,10 +16,20 @@ vm.runInContext(css,context);
 const api=context.CCTVFigures,bank=context.CCTVFigureBank;
 assert.ok(api&&typeof api.render==="function"&&typeof api.figuresHTML==="function");
 const specs=Object.values(bank.byChapter).flat();
-const types=["flow","ladder","bar","stacked","matrix","timeline","compare","coverage","bits","tree"];
+const types=["flow","ladder","bar","stacked","matrix","timeline","compare","coverage","bits","tree","capacity"];
 const sample={id:"escape-test",title:'<tag> & "quote"',desc:"safe & clear",note:"limited",caption:"look",source:"general",chapter:1,items:[{label:"one",detail:"two"}],nodes:[{label:"node"}],bars:[{label:"bar",value:50,kind:"data"}]};
 function balanced(svg){const stack=[];for(const m of svg.matchAll(/<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*?)?\s*\/?>/g)){const tag=m[1],raw=m[0];if(raw.startsWith("</")){assert.equal(stack.pop(),tag,"unbalanced SVG tag "+tag)}else if(!raw.endsWith("/>"))stack.push(tag)}assert.deepEqual(stack,[],"unclosed SVG tags")}
 for(const type of types){const svg=api.render({...sample,type});assert.equal(typeof svg,"string");assert.match(svg,/<svg\b[^>]*role="img"/);assert.match(svg,/<title\b/);assert.match(svg,/<desc\b/);assert.doesNotMatch(svg,/<script\b|\son[a-z]+\s*=|style="[^"]*#/i);assert.doesNotMatch(svg,/href\s*=\s*["']https?:/i);assert.doesNotMatch(svg,/#(?:[0-9a-f]{3,8})\b/i,"SVG colors must use semantic CSS classes/variables");balanced(svg)}
+const capacity=api.render({...sample,type:"capacity",percent:82,limit:70,label:"اشغال لینک",detail:"بار فعلی",status:"از حد طراحی بالاتر است"});
+assert.match(capacity,/حد طراحی/,"Capacity chart must label the threshold");
+assert.match(capacity,/fig-risk|fig-fill-risk/,"Capacity chart must flag usage above the threshold");
+const bits=api.render({...sample,type:"bits",networkBits:26});
+assert.match(bits,/شبکه: 26 بیت/,"Subnet diagram must show the network prefix length");
+assert.match(bits,/میزبان: 6 بیت/,"Subnet diagram must show host bit count");
+assert.match(bits,/fig-fill-data/,"Network bits must use a distinct semantic color");
+assert.match(bits,/fig-fill-image/,"Host bits must use a distinct semantic color");
+assert.ok(css.includes("root.CCTVCalculations") && css.includes("c.bandwidth") && css.includes("c.storage"),"Tool diagrams must use actual calculation functions");
+assert.ok(!css.includes("text.matchAll(/\\d+(?:\\.\\d+)?/g)"),"Tool diagrams must not infer values by parsing formatted result text");
 const escaped=api.render({...sample,type:"flow"});assert.ok(escaped.includes("&lt;tag&gt; &amp; &quot;quote&quot;"),"SVG text must be escaped");
 for(const s of specs){assert.ok(s.source&&s.chapter&&s.note&&s.title&&s.caption, "metadata required: "+s.id);const html=api.figureHTML(s);assert.match(html,/<figure\b/);assert.match(html,/<figcaption>/);assert.doesNotMatch(html,/راهنمای نشانه‌ها/,'Each figure must not repeat the full legend');assert.ok(html.includes(s.note));const svg=api.render(s);const vb=svg.match(/viewBox="0 0 (\d+) (\d+)"/);assert.ok(vb&&Number(vb[1])<=360,"viewBox too wide: "+s.id);const fontSizes=[...svg.matchAll(/font-size="(\d+(?:\.\d+)?)"/g)].map(m=>Number(m[1]));assert.ok(fontSizes.every(n=>n>=12),"font under 12: "+s.id)}
 assert.match(css,/\.fig-svg text\{[^}]*font-size:(?:1[2-9]|[2-9][0-9])px/,"SVG text must default to at least 12 CSS pixels");
