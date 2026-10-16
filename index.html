@@ -746,6 +746,32 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
 .cv-quiz-feedback.is-wrong{border-color:#f2c28f;background:#fff8ed;color:#92400e}
 .cv-simulation-note{margin:0;padding:11px 13px;border-right:3px solid #64748b;border-radius:8px;background:#edf2f7;color:#475569;font-size:12px;line-height:1.9}
 @media(max-width:620px){.cv-concept-grid,.cv-answer-grid{grid-template-columns:minmax(0,1fr)}.cv-step-nav{grid-template-columns:minmax(0,1fr)}.cv-hero{border-radius:15px}.cv-block{border-radius:14px}.cv-concept summary{min-height:56px}.cv-step-content h4{font-size:17px}.cv-step-content>p{font-size:15px}.cv-step-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.cv-step-actions button{width:100%;min-width:0}}
+
+/* Contrast guard: prevent legacy/global theme rules from making text unreadable in the new learning cards. */
+.chapter-visual .cv-block,
+.chapter-visual .cv-concept,
+.chapter-visual .cv-concept summary,
+.chapter-visual .cv-concept summary b,
+.chapter-visual .cv-step-nav button,
+.chapter-visual .cv-question,
+.chapter-visual .cv-answer-grid button {
+  color: #172033;
+}
+.chapter-visual .cv-concept { background: #ffffff; }
+.chapter-visual .cv-concept summary { background: #ffffff; }
+.chapter-visual .cv-concept[open] summary { background: #f8fbff; }
+.chapter-visual .cv-step-nav button { background: #ffffff; }
+.chapter-visual .cv-step-nav button.active { background: #f1f2ff; color: #172033; }
+.chapter-visual .cv-answer-grid button { background: #ffffff; }
+.chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }
+.chapter-visual .cv-section-head h3 { color: #172033; }
+.chapter-visual .cv-section-head p { color: #596579; }
+.chapter-visual .cv-concept>p { color: #344054; }
+.chapter-visual .cv-concept small { color: #596579; }
+.chapter-visual .cv-quiz-feedback { color: #334155; }
+.chapter-visual .cv-quiz-feedback.is-correct { color: #166534; }
+.chapter-visual .cv-quiz-feedback.is-wrong { color: #92400e; }
+
 @media(prefers-reduced-motion:reduce){.cv-progress-track span{transition:none}}
 
 </style><a class="workshops-launch" href="workshops.html" aria-label="ورود به کارگاه‌های تعاملی">🧪 کارگاه‌های تعاملی</a>
