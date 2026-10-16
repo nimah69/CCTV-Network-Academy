@@ -1,0 +1,21 @@
+name: Quality checks
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - stage-3-chapter-one
+permissions:
+  contents: read
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run academy quality checks
+        run: node tests/quality-check.mjs
