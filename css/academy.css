@@ -862,3 +862,30 @@ hr,.divider{border-color:var(--line)}
 .sidebar-backdrop{background:#020813b8}
 :focus-visible{outline-color:#67e8f9}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Stage 3: blueprint treatment for learning concepts and responsive schematics */
+.chapter-visual .cv-concept-grid{
+  padding:12px;
+  border:1px solid #24445e;
+  border-radius:16px;
+  background-color:#091827;
+  background-image:linear-gradient(#38bdf80b 1px,transparent 1px),linear-gradient(90deg,#38bdf80b 1px,transparent 1px);
+  background-size:20px 20px;
+}
+.chapter-visual .cv-concept-grid details{
+  min-width:0;
+  border-inline-start:3px solid #2dd4bf;
+  box-shadow:0 8px 20px #0002;
+}
+.chapter-visual .cv-concept-grid details[open]{border-inline-start-color:#38bdf8}
+.chapter-visual .cv-section-head{position:relative;padding-inline-start:12px;border-inline-start:2px solid #2dd4bf}
+.chapter-visual .cv-section-head h2,.chapter-visual .cv-section-head h3{letter-spacing:0}
+.chapter-visual .cv-answer-grid{gap:9px}
+.chapter-visual .cv-answer-grid button{min-height:48px;border-radius:11px}
+.chapter-visual .cv-answer-grid button:hover{border-color:#38bdf8!important;background:#15344a!important}
+@media(max-width:620px){
+ .chapter-visual .cv-concept-grid{padding:8px;gap:9px;background-size:16px 16px}
+ .chapter-visual .cv-concept-grid details{border-radius:11px}
+ .chapter-visual .cv-answer-grid button{min-height:48px;padding:10px 12px;line-height:1.65}
+}
