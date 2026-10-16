@@ -20,6 +20,14 @@ const types=["flow","ladder","bar","stacked","matrix","timeline","compare","cove
 const sample={id:"escape-test",title:'<tag> & "quote"',desc:"safe & clear",note:"limited",caption:"look",source:"general",chapter:1,items:[{label:"one",detail:"two"}],nodes:[{label:"node"}],bars:[{label:"bar",value:50,kind:"data"}]};
 function balanced(svg){const stack=[];for(const m of svg.matchAll(/<\/?([a-zA-Z][\w:-]*)(?:\s[^<>]*?)?\s*\/?>/g)){const tag=m[1],raw=m[0];if(raw.startsWith("</")){assert.equal(stack.pop(),tag,"unbalanced SVG tag "+tag)}else if(!raw.endsWith("/>"))stack.push(tag)}assert.deepEqual(stack,[],"unclosed SVG tags")}
 for(const type of types){const svg=api.render({...sample,type});assert.equal(typeof svg,"string");assert.match(svg,/<svg\b[^>]*role="img"/);assert.match(svg,/<title\b/);assert.match(svg,/<desc\b/);assert.doesNotMatch(svg,/<script\b|\son[a-z]+\s*=|style="[^"]*#/i);assert.doesNotMatch(svg,/href\s*=\s*["']https?:/i);assert.doesNotMatch(svg,/#(?:[0-9a-f]{3,8})\b/i,"SVG colors must use semantic CSS classes/variables");balanced(svg)}
+const semanticFlow=api.render({...sample,type:"flow",nodes:[{label:"دوربین IP",kind:"data"},{label:"سوئیچ PoE",kind:"power"}]});
+assert.match(semanticFlow,/fig-node-data/,"Flow nodes must visually identify data roles");
+assert.match(semanticFlow,/fig-node-power/,"Flow nodes must visually identify power roles");
+const timeline=api.render({...sample,type:"timeline",items:[{label:"مرحله اول",detail:"توضیح فارسی"}]});
+assert.match(timeline,/x="298" y="22" text-anchor="end"/,"Timeline labels must be aligned for Persian RTL");
+const coverage=api.render({...sample,type:"coverage"});
+assert.match(coverage,/شناسایی/,"Camera coverage stages should be labeled in Persian");
+assert.ok(css.includes('.fig-legend .power::before{content:"▲"') && css.includes('.fig-legend .good::before{content:"✓"'),"Legend must use distinct semantic symbols, not only colored lines");
 const capacity=api.render({...sample,type:"capacity",percent:82,limit:70,label:"اشغال لینک",detail:"بار فعلی",status:"از حد طراحی بالاتر است"});
 assert.match(capacity,/حد طراحی/,"Capacity chart must label the threshold");
 assert.match(capacity,/fig-risk|fig-fill-risk/,"Capacity chart must flag usage above the threshold");
