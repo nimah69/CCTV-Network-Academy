@@ -193,6 +193,18 @@ assert.match(academyCss, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answ
 
 assert.match(academyCss, /\.chapter-visual \.cv-concept summary b,/, "Visual card titles must explicitly set a readable foreground color");
 assert.ok(academyCss.includes(".chapter-visual .cv-answer-grid button { background: #ffffff;") && academyCss.includes(".chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }"), "White answer cards must use dark readable text");
+const lessonRendererStart = appScript.indexOf("function lessonHTML()");
+const lessonRendererEnd = appScript.indexOf("function legacyChapterLabHTML", lessonRendererStart);
+const lessonRenderer = appScript.slice(lessonRendererStart, lessonRendererEnd);
+const visibleTemplateIndex = lessonRenderer.indexOf("chapterLearningTemplate(c,state.chapter)");
+const collapsedTextIndex = lessonRenderer.indexOf('<details class="micro-full-content">');
+assert.ok(visibleTemplateIndex >= 0 && collapsedTextIndex > visibleTemplateIndex, "The redesigned chapter learning module must appear before the collapsed full-text section");
+assert.equal(lessonRenderer.split("chapterLearningTemplate(c,state.chapter)").length - 1, 1, "The redesigned learning module must not be duplicated inside the collapsed full-text section");
+assert.ok(lessonRenderer.includes("نمایش متن کامل فصل و توضیحات تکمیلی"), "The collapsed section label must accurately describe its remaining contents");
+assert.match(appScript, /function studyHeadings\(\)/, "Study progress must track headings in the visible redesign and expanded text");
+assert.match(appScript, /const lab=\(window\.CCTVChapterLabs&&window\.CCTVChapterLabs\[chapterIndex\]\|\|\[\]\)\[0\]/, "Each redesigned chapter must use its own practical lab scenario");
+assert.match(appScript, /cv-mission-preview/, "Non-first chapters must expose a chapter-specific practical mission preview");
+assert.ok(appScript.includes("شروع مأموریت در آزمایشگاه فصل") && appScript.includes("chapterIndex+\')"), "The mission preview must include a chapter-specific lab action");
 assert.ok(academyCss.includes(".chapter-visual .cv-section-head p { color: #596579; }"), "Muted section descriptions must retain readable contrast");
 
 
