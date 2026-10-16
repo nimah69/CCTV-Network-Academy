@@ -83,7 +83,7 @@ assert.ok(appScript.includes('const storeKey="cctvAcademyProgressV1";'), "Existi
 assert.ok(appScript.includes("function normalizeProgress"), "Legacy progress data must be normalized without discarding existing fields");
 assert.ok(appScript.includes("function exportProgress") && appScript.includes("function importProgressFile"), "JSON progress export/import must be available");
 assert.ok(html.includes('id="hddHours"') && html.includes('id="hddOverhead"'), "Storage calculator must expose recording-hours and overhead inputs");
-assert.ok(html.includes("سطح دشواری:"), "Quiz UI must show question difficulty");
+assert.ok(html.includes("سطح پیشنهادی:"), "Quiz UI must show question difficulty");
 assert.ok(html.includes('id="hddResult" aria-live="polite"'), "Storage estimate must announce updated results accessibly");
 assert.ok(appScript.includes("function buildComprehensiveQuiz") && appScript.includes("function shuffleQuestion"), "Randomized quiz generation must be available");
 assert.ok(appScript.includes("state.progress.wrongQuestions"), "Incorrect answers must be persisted for review");
