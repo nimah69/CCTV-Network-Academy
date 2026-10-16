@@ -28,6 +28,8 @@ for (const badCidr of ["", -1, 33, 24.5, "abc"]) {
   assert.throws(() => calc.subnet("192.168.1.1", badCidr));
 }
 assert.throws(() => calc.ipv4ToNumber("1.2.3.999"));
+const referenceStorage = calc.storage(12, 4, 14, 0, 24, 0);
+assert.ok(Math.abs(referenceStorage.tb - 7.2576) < 1e-9, "12 cameras × 4 Mbps × 24 h × 14 days should be about 7.26 decimal TB");
 const scheduledStorage = calc.storage(8, 4, 14, 10, 12, 5);
 assert.ok(Math.abs(scheduledStorage.tb - 2.4192) < 1e-9);
 assert.ok(Math.abs(scheduledStorage.withHeadroom - 2.794176) < 1e-9);

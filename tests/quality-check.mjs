@@ -9,7 +9,7 @@ assert.ok(scripts.length > 0, "index.html must contain a JavaScript script");
 const appScript = scripts.find((script) => script.includes("const chapters = window.CCTVAcademyData.chapters;"));
 assert.ok(appScript, "Could not find the main application script");
 new vm.Script(appScript, { filename: "index.html:inline-script" });
-assert.ok(html.includes('<script src="js/calculations.js"></script>'), "Pure calculator module must be loaded by the page");
+assert.ok(html.includes('<script src="js/calculations.js?v=20261016-2"></script>'), "Pure calculator module must be loaded by the page");
 assert.ok(["poe(n,w,r)", "bandwidth(n,rate,r)", "storage(n,rate,days,10,hours,overhead)", "link(load,speed,limit)"].every((call) => appScript.includes("window.CCTVCalculations." + call)), "UI calculators must call the pure calculation module");
 
 const dataSource = fs.readFileSync("js/academy-data.js", "utf8");

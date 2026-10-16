@@ -45,7 +45,7 @@ assert.match(androidBundler, /sed -i .*__BUILD_VERSION__/, "Android bundle must 
 assert.match(worker, /request.destination === "script"/, "JavaScript must use network-first freshness handling");
 assert.ok(worker.includes('url.pathname.endsWith(".js")'), "JavaScript paths must use network-first freshness handling");
 assert.ok(worker.includes('request.mode === "navigate"') || worker.includes("const isNavigation = request.mode === \"navigate\""), "Offline navigation fallback must be implemented");
-assert.ok(worker.includes('caches.match("./index.html")'), "Offline fallback must provide the cached app shell");
+assert.ok(worker.includes('caches.match("./index.html", { ignoreSearch: true })'), "Offline fallback must provide the cached app shell");
 assert.ok(worker.includes('key !== CACHE_NAME') && worker.includes('caches.delete(key)'), "Activation must delete obsolete academy caches");
 
 console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true }, null, 2));

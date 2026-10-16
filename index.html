@@ -32,14 +32,14 @@
 <div class="wrap" id="view"></div>
 </main>
 </div>
-<script src="js/academy-data.js"></script>
-<script src="js/calculations.js"></script>
-<script src="js/interactive-displays.js"></script>
-<script src="js/chapter-labs.js"></script>
-<script src="js/chapter-lab-ui.js"></script>
-<script src="js/spaced-review.js"></script>
-<script src="js/micro-lessons.js"></script>
-<script src="js/pwa-register.js"></script>
+<script src="js/academy-data.js?v=20261016-2"></script>
+<script src="js/calculations.js?v=20261016-2"></script>
+<script src="js/interactive-displays.js?v=20261016-2"></script>
+<script src="js/chapter-labs.js?v=20261016-2"></script>
+<script src="js/chapter-lab-ui.js?v=20261016-2"></script>
+<script src="js/spaced-review.js?v=20261016-2"></script>
+<script src="js/micro-lessons.js?v=20261016-2"></script>
+<script src="js/pwa-register.js?v=20261016-2"></script>
 <script>
 if(!window.CCTVAcademyData||!Array.isArray(window.CCTVAcademyData.chapters)){const view=document.getElementById("view");if(view)view.innerHTML='<section class="panel load-error" role="alert"><h1>بارگذاری داده‌ها ناموفق بود</h1><p>صفحه را دوباره باز کنید.</p><button class="primary" type="button" onclick="location.reload()">بارگذاری دوباره</button></section>';throw new Error("CCTVAcademyData failed to load");}
 const chapters = window.CCTVAcademyData.chapters;
