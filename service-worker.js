@@ -46,8 +46,9 @@ self.addEventListener("fetch", (event) => {
   const isFreshContent = isNavigation ||
     request.destination === "document" ||
     request.destination === "script" ||
-    /\\.m?js$/i.test(url.pathname) ||
-    /\\.html?$/i.test(url.pathname);
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".mjs") ||
+    url.pathname.endsWith(".html");
 
   if (isFreshContent) {
     event.respondWith(
