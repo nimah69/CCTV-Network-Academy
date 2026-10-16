@@ -28,6 +28,15 @@ for (const badCidr of ["", -1, 33, 24.5, "abc"]) {
   assert.throws(() => calc.subnet("192.168.1.1", badCidr));
 }
 assert.throws(() => calc.ipv4ToNumber("1.2.3.999"));
+const scheduledStorage = calc.storage(8, 4, 14, 10, 12, 5);
+assert.ok(Math.abs(scheduledStorage.tb - 2.4192) < 1e-9);
+assert.ok(Math.abs(scheduledStorage.withHeadroom - 2.794176) < 1e-9);
+assert.equal(scheduledStorage.hoursPerDay, 12);
+assert.equal(scheduledStorage.overheadPercent, 5);
+assert.throws(() => calc.storage(8, 4, 14, 10, 0, 0), /بزرگ‌تر از صفر/);
+assert.throws(() => calc.storage(8, 4, 14, 10, 25, 0), /۲۴/);
+assert.throws(() => calc.storage(8, 4, 14, 10, 12, 101), /۱۰۰/);
+
 assert.throws(() => calc.ipv4ToNumber("1.2.3.4.5"));
 
 console.log("Calculation checks passed: PoE validation, IPv4 parsing, subnet boundaries and invalid-input cases.");
