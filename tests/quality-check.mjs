@@ -137,7 +137,7 @@ assert.ok(workshopsHtml.includes("overflow-wrap:anywhere"), "Long diagram labels
 
 
 assert.match(html, /function chapterOneLearningHTML\(\)/, "Chapter one must use the new card-based visual learning experience");
-assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):''/, "The new visual experience must be limited to chapter one and must not restore legacy diagrams in other chapters");
+assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):chapterVisualLearningHTML\(c,state\.chapter\)/, "Chapter one keeps its custom design while every other chapter uses the shared visual renderer");
 assert.match(html, /function chapterOneStepContent\(step\)/, "Chapter one must provide explanatory step-by-step guidance");
 assert.match(html, /function setChapterOneStep\(step\)/, "Chapter one step navigation must be interactive");
 assert.match(html, /function runChapterOneScenario\(kind\)/, "Chapter one must provide a scenario-based diagnostic interaction");
