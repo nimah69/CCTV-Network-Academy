@@ -3,7 +3,7 @@
 ## وضعیت واقعی ابزار ساخت
 - پروژه در CI با Java 17، Android SDK platform 35، Build Tools 35.0.0 و Gradle 8.7 ساخته می‌شود.
 - فایل APK خروجی از نوع **debug** است؛ برای نصب و آزمون است و امضای انتشار فروشگاه محسوب نمی‌شود.
-- مخزن فعلاً Gradle Wrapper استاندارد (`gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar`) ندارد. بنابراین `./gradlew` کار نخواهد کرد. فایل JAR معتبر باید از توزیع رسمی Gradle یا با اجرای دستور تولید wrapper در یک محیط دارای Gradle ساخته و بررسی شود؛ فایل باینری ساختگی یا خالی جایگزین معتبر نیست.
+- مخزن فعلاً فایل‌های Gradle Wrapper را commit نکرده است. در هر اجرای CI، workflow با Gradle 8.7 فایل‌های Wrapper استاندارد را تولید می‌کند، آن‌ها را به‌عنوان artifact موقت `Gradle-Wrapper-Bootstrap` بارگذاری می‌کند و APK را با `android/gradlew` می‌سازد. این روند ساخت CI را اعتبارسنجی می‌کند، اما اجرای محلی `./gradlew` را تا زمانی که فایل‌ها در مخزن ثبت نشوند فعال نمی‌کند.
 
 ## ساخت از طریق GitHub Actions
 1. مخزن را باز کنید و به **Actions** بروید.
