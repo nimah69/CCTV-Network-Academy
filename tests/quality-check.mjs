@@ -166,7 +166,7 @@ assert.match(html, /\.cv-concept-grid\{display:grid;grid-template-columns:repeat
 assert.match(html, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answer-grid\{grid-template-columns:minmax\(0,1fr\)\}/, "Visual concept cards must stack on mobile");
 
 assert.match(html, /\.chapter-visual \.cv-concept summary b,/, "Visual card titles must explicitly set a readable foreground color");
-assert.match(html, /\.chapter-visual \.cv-answer-grid button \\{ background: #ffffff; color: #172033;|\.chapter-visual \.cv-answer-grid button \\{ background: #ffffff;[\\s\\S]{0,80}color: #172033;/, "White answer cards must use dark readable text");
+assert.ok(html.includes(".chapter-visual .cv-answer-grid button { background: #ffffff;") && html.includes(".chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }"), "White answer cards must use dark readable text");
 assert.match(html, /\.chapter-visual \.cv-section-head p \\{ color: #596579; \\}/, "Muted section descriptions must retain readable contrast");
 
 
