@@ -10,6 +10,6 @@ for (const [name, html] of [["index.html", index], ["workshops.html", workshops]
   assert.match(html, /overflow-wrap:\s*anywhere/, name + ": long labels must be allowed to wrap");
   assert.match(html, /overflow-x:\s*clip/, name + ": narrow layouts must guard against horizontal overflow");
 }
-assert.match(index, /<meta name="viewport" content="width=device-width, initial-scale=1">/, "Main page must use the device viewport");
+assert.match(index, /<meta name="viewport" content="width=device-width,\s*initial-scale=1">/, "Main page must use the device viewport");
 assert.match(workshops, /<meta name="viewport" content="width=device-width, initial-scale=1">/, "Workshop page must use the device viewport");
 console.log(JSON.stringify({status:"passed",scope:"structural CSS checks only",minimumFontPx:13,minimumTouchHeightPx:44,realDeviceLayoutTested:false}, null, 2));
