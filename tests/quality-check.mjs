@@ -128,7 +128,7 @@ assert.ok(figuresSource.includes("fig-compare-title") && figuresSource.includes(
 assert.ok(figuresSource.includes("max-width:420px") && figuresSource.includes("font-size:14px"), "Figure styles must include legible narrow-screen typography");
 assert.ok(figuresSource.includes("Vazirmatn") && figuresSource.includes("Noto Sans Arabic"), "Figure typography must prefer Persian/Arabic-capable fonts with offline fallbacks");
 assert.ok(figuresSource.includes("function wrapWords") && figuresSource.includes("function svgText"), "SVG labels must support readable multi-line wrapping");
-assert.ok(figuresSource.includes("a.length*rowH+12") && figuresSource.includes("height=\"104\"") && figuresSource.includes("fig-compare-detail"), "Comparison rows must reserve separate vertical space for wrapped titles and details");
+assert.ok(figuresSource.includes("a.length*rowH+12") && figuresSource.includes("height=\"116\"") && figuresSource.includes("fig-compare-detail"), "Comparison rows must reserve separate vertical space for wrapped titles and details");
 assert.ok(html.includes("Mobile visual refresh") && html.includes("font-size:16px"), "Lesson typography must remain readable on mobile");
 const workshopsHtml = fs.readFileSync("workshops.html", "utf8");
 assert.ok(!workshopsHtml.includes("font-size:8px") && !workshopsHtml.includes("font-size:9px"), "Workshop SVG labels must not shrink below a readable mobile size");
