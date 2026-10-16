@@ -33,7 +33,7 @@ assert.match(chapter3,/اقدام پیشنهادی/,"PoE results must include a 
 assert.match(chapter3,/جایگزین دیتاشیت/,"PoE demo must disclaim datasheet replacement");
 assert.match(chapter9,/برق \/ Link[\s\S]*IP[\s\S]*سرویس تصویر/,"Chapter 9 must present the troubleshooting stages in order");
 assert.match(chapter9,/data-demo-action="tree-choice"/,"The no-image tree must accept user choices");
-assert.match(chapter9,/evaluateTreeChoice/,"Tree answers must be evaluated with reasons");
+assert.match(demos,/function evaluateTreeChoice\(step,value\)/,"Tree answers must be evaluated with reasons");
 for(const rendered of [chapter1,chapter3,chapter9]){
  assert.doesNotMatch(rendered,/<svg\b/i,"Interactive demos must use HTML/CSS, not SVG");
  assert.match(rendered,/aria-label|aria-live|role="status"/,"Demo feedback must have accessible semantics");
