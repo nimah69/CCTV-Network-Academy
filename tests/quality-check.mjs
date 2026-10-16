@@ -153,6 +153,15 @@ assert.doesNotMatch(ch1Renderer, /<svg\b|<table\b|https?:\/\//i, "The new chapte
 assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ضبط‌کننده / NVR"].every(label => ch1Renderer.includes(label)), "Equipment cards must explain the four core network roles");
 
 
+
+assert.match(html, /class="mission-card"/, "Chapter one must use the reusable MissionCard component");
+assert.match(html, /class="step-list"/, "Chapter one must use the reusable StepList component");
+assert.match(html, /class="compare-card"/, "Chapter one must compare Switch and Router with reusable cards");
+assert.match(html, /function chooseChapterOneAction\(action\)/, "Mission actions must return interactive feedback");
+assert.match(html, /data-ch1-action="service"/, "The mission must offer a technically sound first action");
+assert.match(html, /data-status="success"/, "Mission feedback must support semantic status styling");
+assert.match(html, /Switch|سوئیچ \(Switch\)/, "Chapter one must explain the switch role");
+assert.match(html, /Router|مسیریاب \(Router\)/, "Chapter one must explain the router role");
 assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
 assert.match(html, /function quizHTML\(comprehensive=false\)/, "Quizzes must render one question per page");
 assert.match(html, /function selectQuizAnswer\(index,value\)/, "Answers must trigger immediate feedback");
