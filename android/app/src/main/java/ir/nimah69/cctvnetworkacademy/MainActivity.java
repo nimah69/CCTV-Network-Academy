@@ -85,10 +85,13 @@ public class MainActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri target = request.getUrl();
                 String targetText = target.toString();
-                if (targetText.startsWith("file:///android_asset/academy/")) {
+                String scheme = target.getScheme();
+                String path = target.getPath();
+                if ("file".equalsIgnoreCase(scheme)
+                        && targetText.startsWith("file:///android_asset/academy/")
+                        && (path == null || !path.contains(".."))) {
                     return false;
                 }
-                String scheme = target.getScheme();
                 if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, target));
