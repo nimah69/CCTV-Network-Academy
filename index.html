@@ -235,6 +235,52 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
  .crumb button,.breadcrumb button{min-height:44px;min-width:44px}
  .nav button,.nav .nav-link{min-height:44px}
 }
+
+/* Micro-learning path: mobile-first, accessible, no external dependencies */
+.micro-path{display:grid;gap:14px;margin:22px 0 18px;min-width:0}
+.micro-path-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.micro-path-heading h2{font-size:18px;margin:4px 0}
+.micro-kicker{display:block;color:var(--accent,#79b8ff);font-size:12px;font-weight:700;letter-spacing:.02em}
+.micro-duration{white-space:nowrap;border:1px solid var(--border,#304158);border-radius:999px;padding:6px 9px;color:var(--muted,#a6b5ca);font-size:12px}
+.micro-node-track{display:grid;grid-template-columns:repeat(var(--micro-count,4),minmax(0,1fr));gap:7px}
+.micro-node{display:flex;min-width:0;min-height:48px;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid var(--border,#304158);border-radius:12px;background:var(--panel,#111d2e);color:var(--muted,#a6b5ca);padding:5px 2px;font:inherit;cursor:pointer}
+.micro-node span{font-size:15px;font-weight:800}
+.micro-node small{font-size:10px;line-height:1.35;white-space:nowrap}
+.micro-node.current{border-color:var(--accent,#79b8ff);background:color-mix(in srgb,var(--accent,#79b8ff) 15%,var(--panel,#111d2e));color:var(--text,#f0f5fb);box-shadow:inset 0 0 0 1px var(--accent,#79b8ff)}
+.micro-node.completed{border-color:#3a9474;color:#a9e5ce}
+.micro-node.needs-review{border-color:#d6a24a;color:#ffd58a}
+.micro-node:focus-visible,.micro-sticky-nav button:focus-visible{outline:2px solid var(--accent,#79b8ff);outline-offset:2px}
+.micro-progress{height:6px;overflow:hidden;border-radius:999px;background:var(--border,#304158)}
+.micro-progress span{display:block;height:100%;border-radius:inherit;background:var(--accent,#79b8ff);transition:width .2s ease}
+.micro-card{min-width:0;border:1px solid var(--border,#304158);border-radius:18px;background:var(--panel,#111d2e);padding:clamp(14px,3.5vw,22px)}
+.micro-card h3{font-size:clamp(19px,4.5vw,24px);line-height:1.5;margin:7px 0 12px}
+.micro-definition{font-size:15px;line-height:1.9;margin:0 0 16px}
+.micro-info{border-inline-start:3px solid var(--accent,#79b8ff);padding:10px 12px;margin:12px 0;border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--accent,#79b8ff) 7%,var(--panel,#111d2e))}
+.micro-info h4,.micro-question h4{font-size:15px;margin:0 0 6px}
+.micro-info p{font-size:14px;line-height:1.9;margin:0}
+.micro-example{border-inline-start-color:#4bb58e}
+.micro-tip{font-size:14px;line-height:1.9;padding:12px;border-radius:12px;background:color-mix(in srgb,#4bb58e 9%,var(--panel,#111d2e));margin:14px 0}
+.micro-question{border-top:1px solid var(--border,#304158);padding-top:15px;margin-top:16px}
+.micro-question-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:10px;color:var(--muted,#a6b5ca);font-size:12px}
+.micro-question-head span:first-child{font-size:14px;font-weight:800;color:var(--text,#f0f5fb)}
+.micro-question>h4{font-size:15px;line-height:1.8;margin:0 0 10px}
+.micro-options{display:grid;gap:8px}
+.micro-option{display:flex;align-items:flex-start;gap:9px;min-height:44px;padding:10px;border:1px solid var(--border,#304158);border-radius:11px;line-height:1.7;font-size:14px;cursor:pointer}
+.micro-option:has(input:checked){border-color:var(--accent,#79b8ff);background:color-mix(in srgb,var(--accent,#79b8ff) 9%,var(--panel,#111d2e))}
+.micro-option input{margin-top:5px;flex:0 0 auto}
+.micro-feedback{margin-top:12px;border-radius:12px;padding:12px;font-size:14px;line-height:1.8}
+.micro-feedback.good{border:1px solid #3a9474;background:#12372f;color:#c5f5e2}
+.micro-feedback.bad{border:1px solid #b98538;background:#3b2c17;color:#ffe0a5}
+.micro-feedback p{margin:5px 0 0}
+.text-button{border:0;background:transparent;color:var(--accent,#79b8ff);padding:10px 0;font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}
+.micro-sticky-nav{position:sticky;bottom:calc(78px + env(safe-area-inset-bottom));z-index:6;display:flex;justify-content:space-between;gap:10px;padding:10px 0 4px;background:var(--panel,#111d2e)}
+.micro-sticky-nav button{min-height:44px;max-width:50%;white-space:normal}
+.chapter-learning-template{margin-top:20px;border:1px solid var(--border,#304158);border-radius:14px;overflow:hidden}
+.chapter-learning-template>summary{padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer}
+.chapter-learning-inner{padding:0 12px 12px}
+@media(max-width:380px){.micro-node-track{gap:4px}.micro-node{border-radius:9px}.micro-node small{font-size:9px}.micro-card{padding:13px}.micro-sticky-nav button{font-size:13px;padding-inline:8px}}
+@media(min-width:851px){.micro-sticky-nav{bottom:0}}
+
 </style>
 </head>
 <body>
@@ -565,9 +611,16 @@ function microLessonHTML(chapter,chapterIndex){
  const tip=chapterIndex===12?"پس از هر سؤال، دلیل گزینه درست و علت رد گزینه‌های نزدیک را توضیح بده.":chapterIndex===13?"پاسخ را با نشانه، فرضیه، آزمون و اقدام اصلاحی ساختار بده.":"هنگام کار با «"+item.title+"»، نتیجه را ثبت کن و در هر مرحله فقط یک متغیر را تغییر بده.";
  return '<section class="micro-path" aria-label="مسیر ریزدرس فصل"><div class="micro-path-heading"><div><span class="micro-kicker">مسیر یادگیری</span><h2>ریزدرس '+faNum(index+1)+' از '+faNum(lessons.length)+'</h2></div><span class="micro-duration">۳ تا ۵ دقیقه</span></div><div class="micro-node-track" style="--micro-count:'+lessons.length+'">'+nodes+'</div><div class="micro-progress" role="progressbar" aria-valuemin="0" aria-valuemax="'+lessons.length+'" aria-valuenow="'+(index+1)+'"><span style="width:'+((index+1)/lessons.length*100)+'%"></span></div><article class="micro-card"><span class="micro-kicker">مفهوم '+faNum(index+1)+'</span><h3>'+esc(item.title)+'</h3><p class="micro-definition">'+esc(item.definition)+'</p><div class="micro-info"><h4>چرا مهم است؟</h4><p>'+esc(why)+' این موضوع هنگام تصمیم‌گیری درباره «'+esc(item.title)+'» اهمیت دارد.</p></div><div class="micro-info micro-example"><h4>مثال در پروژه واقعی CCTV</h4><p>'+esc(example)+' هنگام بررسی «'+esc(item.title)+'»، نتیجه را روی دستگاه یا مسیر واقعی تطبیق بده.</p></div><div class="micro-tip"><b>نکته کاربردی:</b> '+esc(tip)+'</div>'+(q?'<section class="micro-question"><div class="micro-question-head"><span>پرسش فوری</span><span>از بانک سؤال همین فصل</span></div><h4>'+esc(q.q)+'</h4><div class="micro-options">'+options+'</div>'+feedback+'<button type="button" class="text-button" onclick="skipMicroQuestion('+index+')">فعلاً از پرسش رد شو</button></section>':'<section class="micro-question"><p>پرسش فوری برای این فصل ثبت نشده است؛ این مورد نیازمند بازبینی است.</p></section>')+'</article><div class="micro-sticky-nav"><button type="button" class="secondary" onclick="moveMicroLesson(-1)" '+(index===0?"disabled":"")+'><span aria-hidden="true">→</span> ریزدرس قبلی</button>'+(index<lessons.length-1?'<button type="button" class="primary" onclick="moveMicroLesson(1)">ریزدرس بعدی ←</button>':'<button type="button" class="primary" onclick="moveMicroLesson(1)">پایان ریزدرس‌ها</button>')+'</div></section>';
 }
-function chapterLearningTemplate(chapter,chapterIndex){const content=chapterIndex===0?chapterOneLearningHTML():chapterVisualLearningHTML(chapter,chapterIndex);return '<div class="chapter-learning-template" data-template-version="1">'+content+'</div>'}
+function chapterLearningTemplate(chapter,chapterIndex){const content=chapterIndex===0?chapterOneLearningHTML():chapterVisualLearningHTML(chapter,chapterIndex);return '<details class="chapter-learning-template" data-template-version="1"><summary>مرور تکمیلی: مفاهیم کلیدی، تجهیزات و بازیابی فعال</summary><div class="chapter-learning-inner">'+content+'</div></details>'}
 function lessonHTML(){
-const c=chapters[state.chapter];return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　فصل ${state.chapter+1} از ${chapters.length}</div><article class="panel"><span class="pill">صفحات PDF: ${esc(c.pages)} — منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)</span><h1 class="lesson-title">${esc(c.title)}</h1><p class="lesson-intro">${esc(c.intro)}</p><div class="lesson-content">${c.sections.map((s,si)=>`<h3>${esc(s[0])}</h3><p>${esc(s[1])}</p>`).join("")}<div class="callout"><b>نکته کاربردی:</b> ${esc(c.tips)}</div>${chapterLearningTemplate(c,state.chapter)}<section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>${c.supplemental.items.map((s,i)=>`<details class="supplement-item" ${i===0?"open":""}><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</section></div><section class="chapter-lab-launch"><div><span class="lab-launch-kicker">PRACTICE LAB · ۵ مأموریت</span><h2>آماده‌ای دانسته‌ها را در عمل امتحان کنی؟</h2><p>پنج سناریوی عملی متناسب با همین فصل، با انتخاب اقدام، توضیح دلیل و بازخورد مرحله‌ای.</p></div><button class="primary" onclick="go('chapterLab',${state.chapter})">ورود به آزمایشگاه تعاملی فصل ←</button></section><div class="lesson-actions"><button class="primary" onclick="go('chapterQuiz',${state.chapter})">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone(${state.chapter})">${state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده"}</button><button class="secondary" onclick="go('lesson',${Math.max(0,state.chapter-1)})" ${state.chapter===0?"disabled":""}>فصل قبلی</button><button class="secondary" onclick="go('lesson',${Math.min(chapters.length-1,state.chapter+1)})" ${state.chapter===chapters.length-1?"disabled":""}>فصل بعدی</button></div></article>`;
+const c=chapters[state.chapter];
+return '<div class="crumb"><button class="secondary" onclick="go(\'home\')">داشبورد</button>　/　فصل '+faNum(state.chapter+1)+' از '+faNum(chapters.length)+'</div>'+
+'<article class="panel"><span class="pill">صفحات PDF: '+esc(c.pages)+' — منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)</span><h1 class="lesson-title">'+esc(c.title)+'</h1><p class="lesson-intro">'+esc(c.intro)+'</p>'+
+'<div class="lesson-content">'+microLessonHTML(c,state.chapter)+'<div class="callout"><b>نکته کاربردی فصل:</b> '+esc(c.tips)+'</div>'+
+chapterLearningTemplate(c,state.chapter)+'<section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>'+
+c.supplemental.items.map((s,i)=>'<details class="supplement-item" '+(i===0?'open':'')+'><summary>'+esc(s[0])+'</summary><p>'+esc(s[1])+'</p></details>').join('')+
+'</section></div><section class="chapter-lab-launch"><div><span class="lab-launch-kicker">PRACTICE LAB · ۵ مأموریت</span><h2>پایان ریزدرس‌ها؛ حالا عیب‌یابی را تمرین کن</h2><p>ابتدا آزمایشگاه عیب‌یابی فصل را انجام بده، سپس آزمون فصل را برای سنجش یادگیری شروع کن.</p></div><button class="primary" onclick="go(\'chapterLab\','+state.chapter+')">۱. ورود به آزمایشگاه تعاملی ←</button></section>'+
+'<div class="lesson-actions"><button class="primary" onclick="go(\'chapterQuiz\','+state.chapter+')">۲. شروع آزمون فصل ←</button><button class="secondary" onclick="markDone('+state.chapter+')">'+(state.progress.done.includes(state.chapter)?'✓ فصل تکمیل شده':'علامت‌گذاری به‌عنوان مطالعه‌شده')+'</button><button class="secondary" onclick="go(\'lesson\','+Math.max(0,state.chapter-1)+')" '+(state.chapter===0?'disabled':'')+'>فصل قبلی</button><button class="secondary" onclick="go(\'lesson\','+Math.min(chapters.length-1,state.chapter+1)+')" '+(state.chapter===chapters.length-1?'disabled':'')+'>فصل بعدی</button></div></article>';
 }
 function legacyChapterLabHTML(i){
 const heads=["ماموریت شبکه: تصویر قطع است","آزمایشگاه میدان دید و جزئیات","اتاق طراحی سامانه","بازدید هوشمند محل نصب","دفاع سایبری دوربین‌ها","اتاق فرمان بازیابی","ماتریس تصمیم ریسک","کارگاه استانداردشناسی","درخت عیب‌یابی زنده","کارآگاه تصویر شب","آزمایشگاه لایه‌های شبکه","تحویل پروژه بدون نقص","چالش تشخیص مفهومی","مصاحبه‌گر فنی"];
