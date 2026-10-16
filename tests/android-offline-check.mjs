@@ -15,6 +15,8 @@ const license=fs.readFileSync(path.join(root,"fonts/OFL.txt"),"utf8");
 assert.match(manifest,/android:allowBackup="false"/);
 assert.match(activity,/file:\/\/\/android_asset\/academy\//,"Internal offline URLs must remain in WebView");
 assert.match(activity,/Intent\.ACTION_VIEW/,"External HTTP/HTTPS links must open in an external browser");
+assert.match(activity,/path\.contains\("\.\."\)/,"Local file URLs must not traverse outside the academy asset directory");
+assert.match(activity,/equalsIgnoreCase\(scheme\)/,"External routing must check the URL scheme");
 assert.match(activity,/CCTVAcademyHandleBack/,"Native Back must keep using the route handler");
 assert.match(gradle,/targetSdk 34/,"Target SDK should remain at the reviewed conservative level");
 assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the same bundler as local builds");
