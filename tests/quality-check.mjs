@@ -214,6 +214,13 @@ assert.ok(appScript.includes("شروع مأموریت در آزمایشگاه ف
 assert.ok(academyCss.includes(".chapter-visual .cv-section-head p { color: #596579; }"), "Muted section descriptions must retain readable contrast");
 
 
+assert.match(workshops, /id="addTopologyNode"/, "technical map lets users add custom devices");
+assert.match(workshops, /id="addTopologyLink"/, "technical map lets users define custom connections");
+assert.match(workshops, /data-node-field="ip"/, "technical map exposes editable IP fields");
+assert.match(workshops, /id="exportTopology"/, "technical map exports user-created topology as JSON");
+assert.match(workshops, /IP تکراری/, "technical map checks duplicate IP addresses");
+assert.match(workshops, /topologyLinks\.filter\(l=>l\.from!==id&&l\.to!==id\)/, "removing a device removes its dependent links");
+
 console.log(JSON.stringify({
   status: "passed",
   chapters: chapters.length,
@@ -226,11 +233,3 @@ console.log(JSON.stringify({
   generatedStemPatterns: generatedStemPatterns.size,
   calculatorCases: 5
 }, null, 2));
-
-assert.match(workshops, /id="addTopologyNode"/, "technical map lets users add custom devices");
-assert.match(workshops, /id="addTopologyLink"/, "technical map lets users define custom connections");
-assert.match(workshops, /data-node-field="ip"/, "technical map exposes editable IP fields");
-assert.match(workshops, /id="exportTopology"/, "technical map exports user-created topology as JSON");
-assert.match(workshops, /IP تکراری/, "technical map checks duplicate IP addresses");
-assert.match(workshops, /topologyLinks\.filter\(l=>l\.from!==id&&l\.to!==id\)/, "removing a device removes its dependent links");
-
