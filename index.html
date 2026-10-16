@@ -190,6 +190,43 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .chapter-lab .lab-reset{border:1px solid #31516a;border-radius:9px;background:#10243a;color:#d5e7f7;padding:7px 10px;font-size:11px}
 @media(max-width:720px){.chapter-lab .lab-mission{grid-template-columns:minmax(0,1fr)}.chapter-lab .lab-head{gap:8px}.chapter-lab .lab-index{font-size:9px;padding:6px 7px}.chapter-lab .lab-form-grid{grid-template-columns:minmax(0,1fr)}.chapter-lab .lab-metric strong{font-size:16px}.chapter-lab .lab-footer{align-items:flex-start}.chapter-lab .lab-risk-grid{gap:3px}.chapter-lab .lab-risk-cell{font-size:9px;min-height:28px}}
 
+
+/* Recovery-review readability fix: align the review step with the academy's dark theme. */
+.chapter-visual .cv-step-content.cv-review-step{
+  background:#111f32;
+  border-color:#35516a;
+  color:#e8f0fb;
+}
+.chapter-visual .cv-review-step .cv-step-kicker{color:#7ce8e4}
+.chapter-visual .cv-review-step h4{color:#f0f6ff}
+.chapter-visual .cv-review-step>p{color:#c5d5e8}
+.chapter-visual .cv-review-step .cv-answer-grid button{
+  background:#17283b;
+  border-color:#35516a;
+  color:#e8f0fb;
+}
+.chapter-visual .cv-review-step .cv-answer-grid button:hover,
+.chapter-visual .cv-review-step .cv-answer-grid button.chosen{
+  background:#203b50;
+  border-color:#55d6d0;
+  color:#f2fbff;
+}
+.chapter-visual .cv-review-step .cv-quiz-feedback{
+  background:#17283b;
+  border-color:#35516a;
+  color:#dbe8f5;
+}
+.chapter-visual .cv-review-step .cv-quiz-feedback.is-correct{
+  background:#15382f;
+  border-color:#28785f;
+  color:#a7f3d0;
+}
+.chapter-visual .cv-review-step .cv-quiz-feedback.is-wrong{
+  background:#3a202b;
+  border-color:#82404e;
+  color:#ffc0c9;
+}
+
 </style>
 </head>
 <body>
