@@ -32,6 +32,14 @@ html{max-width:100%;overflow-x:hidden}body{max-width:100%;overflow-x:hidden}.she
 .schematic-foot span{display:inline-flex;align-items:center;gap:5px}
 .legend-dot{width:7px;height:7px;display:inline-block;border-radius:50%}.legend-dot.data{background:var(--cyan)}.legend-dot.power{background:var(--warn)}
 .sim-note{margin-inline-start:auto;color:#748ba5}
+
+.sim-status{margin:9px 0 0;padding:9px 11px;border:1px solid #294760;border-radius:10px;background:#0a1b2b;color:#c5e8f4;font-size:12px;line-height:1.9;min-height:42px}
+.schematic-node.flow-active rect{fill:#164b54;stroke:#68f0dc;stroke-width:2.5;filter:drop-shadow(0 0 7px rgba(66,217,232,.45))}
+.schematic-node.flow-active .device-dot{fill:#8bffe8}
+.schematic-node.flow-active .node-label,.schematic-node.flow-active .node-code{fill:#ffffff}
+.lab-schematic .wire.flow-active{stroke:#79f4df!important;stroke-width:5;opacity:1;filter:drop-shadow(0 0 4px rgba(66,217,232,.55))}
+@media(prefers-reduced-motion:reduce){.lab-schematic.sim-running .wire{animation:none}}
+
 .workshop>.card{padding:clamp(12px,2.5vw,20px);border-radius:16px;background:linear-gradient(160deg,rgba(16,30,49,.98),rgba(10,23,39,.98))}
 .workshop .heading{margin-bottom:12px}
 .workshop .heading h2{display:flex;align-items:center;gap:8px}
@@ -185,7 +193,75 @@ $("buildReport").addEventListener("click",()=>{const name=$("projectName").value
 $("downloadReport").addEventListener("click",()=>{if(!reportText){$("buildReport").click();if(!reportText)return}const blob=new Blob(["\ufeff"+reportText],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="cctv-design-report.txt";a.click();URL.revokeObjectURL(url)});
 $("printReport").addEventListener("click",()=>{if(!reportText){$("buildReport").click();if(!reportText)return}const w=window.open("","_blank");if(!w){output("capstoneResult","مرورگر بازشدن پنجره چاپ را مسدود کرد؛ اجازه pop-up بده یا گزارش TXT را ذخیره کن.","warn");return}w.document.write("<!doctype html><html lang='fa' dir='rtl'><meta charset='utf-8'><title>گزارش طراحی CCTV</title><style>body{font:14px/2 Tahoma,sans-serif;padding:24px;color:#111}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/2 Tahoma,sans-serif}</style><pre>"+reportText.replace(/&/g,"&amp;").replace(/</g,"&lt;")+"</pre><script>window.onload=()=>window.print()<\/script></html>");w.document.close()});
 $("resetProgress").addEventListener("click",()=>{if(!confirm("پیشرفت و امتیاز ذخیره‌شده در این مرورگر پاک شود؟"))return;state.completed.clear();state.score=0;state.answered={};localStorage.removeItem("cctv-workshops-completed");localStorage.removeItem("cctv-workshops-score");updateMetrics();renderScenario()});
-document.querySelectorAll("[data-sim-toggle]").forEach(button=>{button.addEventListener("click",()=>{const panel=button.closest(".lab-schematic"),running=button.getAttribute("aria-pressed")!=="true";panel.classList.toggle("sim-running",running);button.setAttribute("aria-pressed",String(running));button.textContent=running?"■ توقف شبیه‌سازی":"▶ شبیه‌سازی جریان";});});
+
+// شبیه‌ساز آموزشی مرحله‌ای: مسیر داده را تجهیزبه‌تجهیز نشان می‌دهد؛ هیچ تجهیز واقعی کنترل نمی‌شود.
+const flowTimers=new WeakMap();
+function stopFlow(panel,button,finished=false){
+  const timer=flowTimers.get(panel);
+  if(timer) clearInterval(timer);
+  flowTimers.delete(panel);
+  panel.classList.remove("sim-running");
+  panel.querySelectorAll(".schematic-node.flow-active").forEach(node=>node.classList.remove("flow-active"));
+  panel.querySelectorAll(".wire.flow-active").forEach(wire=>wire.classList.remove("flow-active"));
+  button.setAttribute("aria-pressed","false");
+  button.textContent=finished?"↻ شروع دوباره":"▶ شبیه‌سازی جریان";
+}
+document.querySelectorAll("[data-sim-toggle]").forEach(button=>{
+  const panel=button.closest(".lab-schematic");
+  if(!panel)return;
+  let status=panel.querySelector(".sim-status");
+  if(!status){
+    status=document.createElement("p");
+    status.className="sim-status";
+    status.setAttribute("aria-live","polite");
+    status.setAttribute("role","status");
+    status.textContent="برای مشاهده مسیر حرکت داده، شبیه‌سازی را شروع کن.";
+    const foot=panel.querySelector(".schematic-foot");
+    if(foot) foot.insertAdjacentElement("afterend",status);
+  }
+  button.addEventListener("click",()=>{
+    if(button.getAttribute("aria-pressed")==="true"){
+      stopFlow(panel,button);
+      status.textContent="شبیه‌سازی متوقف شد. برای شروع دوباره دکمه را بزن.";
+      return;
+    }
+    const nodes=[...panel.querySelectorAll(".schematic-node")];
+    const wires=[...panel.querySelectorAll(".wire")];
+    if(!nodes.length){
+      status.textContent="برای این شماتیک گره قابل شبیه‌سازی پیدا نشد.";
+      return;
+    }
+    stopFlow(panel,button);
+    button.setAttribute("aria-pressed","true");
+    button.textContent="■ توقف شبیه‌سازی";
+    panel.classList.add("sim-running");
+    let step=0;
+    const showStep=()=>{
+      panel.querySelectorAll(".schematic-node.flow-active").forEach(node=>node.classList.remove("flow-active"));
+      panel.querySelectorAll(".wire.flow-active").forEach(wire=>wire.classList.remove("flow-active"));
+      const node=nodes[step];
+      node.classList.add("flow-active");
+      if(step>0 && wires[step-1]) wires[step-1].classList.add("flow-active");
+      const label=node.querySelector(".node-label")?.textContent?.trim()
+        ||node.querySelector(".node-code")?.textContent?.trim()
+        ||("تجهیز "+(step+1));
+      status.textContent=step===nodes.length-1
+        ? "گام "+(step+1)+" از "+nodes.length+" — مقصد: "+label+". مسیر آموزشی کامل شد."
+        : "گام "+(step+1)+" از "+nodes.length+" — داده در «"+label+"» قرار دارد؛ مرحله بعد را دنبال کن.";
+      step++;
+      if(step>=nodes.length){
+        const timer=flowTimers.get(panel);
+        if(timer)clearInterval(timer);
+        flowTimers.delete(panel);
+        button.setAttribute("aria-pressed","false");
+        button.textContent="↻ شروع دوباره";
+        panel.classList.remove("sim-running");
+      }
+    };
+    showStep();
+    if(nodes.length>1)flowTimers.set(panel,setInterval(showStep,1100));
+  });
+});
 renderScenarioPicks();renderScenario();updateMetrics();
 })();
 </script>
