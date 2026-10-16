@@ -154,6 +154,17 @@ const ch1Renderer = html.slice(ch1Start, ch1End);
 assert.doesNotMatch(ch1Renderer, /<svg\b|<table\b|https?:\/\//i, "The new chapter-one experience must avoid SVG/table diagrams and external dependencies");
 assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ضبط‌کننده / NVR"].every(label => ch1Renderer.includes(label)), "Equipment cards must explain the four core network roles");
 
+
+assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
+assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):chapterVisualLearningHTML\(c,state\.chapter\)/, "All chapter lessons must render the new visual learning experience");
+assert.match(html, /function setChapterVisualStep\(step\)/, "All-chapter step navigation must work");
+assert.match(html, /function checkChapterVisualAnswer\(choice\)/, "All-chapter quick checks must provide feedback");
+assert.match(html, /cv-concept-grid/, "Chapter concepts must be presented as responsive cards");
+assert.match(html, /aria-live="polite"/, "Chapter learning feedback must be announced accessibly");
+assert.match(html, /این بخش ابزار آموزشی است/, "The shared chapter module must disclose simulation limitations");
+assert.match(html, /\.cv-concept-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/, "Concept cards must use a responsive grid");
+assert.match(html, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answer-grid\{grid-template-columns:minmax\(0,1fr\)\}/, "Visual concept cards must stack on mobile");
+
 console.log(JSON.stringify({
   status: "passed",
   chapters: chapters.length,
