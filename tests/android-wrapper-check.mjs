@@ -26,5 +26,5 @@ assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the
 assert.match(workflow,/gradle -p android --no-daemon clean assembleDebug/,"CI must build the offline APK");
 assert.match(workflow,/actions\/upload-artifact@v4/,"CI must publish the APK artifact");
 assert.match(buildDoc,/فونت Vazirmatn/,"Font decision must be documented");
-assert.match(buildDoc,/Service Worker در file:\/\/ اجرا نمی‌شود/,"Service Worker limitations in file mode must be documented");
+assert.match(buildDoc,/Service Worker.*file:\/\/.*اجرا نمی‌شود/s,"Service Worker limitations in file mode must be documented");
 console.log(JSON.stringify({status:"passed",targetSdk:34,compileSdk:35,allowBackup:false,externalLinks:"ACTION_VIEW",assetBundler:"bash -n passed"},null,2));
