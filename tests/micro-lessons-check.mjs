@@ -36,5 +36,5 @@ assert.match(html,/microBookmarks:/,"Bookmark progress field must be normalized"
 assert.match(html,/const storeKey="cctvAcademyProgressV1"/,"Legacy progress key must remain unchanged");
 assert.match(html,/micro-full-content/,"Original full chapter content must remain accessible");
 assert.match(sw,/js\/micro-lessons\.js/,"Micro lessons script must be cached for offline use");
-assert.match(sw,/cctv-academy-static-v2026-10-16-3/,"Cache version must change when adding a module");
+assert.match(sw,/cctv-academy-static-v2026-10-16-4/,"Cache version must change when adding a module");
 console.log(JSON.stringify({status:"passed",chapters:chapters.length,features:["micro-lessons","optional-question","progress","bookmarks","offline-script","legacy-content-preserved"]},null,2));
