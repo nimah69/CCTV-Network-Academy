@@ -26,7 +26,7 @@ assert.match(html,/function moveMicroLesson\(direction\)/,"Previous and next mic
 assert.match(html,/function chapterLearningTemplate\(chapter,chapterIndex\).*<details class="chapter-learning-template"/,"Existing concept cards and chapter-one equipment cards must remain available");
 assert.match(html,/micro-node\.needs-review/,"Needs-review nodes must have a distinct visual state");
 assert.match(html,/min-height:44px/,"Touch targets must remain usable on phones");
-assert.match(html,/function go\("chapterLab",state\.chapter\)/,"Finishing micro-lessons must lead to the chapter lab");
+assert.match(html,/go\("chapterLab",state\.chapter\)/,"Finishing micro-lessons must lead to the chapter lab");
 
 const expected=chapters.map((chapter,index)=>({title:chapter.title,count:chapter.sections.length+(index===12&&chapter.sections.length<3?2:0),hasQuiz:Array.isArray(chapter.quiz)&&chapter.quiz.length>0}));
 for(const item of expected){
