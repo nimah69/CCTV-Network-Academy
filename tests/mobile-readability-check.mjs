@@ -7,6 +7,7 @@ const guard = /@media\s*\(max-width:\s*390px\)[\s\S]*?body,\s*body\s*\*\s*\{\s*f
 for (const [name, html] of [["index.html", index], ["workshops.html", workshops]]) {
   assert.match(html, guard, name + ": narrow-screen typography must have a 13px minimum");
   assert.match(html, /min-height:\s*44px/, name + ": touch targets need a 44px minimum height");
+  assert.match(html, /min-width:\s*44px/, name + ": touch targets need a 44px minimum width");
   assert.match(html, /overflow-wrap:\s*anywhere/, name + ": long labels must be allowed to wrap");
   assert.match(html, /overflow-x:\s*clip/, name + ": narrow layouts must guard against horizontal overflow");
 }
