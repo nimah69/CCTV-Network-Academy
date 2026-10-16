@@ -47,6 +47,6 @@ assert.match(moduleText,/دسترسی IP/);
 assert.match(moduleText,/سرویس تصویر/);
 assert.match(html,/CCTVInteractiveDisplays\.renderForChapter\(state\.chapter\)/);
 assert.match(sw,/js\/interactive-displays\.js/);
-assert.match(sw,/cctv-academy-static-v2026-10-16-4/);
+assert.match(sw,/cctv-academy-static-v2026-10-16-5/);
 assert.match(html,/@media\(max-width:420px\)/);
 console.log(JSON.stringify({status:"passed",pathDisplay:true,poeCalculation:true,troubleshootingTree:true,offlineCache:true},null,2));
