@@ -827,3 +827,9 @@ button,
 #glossarySearch{display:block;width:100%;min-width:0;min-height:46px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--ink);font:inherit}
 .glossary-entry[hidden]{display:none!important}
 .glossary-entry p{overflow-wrap:anywhere;line-height:1.9}
+
+/* مرحله ۳: واژه‌نامه و گزارش مرور */
+.glossary-search-label{display:block;font-size:14px;font-weight:800;margin:14px 0 6px}
+#glossarySearch{display:block;width:100%;min-width:0;min-height:46px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--ink);font:inherit}
+.glossary-entry[hidden]{display:none!important}
+.glossary-entry p{overflow-wrap:anywhere;line-height:1.9}
