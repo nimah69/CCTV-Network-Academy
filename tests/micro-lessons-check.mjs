@@ -20,7 +20,7 @@ for(const chapter of chapters){
  const lessons=sandbox.window.CCTVMicroLessons.build(chapter);
  assert.ok(lessons.length>=3&&lessons.length<=5,"Chapter must have 3–5 micro lessons: "+chapter.title);
  for(const [i,lesson] of lessons.entries()){
-  assert.ok(lesson.title&&lesson.definition&&lesson.why&&lesson.example&&lesson.tip,"Each micro lesson must have the required learning fields: "+chapter.title+" / "+i);
+  assert.ok(lesson.title&&lesson.definition&&lesson.sourceLabel&&lesson.expandedExplanation&&lesson.why&&lesson.example&&lesson.commonMistake&&lesson.systemConnection&&lesson.tip,"Each micro lesson must have the required learning fields: "+chapter.title+" / "+i);
   assert.equal(lesson.minutes,4,"Each micro lesson should target a 3–5 minute duration");
   assert.ok(lesson.question&&chapter.quiz.includes(lesson.question),"Immediate question must come from this chapter's question bank");
  }
@@ -35,6 +35,9 @@ assert.match(html,/microLessons:/,"New progress field must be normalized");
 assert.match(html,/microBookmarks:/,"Bookmark progress field must be normalized");
 assert.match(html,/const storeKey="cctvAcademyProgressV1"/,"Legacy progress key must remain unchanged");
 assert.match(html,/micro-full-content/,"Original full chapter content must remain accessible");
+assert.match(html,/شماره صفحه PDF نیازمند تطبیق/,"Unverified PDF page numbers must not be presented as verified");
+assert.match(html,/اشتباه رایج/,"Micro lessons must call out common mistakes");
+assert.match(html,/ارتباط با سامانه کامل CCTV/,"Micro lessons must connect the topic to the full CCTV system");
 assert.match(sw,/js\/micro-lessons\.js/,"Micro lessons script must be cached for offline use");
 assert.match(sw,/cctv-academy-static-v2026-10-16-5/,"Cache version must change when adding a module");
 console.log(JSON.stringify({status:"passed",chapters:chapters.length,features:["micro-lessons","optional-question","progress","bookmarks","offline-script","legacy-content-preserved"]},null,2));
