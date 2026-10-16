@@ -41,27 +41,7 @@ jobs:
           done
 
       - name: Bundle local website files
-        run: |
-          set -e
-          mkdir -p android/app/src/main/assets/academy/js android/app/src/main/assets/academy/icons
-          cp index.html workshops.html manifest.webmanifest service-worker.js android/app/src/main/assets/academy/
-          cp icons/*.svg android/app/src/main/assets/academy/icons/
-          cp js/*.js android/app/src/main/assets/academy/js/
-          test -s android/app/src/main/assets/academy/index.html
-          test -s android/app/src/main/assets/academy/workshops.html
-          test -s android/app/src/main/assets/academy/manifest.webmanifest
-          test -s android/app/src/main/assets/academy/service-worker.js
-          test -s android/app/src/main/assets/academy/icons/academy-icon.svg
-          for f in js/*.js; do
-            test -s "android/app/src/main/assets/academy/$f"
-          done
-          test -s android/app/src/main/assets/academy/js/academy-data.js
-          test -s android/app/src/main/assets/academy/js/calculations.js
-          test -s android/app/src/main/assets/academy/js/chapter-labs.js
-          test -s android/app/src/main/assets/academy/js/chapter-lab-ui.js
-          test -s android/app/src/main/assets/academy/js/spaced-review.js
-          echo "Bundled files:"
-          find android/app/src/main/assets/academy -type f | sort
+        run: bash scripts/bundle-android-assets.sh
 
       - name: Set up Java
         uses: actions/setup-java@v4
