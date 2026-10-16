@@ -498,7 +498,8 @@ chapters.forEach((c,ci)=>{
       q:questionStems[(n+ci)%questionStems.length].build(concept.title),
       o:options,
       a:answerIndex,
-      e:"مفهوم اصلی: "+concept.summary+"\n\n"+questionStems[(n+ci)%questionStems.length].explanation,\n      difficulty:questionStems[(n+ci)%questionStems.length].difficulty,
+      e:"مفهوم اصلی: "+concept.summary+"\n\n"+questionStems[(n+ci)%questionStems.length].explanation,
+      difficulty:questionStems[(n+ci)%questionStems.length].difficulty,
       kind:"تمرین مفهومی تکمیلی"
     });
     n++;
