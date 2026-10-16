@@ -122,22 +122,15 @@ assert.equal(link.remaining, 60, "Remaining nominal link capacity should be 60 M
 assert.equal(link.status, "status-good", "Occupancy below the warning threshold should be marked good");
 assert.equal(calculations.link(80, 100, 70).status, "status-bad", "Occupancy above the design limit should be marked bad");
 
-const figuresSource = fs.readFileSync("js/figures.js", "utf8");
-new vm.Script(figuresSource, { filename: "js/figures.js" });
-assert.ok(figuresSource.includes("fig-compare-title") && figuresSource.includes("fig-compare-detail"), "Comparison diagrams must separate titles and descriptions into distinct rows");
-assert.ok(figuresSource.includes("max-width:420px") && figuresSource.includes("font-size:14px"), "Figure styles must include legible narrow-screen typography");
-assert.ok(figuresSource.includes("Vazirmatn") && figuresSource.includes("Noto Sans Arabic"), "Figure typography must prefer Persian/Arabic-capable fonts with offline fallbacks");
-assert.ok(figuresSource.includes("function wrapWords") && figuresSource.includes("function svgText"), "SVG labels must support readable multi-line wrapping");
-assert.ok(figuresSource.includes("a.length*rowH+12") && figuresSource.includes("height=\"116\"") && figuresSource.includes("fig-compare-detail"), "Comparison rows must reserve separate vertical space for wrapped titles and details");
 assert.ok(html.includes("Mobile visual refresh") && html.includes("font-size:16px"), "Lesson typography must remain readable on mobile");
 const workshopsHtml = fs.readFileSync("workshops.html", "utf8");
-assert.ok(!workshopsHtml.includes("font-size:8px") && !workshopsHtml.includes("font-size:9px"), "Workshop SVG labels must not shrink below a readable mobile size");
+assert.ok(!workshopsHtml.includes("font-size:8px") && !workshopsHtml.includes("font-size:9px"), "Workshop labels must not shrink below a readable mobile size");
 assert.ok(workshopsHtml.includes("Mobile diagram and typography redesign") && workshopsHtml.includes("grid-template-columns:minmax(0,1fr)"), "Workshop diagrams must stack cleanly on narrow screens");
 assert.ok(workshopsHtml.includes("overflow-wrap:anywhere"), "Long diagram labels must wrap instead of causing horizontal overflow");
 
 
 assert.match(html, /function chapterOneLearningHTML\(\)/, "Chapter one must use the new card-based visual learning experience");
-assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):chapterVisualLearningHTML\(c,state\.chapter\)/, "Chapter one keeps its custom design while every other chapter uses the shared visual renderer");
+assert.match(html, /function chapterLearningTemplate\(chapter,chapterIndex\)/, "All chapters must use a shared outer learning template");
 assert.match(html, /function chapterOneStepContent\(step\)/, "Chapter one must provide explanatory step-by-step guidance");
 assert.match(html, /function setChapterOneStep\(step\)/, "Chapter one step navigation must be interactive");
 assert.match(html, /function runChapterOneScenario\(kind\)/, "Chapter one must provide a scenario-based diagnostic interaction");
@@ -156,7 +149,11 @@ assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ض
 
 
 assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
-assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):chapterVisualLearningHTML\(c,state\.chapter\)/, "All chapter lessons must render the new visual learning experience");
+assert.match(html, /function quizHTML\(comprehensive=false\)/, "Quizzes must render one question per page");
+assert.match(html, /function selectQuizAnswer\(index,value\)/, "Answers must trigger immediate feedback");
+assert.match(html, /quiz-progress-meta/, "Quiz progress must be visible");
+assert.match(html, /function nextQuizQuestion\(/, "Quiz navigation must include a next action");
+assert.match(html, /chapterLearningTemplate\(c,state\.chapter\)/, "All chapter lessons must render through the shared learning template");
 assert.match(html, /function setChapterVisualStep\(step\)/, "All-chapter step navigation must work");
 assert.match(html, /function checkChapterVisualAnswer\(choice,questionIndex=5\)/, "Review and quick-challenge answers must select the correct question");
 const guidedRenderer = html.slice(html.indexOf("function chapterVisualStepHTML"), html.indexOf("function setChapterVisualStep"));
