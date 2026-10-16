@@ -40,6 +40,8 @@ assert.match(html,/microBookmarks:/,"Bookmark progress field must be normalized"
 assert.match(html,/const storeKey="cctvAcademyProgressV1"/,"Legacy progress key must remain unchanged");
 assert.match(html,/micro-full-content/,"Original full chapter content must remain accessible");
 assert.match(html,/شماره صفحه PDF نیازمند تطبیق/,"Unverified PDF page numbers must not be presented as verified");
+assert.doesNotMatch(html,/محتوا خلاصه‌سازی آموزشی از PDF پیوست است/,"Footer must not claim the source PDF is attached");
+assert.match(html,/PDF اصلی در مخزن موجود نیست/,"Source availability must be stated accurately");
 assert.match(html,/اشتباه رایج/,"Micro lessons must call out common mistakes");
 assert.match(html,/ارتباط با سامانه کامل CCTV/,"Micro lessons must connect the topic to the full CCTV system");
 assert.match(sw,/js\/micro-lessons\.js/,"Micro lessons script must be cached for offline use");
