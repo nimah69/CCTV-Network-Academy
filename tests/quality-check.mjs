@@ -3,6 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const html = fs.readFileSync("index.html", "utf8");
+const academyCss = fs.readFileSync("css/academy.css", "utf8");
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
 assert.ok(scripts.length > 0, "index.html must contain a JavaScript script");
 const appScript = scripts.find((script) => script.includes("const chapters = window.CCTVAcademyData.chapters;"));
@@ -127,7 +128,7 @@ assert.equal(link.remaining, 60, "Remaining nominal link capacity should be 60 M
 assert.equal(link.status, "status-good", "Occupancy below the warning threshold should be marked good");
 assert.equal(calculations.link(80, 100, 70).status, "status-bad", "Occupancy above the design limit should be marked bad");
 
-assert.ok(html.includes("Mobile visual refresh") && html.includes("font-size:16px"), "Lesson typography must remain readable on mobile");
+assert.ok(academyCss.includes("Mobile visual refresh") && academyCss.includes("font-size:16px"), "Lesson typography must remain readable on mobile");
 const workshopsHtml = fs.readFileSync("workshops.html", "utf8");
 assert.ok(!workshopsHtml.includes("font-size:8px") && !workshopsHtml.includes("font-size:9px"), "Workshop labels must not shrink below a readable mobile size");
 assert.ok(workshopsHtml.includes("Mobile diagram and typography redesign") && workshopsHtml.includes("grid-template-columns:minmax(0,1fr)"), "Workshop diagrams must stack cleanly on narrow screens");
@@ -143,8 +144,8 @@ assert.match(html, /data-ch1-scenario="ping"/, "The diagnostic mission must incl
 assert.match(html, /data-ch1-step="2"/, "The learning flow must expose all three steps");
 assert.match(html, /aria-live="polite"/, "Interactive feedback must be announced accessibly");
 assert.match(html, /این یک شبیه‌سازی آموزشی است/, "The interface must distinguish simulated guidance from real device measurements");
-assert.match(html, /\.ch1-equipment-grid\{grid-template-columns:1fr\}/, "Equipment cards must stack on narrow mobile screens");
-assert.match(html, /\.ch1-scenario-options\{grid-template-columns:1fr\}/, "Scenario options must stack on narrow mobile screens");
+assert.match(academyCss, /\.ch1-equipment-grid\{grid-template-columns:1fr\}/, "Equipment cards must stack on narrow mobile screens");
+assert.match(academyCss, /\.ch1-scenario-options\{grid-template-columns:1fr\}/, "Scenario options must stack on narrow mobile screens");
 const ch1Start = html.indexOf("function chapterOneLearningHTML()");
 const ch1End = html.indexOf("function lessonHTML()", ch1Start);
 assert.ok(ch1Start >= 0 && ch1End > ch1Start, "Could not isolate the chapter-one visual learning renderer");
@@ -153,6 +154,15 @@ assert.doesNotMatch(ch1Renderer, /<svg\b|<table\b|https?:\/\//i, "The new chapte
 assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ضبط‌کننده / NVR"].every(label => ch1Renderer.includes(label)), "Equipment cards must explain the four core network roles");
 
 
+
+assert.match(html, /class="mission-card"/, "Chapter one must use the reusable MissionCard component");
+assert.match(html, /class="step-list"/, "Chapter one must use the reusable StepList component");
+assert.match(html, /class="compare-card"/, "Chapter one must compare Switch and Router with reusable cards");
+assert.match(html, /function chooseChapterOneAction\(action\)/, "Mission actions must return interactive feedback");
+assert.match(html, /data-ch1-action="service"/, "The mission must offer a technically sound first action");
+assert.match(html, /status:"success"/, "Mission feedback must support semantic status styling");
+assert.match(html, /Switch|سوئیچ \(Switch\)/, "Chapter one must explain the switch role");
+assert.match(html, /Router|مسیریاب \(Router\)/, "Chapter one must explain the router role");
 assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
 assert.match(html, /function quizHTML\(comprehensive=false\)/, "Quizzes must render one question per page");
 assert.match(html, /function selectQuizAnswer\(index,value\)/, "Answers must trigger immediate feedback");
@@ -169,12 +179,12 @@ assert.ok(html.includes("const q=c.quiz&&c.quiz[5];"), "The quick challenge must
 assert.match(html, /cv-concept-grid/, "Chapter concepts must be presented as responsive cards");
 assert.match(html, /aria-live="polite"/, "Chapter learning feedback must be announced accessibly");
 assert.match(html, /این بخش ابزار آموزشی است/, "The shared chapter module must disclose simulation limitations");
-assert.match(html, /\.cv-concept-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/, "Concept cards must use a responsive grid");
-assert.match(html, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answer-grid\{grid-template-columns:minmax\(0,1fr\)\}/, "Visual concept cards must stack on mobile");
+assert.match(academyCss, /\.cv-concept-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/, "Concept cards must use a responsive grid");
+assert.match(academyCss, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answer-grid\{grid-template-columns:minmax\(0,1fr\)\}/, "Visual concept cards must stack on mobile");
 
-assert.match(html, /\.chapter-visual \.cv-concept summary b,/, "Visual card titles must explicitly set a readable foreground color");
-assert.ok(html.includes(".chapter-visual .cv-answer-grid button { background: #ffffff;") && html.includes(".chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }"), "White answer cards must use dark readable text");
-assert.ok(html.includes(".chapter-visual .cv-section-head p { color: #596579; }"), "Muted section descriptions must retain readable contrast");
+assert.match(academyCss, /\.chapter-visual \.cv-concept summary b,/, "Visual card titles must explicitly set a readable foreground color");
+assert.ok(academyCss.includes(".chapter-visual .cv-answer-grid button { background: #ffffff;") && academyCss.includes(".chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }"), "White answer cards must use dark readable text");
+assert.ok(academyCss.includes(".chapter-visual .cv-section-head p { color: #596579; }"), "Muted section descriptions must retain readable contrast");
 
 
 console.log(JSON.stringify({

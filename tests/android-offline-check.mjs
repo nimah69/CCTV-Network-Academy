@@ -9,6 +9,7 @@ const workflow=fs.readFileSync(path.join(root,".github/workflows/offline-apk-ci.
 const bundler=fs.readFileSync(path.join(root,"scripts/bundle-android-assets.sh"),"utf8");
 const sw=fs.readFileSync(path.join(root,"service-worker.js"),"utf8");
 const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
+const academyCss=fs.readFileSync(path.join(root,"css/academy.css"),"utf8");
 const workshops=fs.readFileSync(path.join(root,"workshops.html"),"utf8");
 const font=path.join(root,"fonts/Vazirmatn-Variable.woff2");
 const license=fs.readFileSync(path.join(root,"fonts/OFL.txt"),"utf8");
@@ -28,7 +29,7 @@ assert.match(bundler,/cmp -s/,"Bundler must verify copied assets");
 assert.ok(fs.existsSync(font),"Local variable font must be present");
 assert.ok(fs.statSync(font).size<300*1024,"Bundled font must stay below 300 KB");
 assert.match(license,/SIL OPEN FONT LICENSE Version 1\.1/);
-assert.match(index,/Vazirmatn-Variable\.woff2/);
+assert.match(academyCss,/\.\.\/fonts\/Vazirmatn-Variable\.woff2/,"External academy stylesheet must load the local font from the correct relative path");
 assert.match(workshops,/Vazirmatn-Variable\.woff2/);
 assert.match(sw,/\.\/fonts\/Vazirmatn-Variable\.woff2/);
 assert.match(sw,/cctv-academy-static-v__BUILD_VERSION__/,"Source service worker must use the build-time cache placeholder");
