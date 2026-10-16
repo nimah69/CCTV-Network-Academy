@@ -250,26 +250,86 @@ if(next)next.disabled=state.ch1Step===2;
 }
 function runChapterOneScenario(kind){
 const output=document.getElementById("ch1-scenario-result");if(!output)return;
-const results={
-link:{title:"آزمون بعدی: لایه فیزیکی",text:"ابتدا برق، لینک، کابل و پورت سوئیچ را بررسی کن. تا وقتی لینک برقرار نشده، تغییر IP یا تعویض NVR اقدام اول نیست."},
-ping:{title:"آزمون بعدی: مسیر سرویس تصویر",text:"ارتباط IP تا حدی برقرار است؛ آدرس/پورت سرویس، اعتبارنامه، مجوز، جریان ویدئو و وضعیت ثبت در NVR را بررسی کن. Ping موفق به معنی سالم‌بودن تصویر نیست."},
-drop:{title:"آزمون بعدی: بررسی ناپایداری",text:"هم‌زمانی قطع‌و‌وصل با لینک، توان PoE، خطاهای پورت، ازدحام شبکه و ثبت رویدادها را بررسی کن. هر بار یک متغیر را آزمایش و نتیجه را ثبت کن."}
+const descriptions={
+link:"چراغ لینک خاموش است؛ ابتدا برق، کابل، سوکت، پورت سوئیچ و PoE را بررسی کن.",
+ping:"Ping موفق است اما تصویر نمایش داده نمی‌شود؛ پورت سرویس، مجوز، جریان و وضعیت ثبت در NVR را بررسی کن.",
+drop:"تصویر گاهی قطع می‌شود؛ زمان رخداد را با خطای لینک، توان PoE، خطاهای پورت و بار شبکه مقایسه کن."
 };
-const r=results[kind]||results.link;
-output.innerHTML="<b>"+r.title+"</b><p>"+r.text+"</p>";
-document.querySelectorAll("[data-ch1-scenario]").forEach(b=>b.classList.toggle("active",b.dataset.ch1Scenario===kind));
+state.ch1Scenario=["link","ping","drop"].includes(kind)?kind:"ping";
+const desc=document.getElementById("ch1-scenario-description");if(desc)desc.textContent=descriptions[state.ch1Scenario];
+document.querySelectorAll("[data-ch1-scenario]").forEach(b=>{const selected=b.dataset.ch1Scenario===state.ch1Scenario;b.classList.toggle("active",selected);b.setAttribute("aria-pressed",String(selected))});
+document.querySelectorAll("[data-ch1-action]").forEach(b=>{b.classList.remove("active");b.setAttribute("aria-pressed","false")});
+output.dataset.status="warning";output.innerHTML="<strong>نشانه انتخاب شد</strong><p>حالا اقدام اول را انتخاب کن تا دلیل مناسب‌بودن یا پرریسک‌بودن آن را ببینی.</p>";
 }
+
 function chapterOneLearningHTML(){
-return '<section class="ch1-learning" aria-labelledby="ch1-learning-title"><div class="ch1-learning-head"><span class="ch1-eyebrow">یادگیری دیداری · فصل اول</span><h2 id="ch1-learning-title">شبکه را مثل یک مسیر قابل‌ردیابی ببین</h2><p>به‌جای نمودار فشرده، نقش هر دستگاه و ترتیب واقعی عیب‌یابی را قدم‌به‌قدم یاد بگیر.</p></div>'+
-'<section class="ch1-block"><div class="ch1-block-heading"><span class="ch1-number">۰۱</span><div><h3>نقش تجهیزات در یک سامانه ساده</h3><p>هر کارت یک مسئولیت مشخص و یک محدودیت مهم دارد.</p></div></div><div class="ch1-equipment-grid">'+
-'<article class="ch1-equipment-card"><span class="ch1-device-icon">◉</span><h4>دوربین IP</h4><p class="ch1-role">تولید تصویر و ارسال داده</p><div><b>ورودی</b><span>برق یا PoE، نور صحنه، تنظیمات شبکه</span></div><div><b>خروجی</b><span>جریان ویدئو و رویدادها</span></div><small>محدودیت: کیفیت تصویر به لنز، نور، تنظیمات و شبکه وابسته است.</small></article>'+
-'<article class="ch1-equipment-card"><span class="ch1-device-icon">▦</span><h4>سوئیچ (Switch)</h4><p class="ch1-role">اتصال دستگاه‌های شبکه محلی</p><div><b>ورودی</b><span>لینک شبکه از دوربین‌ها و دستگاه‌ها</span></div><div><b>خروجی</b><span>ارسال فریم به پورت مقصد</span></div><small>محدودیت: مدل عادی الزاماً PoE ندارد؛ ظرفیت و VLAN باید بررسی شوند.</small></article>'+
-'<article class="ch1-equipment-card"><span class="ch1-device-icon">⇄</span><h4>مسیریاب (Router)</h4><p class="ch1-role">هدایت بسته میان شبکه‌ها</p><div><b>ورودی</b><span>بسته و اطلاعات مقصد IP</span></div><div><b>خروجی</b><span>ارسال به مسیر یا شبکه بعدی</span></div><small>محدودیت: مسیریابی به‌تنهایی سیاست امنیتی کامل نیست.</small></article>'+
-'<article class="ch1-equipment-card"><span class="ch1-device-icon">▣</span><h4>ضبط‌کننده / NVR</h4><p class="ch1-role">دریافت، ضبط و بازپخش تصویر</p><div><b>ورودی</b><span>جریان ویدئوی دوربین‌های مجاز</span></div><div><b>خروجی</b><span>ضبط، جست‌وجو و نمایش تصویر</span></div><small>محدودیت: ظرفیت شبکه، مجوز، سازگاری و فضای ذخیره‌سازی مهم‌اند.</small></article>'+
-'</div><div class="ch1-data-path" aria-label="مسیر کلی تصویر"><span>دوربین IP</span><i>داده</i><span>سوئیچ شبکه</span><i>داده</i><span>NVR / ایستگاه مشاهده</span></div><p class="ch1-caption">این مسیر مفهومی است؛ برق دوربین ممکن است از PoE سوئیچ تأمین شود، اما برق و داده دو مفهوم جدا هستند.</p></section>'+
-'<section class="ch1-block"><div class="ch1-block-heading"><span class="ch1-number">۰۲</span><div><h3>آزمایشگاه عیب‌یابی سه‌مرحله‌ای</h3><p>هر مرحله را کامل کن؛ بی‌دلیل از یک لایه به لایه بعد نپر.</p></div></div><div class="ch1-step-tabs" role="group" aria-label="انتخاب گام عیب‌یابی"><button type="button" class="ch1-step-tab active" data-ch1-step="0" aria-current="step" onclick="setChapterOneStep(0)">۱. لینک</button><button type="button" class="ch1-step-tab" data-ch1-step="1" onclick="setChapterOneStep(1)">۲. IP</button><button type="button" class="ch1-step-tab" data-ch1-step="2" onclick="setChapterOneStep(2)">۳. تصویر</button></div><div id="ch1-step-panel" class="ch1-step-panel" aria-live="polite">'+chapterOneStepContent(state.ch1Step||0)+'</div><div class="ch1-step-controls"><button type="button" class="secondary" id="ch1-step-back" onclick="setChapterOneStep((state.ch1Step||0)-1)" '+((state.ch1Step||0)===0?'disabled':'')+'>گام قبلی</button><button type="button" class="primary" id="ch1-step-next" onclick="setChapterOneStep((state.ch1Step||0)+1)" '+((state.ch1Step||0)===2?'disabled':'')+'>گام بعدی</button></div></section>'+
-'<section class="ch1-block"><div class="ch1-block-heading"><span class="ch1-number">۰۳</span><div><h3>مأموریت کوتاه: تصویر قطع شده است</h3><p>نشانه را انتخاب کن تا آزمون بعدی و دلیل آن را ببینی.</p></div></div><div class="ch1-scenario-options" role="group" aria-label="نشانه خرابی"><button type="button" class="ch1-scenario-option active" data-ch1-scenario="link" onclick="runChapterOneScenario(\'link\')"><b>چراغ لینک خاموش</b><span>اتصال فیزیکی مشکوک است</span></button><button type="button" class="ch1-scenario-option" data-ch1-scenario="ping" onclick="runChapterOneScenario(\'ping\')"><b>Ping موفق، تصویر نیست</b><span>شبکه پاسخ می‌دهد؛ سرویس را بررسی کن</span></button><button type="button" class="ch1-scenario-option" data-ch1-scenario="drop" onclick="runChapterOneScenario(\'drop\')"><b>تصویر گاهی قطع می‌شود</b><span>به ناپایداری لینک یا بار شبکه فکر کن</span></button></div><div id="ch1-scenario-result" class="ch1-scenario-result" aria-live="polite"><b>آزمون بعدی: لایه فیزیکی</b><p>ابتدا برق، لینک، کابل و پورت سوئیچ را بررسی کن. تا وقتی لینک برقرار نشده، تغییر IP یا تعویض NVR اقدام اول نیست.</p></div><p class="ch1-note"><b>یادآوری:</b> این یک شبیه‌سازی آموزشی است؛ هیچ دستگاه واقعی را تغییر نمی‌دهد و نتیجه واقعی شبکه را اندازه‌گیری نمی‌کند.</p></section></section>';
+state.ch1Scenario=state.ch1Scenario||"ping";
+return `<section class="ch1-learning chapter-one-redesign" aria-labelledby="ch1-learning-title">
+<header class="ch1-learning-head"><span class="ch1-eyebrow">کارگاه تصمیم‌محور · فصل اول</span><h2 id="ch1-learning-title">از نشانه تا تشخیص شبکه</h2><p>نقش تجهیزات را مقایسه کن، مسیر عیب‌یابی را مرحله‌به‌مرحله جلو ببر و برای هر نشانه یک اقدام قابل دفاع انتخاب کن.</p></header>
+<section class="ch1-block" aria-labelledby="ch1-equipment-title"><div class="ch1-block-heading"><span class="ch1-number">۰۱</span><div><h3 id="ch1-equipment-title">چه تجهیزی چه کاری انجام می‌دهد؟</h3><p>هر کارت مسئولیت و محدودیت دستگاه را روشن می‌کند.</p></div></div>
+<div class="ch1-equipment-grid">
+<article class="ch1-equipment-card"><span class="ch1-device-icon" aria-hidden="true">◉</span><h4>دوربین IP</h4><p class="ch1-role">تولید تصویر و ارسال داده</p><div><b>ورودی</b><span>برق یا PoE، نور صحنه و تنظیمات شبکه</span></div><div><b>خروجی</b><span>جریان ویدئو و رویدادها</span></div><small>محدودیت: کیفیت تصویر به لنز، نور، تنظیمات و شبکه وابسته است.</small></article>
+<article class="ch1-equipment-card"><span class="ch1-device-icon" aria-hidden="true">▦</span><h4>سوئیچ (Switch)</h4><p class="ch1-role">اتصال دستگاه‌های شبکه محلی</p><div><b>ورودی</b><span>فریم‌های دریافتی از پورت‌ها</span></div><div><b>خروجی</b><span>ارسال فریم به پورت مقصد بر پایه MAC</span></div><small>محدودیت: همهٔ سوئیچ‌ها PoE یا قابلیت مدیریتی ندارند.</small></article>
+<article class="ch1-equipment-card"><span class="ch1-device-icon" aria-hidden="true">⇄</span><h4>مسیریاب (Router)</h4><p class="ch1-role">هدایت بسته بین شبکه‌های IP</p><div><b>ورودی</b><span>بسته و آدرس مقصد IP</span></div><div><b>خروجی</b><span>ارسال بسته به مسیر بعدی</span></div><small>محدودیت: مسیریابی به‌تنهایی سیاست امنیتی کامل نیست.</small></article>
+<article class="ch1-equipment-card"><span class="ch1-device-icon" aria-hidden="true">▣</span><h4>ضبط‌کننده / NVR</h4><p class="ch1-role">دریافت، ضبط و بازپخش تصویر</p><div><b>ورودی</b><span>جریان ویدئوی دوربین‌های مجاز</span></div><div><b>خروجی</b><span>ضبط، جست‌وجو و نمایش تصویر</span></div><small>محدودیت: ظرفیت شبکه، مجوز، سازگاری و فضای ذخیره‌سازی مهم‌اند.</small></article>
+</div>
+<div class="compare-card" aria-label="مقایسه سوئیچ و مسیریاب">
+<article class="compare-card__item"><strong class="compare-card__name">سوئیچ (Switch)</strong><div class="compare-card__field"><b>کار اصلی</b>اتصال دستگاه‌ها در شبکهٔ محلی و هدایت فریم بر پایهٔ MAC.</div><div class="compare-card__field"><b>چه کاری نمی‌کند؟</b>سوئیچ لایهٔ ۲ معمولی به‌طور پیش‌فرض مسیریابی بین subnetها را انجام نمی‌دهد.</div><div class="compare-card__field"><b>چه زمانی نیاز است؟</b>وقتی چند دوربین، NVR و رایانه باید به LAN متصل شوند؛ برای PoE، توان و استاندارد پورت را جداگانه بررسی کن.</div></article>
+<article class="compare-card__item"><strong class="compare-card__name">مسیریاب (Router)</strong><div class="compare-card__field"><b>کار اصلی</b>انتقال بسته بین شبکه‌های IP بر اساس جدول مسیریابی.</div><div class="compare-card__field"><b>چه کاری نمی‌کند؟</b>صرف وجود Router به معنی امن‌بودن شبکه یا مجازبودن همهٔ مسیرها نیست.</div><div class="compare-card__field"><b>چه زمانی نیاز است؟</b>وقتی دوربین‌ها یا سامانهٔ مدیریت باید با شبکهٔ دیگری ارتباط کنترل‌شده داشته باشند.</div></article>
+</div>
+<p class="ch1-caption">مسیر مفهومی داده: دوربین IP ← شبکهٔ محلی/سوئیچ ← NVR یا ایستگاه مشاهده. برق PoE و دادهٔ شبکه مرتبط‌اند اما یک مفهوم واحد نیستند.</p></section>
+<section class="ch1-block" aria-labelledby="ch1-steps-title"><div class="ch1-block-heading"><span class="ch1-number">۰۲</span><div><h3 id="ch1-steps-title">ترتیب عیب‌یابی</h3><p>از نشانه‌های پایه شروع کن؛ تا وقتی یک لایه بررسی نشده، سراغ تغییرات بعدی نرو.</p></div></div>
+<ol class="step-list">
+<li><span class="step-list__title">برق و لینک فیزیکی</span><span class="step-list__detail">چراغ وضعیت، کابل، سوکت، پورت و سازگاری/بودجهٔ PoE را بررسی کن.</span></li>
+<li><span class="step-list__title">آدرس‌دهی و مسیر IP</span><span class="step-list__detail">IP، Subnet Mask، تداخل آدرس، VLAN و Gateway را بررسی کن؛ Ping به‌تنهایی سلامت تصویر را ثابت نمی‌کند.</span></li>
+<li><span class="step-list__title">سرویس ویدئو و NVR</span><span class="step-list__detail">پورت سرویس، مجوز، اعتبارنامه، سازگاری جریان، زمان و وضعیت ثبت دوربین را بررسی کن.</span></li>
+</ol>
+<div class="callout callout--tip"><strong class="callout__title">قاعدهٔ عملی</strong><p>هر بار یک متغیر را تغییر بده و نتیجه را ثبت کن. تعویض دوربین یا NVR بدون شواهد، عیب‌یابی را پرهزینه و مبهم می‌کند.</p></div>
+<div class="ch1-step-tabs" role="group" aria-label="انتخاب گام عیب‌یابی"><button type="button" class="ch1-step-tab active" data-ch1-step="0" aria-current="step" onclick="setChapterOneStep(0)">۱. لینک</button><button type="button" class="ch1-step-tab" data-ch1-step="1" onclick="setChapterOneStep(1)">۲. IP</button><button type="button" class="ch1-step-tab" data-ch1-step="2" onclick="setChapterOneStep(2)">۳. تصویر</button></div>
+<div id="ch1-step-panel" class="ch1-step-panel" aria-live="polite">${chapterOneStepContent(state.ch1Step||0)}</div><div class="ch1-step-controls"><button type="button" class="secondary" id="ch1-step-back" onclick="setChapterOneStep((state.ch1Step||0)-1)" ${((state.ch1Step||0)===0?'disabled':'')}>گام قبلی</button><button type="button" class="primary" id="ch1-step-next" onclick="setChapterOneStep((state.ch1Step||0)+1)" ${((state.ch1Step||0)===2?'disabled':'')}>گام بعدی</button></div></section>
+<section class="ch1-block" aria-labelledby="ch1-mission-title"><div class="ch1-block-heading"><span class="ch1-number">۰۳</span><div><h3 id="ch1-mission-title">مأموریت تشخیص خطا</h3><p>سناریو را انتخاب کن، سپس اقدامی را که اول انجام می‌دهی مشخص کن.</p></div></div>
+<article class="mission-card" aria-labelledby="ch1-mission-card-title">
+<span class="mission-card__eyebrow">شبیه‌سازی آموزشی · بدون اتصال به دستگاه واقعی</span><h4 class="mission-card__title" id="ch1-mission-card-title">تصویر دوربین در NVR نمایش داده نمی‌شود</h4>
+<div class="mission-card__section"><span class="mission-card__label">نشانهٔ فعلی</span><p id="ch1-scenario-description">Ping موفق است اما تصویر نمایش داده نمی‌شود؛ لینک فیزیکی روشن است.</p></div>
+<div class="mission-card__section"><span class="mission-card__label">انتخاب سناریو</span><div class="ch1-scenario-options mission-card__choices" role="group" aria-label="انتخاب نشانه خرابی">
+<button type="button" class="mission-card__choice ch1-scenario-option" data-ch1-scenario="link" aria-pressed="false" onclick="runChapterOneScenario('link')"><b>چراغ لینک خاموش</b><span>برق یا اتصال فیزیکی مشکوک است</span></button>
+<button type="button" class="mission-card__choice ch1-scenario-option active" data-ch1-scenario="ping" aria-pressed="true" onclick="runChapterOneScenario('ping')"><b>Ping موفق، تصویر نیست</b><span>شبکه پاسخ می‌دهد؛ سرویس را بررسی کن</span></button>
+<button type="button" class="mission-card__choice ch1-scenario-option" data-ch1-scenario="drop" aria-pressed="false" onclick="runChapterOneScenario('drop')"><b>تصویر گاهی قطع می‌شود</b><span>ناپایداری یا بار شبکه محتمل است</span></button>
+</div></div>
+<div class="mission-card__section"><span class="mission-card__label">اقدام اول تو چیست؟</span><div class="mission-card__choices" role="group" aria-label="انتخاب اقدام عیب‌یابی">
+<button type="button" class="mission-card__choice" data-ch1-action="service" aria-pressed="false" onclick="chooseChapterOneAction('service')">بررسی پورت سرویس، مجوز و وضعیت جریان در NVR</button>
+<button type="button" class="mission-card__choice" data-ch1-action="replace" aria-pressed="false" onclick="chooseChapterOneAction('replace')">تعویض فوری دوربین و NVR</button>
+<button type="button" class="mission-card__choice" data-ch1-action="subnet" aria-pressed="false" onclick="chooseChapterOneAction('subnet')">تغییر subnet بدون بررسی تنظیمات فعلی</button>
+</div></div>
+<div class="mission-card__outcome" id="ch1-scenario-result" data-status="warning" aria-live="polite"><strong>راهنمای شروع</strong><p>ابتدا نشانه را مشخص کن. برای «Ping موفق، تصویر نیست»، بررسی سرویس و مجوز از تعویض قطعه یا تغییر تصادفی IP منطقی‌تر است.</p></div>
+</article>
+<div class="callout callout--warning"><strong class="callout__title">محدودیت شبیه‌سازی</strong><p>این تمرین فقط مسیر تصمیم‌گیری را آموزش می‌دهد؛ وضعیت واقعی کابل، شبکه یا تجهیزات را اندازه‌گیری نمی‌کند.</p></div>
+</section></section>`;
 }
+function chooseChapterOneAction(action){
+const out=document.getElementById("ch1-scenario-result");if(!out)return;
+const scenario=state.ch1Scenario||"ping";
+const feedback={
+ping:{
+service:{status:"success",title:"انتخاب مناسب",text:"Ping موفق فقط دسترس‌پذیری IP را نشان می‌دهد. اکنون پورت سرویس، اعتبارنامه و مجوز، سازگاری جریان و وضعیت ثبت دوربین در NVR را بررسی کن."},
+replace:{status:"error",title:"اقدام زودهنگام",text:"تعویض دوربین و NVR بدون شواهد هزینه‌زا است. ابتدا سرویس ویدئو، مجوز، تنظیمات جریان و رویدادهای NVR را بررسی کن."},
+subnet:{status:"error",title:"تغییر بی‌دلیل",text:"با Ping موفق، تغییر subnet اولین اقدام منطقی نیست؛ ممکن است ارتباط را قطع کند. تنظیمات فعلی، gateway و سرویس را بررسی کن."}
+},
+link:{
+service:{status:"error",title:"ترتیب عیب‌یابی اشتباه است",text:"وقتی چراغ لینک خاموش است، ابتدا برق، کابل، سوکت، پورت سوئیچ و PoE را بررسی کن؛ هنوز شواهدی برای ایراد سرویس نداریم."},
+replace:{status:"warning",title:"هنوز زود است",text:"ابتدا کابل و پورت جایگزین سالم و توان PoE را بررسی کن. تعویض دوربین یا NVR اولین آزمون نیست."},
+subnet:{status:"error",title:"لایهٔ اشتباه",text:"تغییر subnet لینک فیزیکی خاموش را درست نمی‌کند. اول برق و اتصال فیزیکی را تأیید کن."}
+},
+drop:{
+service:{status:"warning",title:"بررسی لازم است، اما تنها علت نیست",text:"ثبت رویداد سرویس را بررسی کن و هم‌زمانی قطع‌و‌وصل را با لینک، خطای پورت، PoE و بار شبکه مقایسه کن."},
+replace:{status:"error",title:"تعویض بدون تشخیص",text:"قطع‌و‌وصل می‌تواند از کابل، توان، ازدحام یا سرویس باشد. لاگ‌ها و هر بار یک متغیر را آزمایش کن."},
+subnet:{status:"error",title:"فرضیهٔ تأییدنشده",text:"تغییر subnet به‌تنهایی علت ناپایداری را روشن نمی‌کند. زمان قطعی، خطاهای لینک و بار شبکه را ثبت کن."}
+}};
+const result=(feedback[scenario]||feedback.ping)[action]||feedback.ping.service;
+out.dataset.status=result.status;out.innerHTML="<strong>"+result.title+"</strong><p>"+result.text+"</p>";
+document.querySelectorAll("[data-ch1-action]").forEach(b=>{const selected=b.dataset.ch1Action===action;b.classList.toggle("active",selected);b.setAttribute("aria-pressed",String(selected))});
+}
+
 
 
 function chapterVisualStepHTML(c,step){
