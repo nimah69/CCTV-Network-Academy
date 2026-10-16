@@ -433,8 +433,8 @@ return '<section class="ch1-learning" aria-labelledby="ch1-learning-title"><div 
 
 
 function chapterVisualStepHTML(c,step){
-const s=c.sections[step]||c.sections[0];
-return '<div class="cv-step-content"><span class="cv-step-kicker">گام '+(step+1)+' از '+c.sections.length+'</span><h4>'+esc(s[0])+'</h4><p>'+esc(s[1])+'</p><div class="cv-practice-note"><b>ارتباط با کار واقعی</b><p>'+esc(c.tips)+'</p></div><div class="cv-step-actions"><button class="secondary" type="button" onclick="setChapterVisualStep('+(step-1)+')" '+(step===0?'disabled':'')+'>گام قبلی</button><button class="primary" type="button" onclick="setChapterVisualStep('+(step+1)+')" '+(step===c.sections.length-1?'disabled':'')+'>'+(step===c.sections.length-1?'پایان مرور':'گام بعدی')+'</button></div></div>';
+const q=(c.quiz||[])[step];if(!q)return '<div class="cv-step-content"><p>برای این فصل پرسش مروری ثبت نشده است.</p></div>';
+return '<div class="cv-step-content cv-review-step"><span class="cv-step-kicker">مرور بازیابی · پرسش '+(step+1)+' از '+Math.min(c.sections.length,(c.quiz||[]).length)+'</span><h4>'+esc(q.q)+'</h4><p>پیش از دیدن پاسخ، گزینه‌ای را انتخاب کن و سعی کن دلیل انتخابت را به یاد بیاوری.</p><div class="cv-answer-grid">'+q.o.map((o,i)=>'<button type="button" data-cv-answer="'+i+'" data-cv-question="'+step+'" aria-pressed="false" onclick="checkChapterVisualAnswer('+i+','+step+')"><span>'+String.fromCharCode(65+i)+'</span>'+esc(o)+'</button>').join('')+'</div><div id="cv-review-feedback-'+step+'" class="cv-quiz-feedback" aria-live="polite">پس از انتخاب، پاسخ درست و توضیح آموزشی نمایش داده می‌شود.</div><div class="cv-step-actions"><button class="secondary" type="button" onclick="setChapterVisualStep('+(step-1)+')" '+(step===0?'disabled':'')+'>پرسش قبلی</button><button class="primary" type="button" onclick="setChapterVisualStep('+(step+1)+')" '+(step===Math.min(c.sections.length,(c.quiz||[]).length)-1?'disabled':'')+'>'+(step===Math.min(c.sections.length,(c.quiz||[]).length)-1?'پایان مرور':'پرسش بعدی')+'</button></div></div>';
 }
 function setChapterVisualStep(step){
 const c=chapters[state.chapter];if(!c||!c.sections||!c.sections.length)return;
@@ -445,21 +445,21 @@ document.querySelectorAll("[data-cv-step]").forEach(b=>{const active=Number(b.da
 const progress=document.getElementById("cv-step-progress");
 if(progress)progress.style.width=(((state.chVisualStep+1)/c.sections.length)*100)+"%";
 }
-function checkChapterVisualAnswer(choice){
-const c=chapters[state.chapter],q=c&&c.quiz&&c.quiz[0];if(!q)return;
+function checkChapterVisualAnswer(choice,questionIndex=5){
+const c=chapters[state.chapter],q=c&&c.quiz&&c.quiz[questionIndex];if(!q)return;
 state.chVisualAnswer=Number(choice);
-const out=document.getElementById("cv-quiz-feedback");
+const out=document.getElementById(questionIndex===5?"cv-quiz-feedback":"cv-review-feedback-"+questionIndex);
 if(out){const ok=state.chVisualAnswer===q.a;out.className="cv-quiz-feedback "+(ok?"is-correct":"is-wrong");out.innerHTML="<b>"+(ok?"درست است؛ آفرین!":"هنوز درست نیست؛ پاسخ را بررسی کن.")+"</b><p>"+esc(q.e||"برای یادگیری بیشتر، توضیح پاسخ را مرور کن.")+"</p><p>پاسخ درست: <strong>"+esc(q.o[q.a])+"</strong></p>";}
-document.querySelectorAll("[data-cv-answer]").forEach(b=>{b.classList.toggle("chosen",Number(b.dataset.cvAnswer)===state.chVisualAnswer);b.setAttribute("aria-pressed",String(Number(b.dataset.cvAnswer)===state.chVisualAnswer))});
+document.querySelectorAll('[data-cv-answer][data-cv-question="'+questionIndex+'"]').forEach(b=>{b.classList.toggle("chosen",Number(b.dataset.cvAnswer)===state.chVisualAnswer);b.setAttribute("aria-pressed",String(Number(b.dataset.cvAnswer)===state.chVisualAnswer))});
 }
 function chapterVisualLearningHTML(c,chapterIndex){
 const sections=Array.isArray(c.sections)?c.sections:[];
-const q=c.quiz&&c.quiz[0];
+const q=c.quiz&&c.quiz[5];
 state.chVisualStep=0;state.chVisualAnswer=null;
 return '<section class="chapter-visual" aria-labelledby="cv-title"><header class="cv-hero"><span class="cv-eyebrow">VISUAL LEARNING LAB · فصل '+(chapterIndex+1)+'</span><h2 id="cv-title">'+esc(c.title)+'؛ از مفهوم تا اقدام</h2><p>مطالب این فصل به کارت‌های خوانا، مرور مرحله‌ای و یک تمرین کوتاه تبدیل شده‌اند. روی هر مفهوم بزن تا توضیحش باز شود.</p><div class="cv-hero-meta"><span>'+sections.length+' مفهوم اصلی</span><span>مرور مرحله‌ای</span><span>تمرین فوری</span></div></header>'+
 '<section class="cv-block"><div class="cv-section-head"><span class="cv-section-number">۰۱</span><div><h3>مفاهیم کلیدی فصل</h3><p>هر کارت یک مفهوم مستقل است؛ برای مطالعه روی عنوان آن بزن.</p></div></div><div class="cv-concept-grid">'+sections.map((s,i)=>'<details class="cv-concept"><summary><span class="cv-concept-index">'+String(i+1).padStart(2,"0")+'</span><b>'+esc(s[0])+'</b><span class="cv-open-mark" aria-hidden="true">+</span></summary><p>'+esc(s[1])+'</p><small>مفهوم '+(i+1)+' از '+sections.length+'</small></details>').join("")+'</div></section>'+
-'<section class="cv-block"><div class="cv-section-head"><span class="cv-section-number">۰۲</span><div><h3>مرور هدایت‌شده</h3><p>گام‌ها را یکی‌یکی باز کن تا نکته و کاربرد هر بخش را بخوانی.</p></div></div><div class="cv-step-nav" role="group" aria-label="گام‌های مرور">'+sections.map((s,i)=>'<button type="button" data-cv-step="'+i+'" onclick="setChapterVisualStep('+i+')" class="'+(i===0?"active":"")+'" aria-current="'+(i===0?"step":"false")+'"><span>'+(i+1)+'</span><b>'+esc(s[0])+'</b></button>').join("")+'</div><div class="cv-progress-track" aria-hidden="true"><span id="cv-step-progress" style="width:'+(sections.length?100/sections.length:0)+'%"></span></div><div id="cv-step-panel" aria-live="polite">'+chapterVisualStepHTML(c,0)+'</div></section>'+
-(q?'<section class="cv-block cv-quiz-block"><div class="cv-section-head"><span class="cv-section-number">۰۳</span><div><h3>چالش سریع</h3><p>قبل از دیدن توضیح، گزینه‌ای را که درست می‌دانی انتخاب کن.</p></div></div><p class="cv-question">'+esc(q.q)+'</p><div class="cv-answer-grid">'+q.o.map((o,i)=>'<button type="button" data-cv-answer="'+i+'" aria-pressed="false" onclick="checkChapterVisualAnswer('+i+')"><span>'+String.fromCharCode(65+i)+'</span>'+esc(o)+'</button>').join("")+'</div><div id="cv-quiz-feedback" class="cv-quiz-feedback" aria-live="polite">پس از انتخاب پاسخ، توضیح و پاسخ صحیح نمایش داده می‌شود.</div></section>':'')+
+'<section class="cv-block"><div class="cv-section-head"><span class="cv-section-number">۰۲</span><div><h3>مرور هدایت‌شده</h3><p>در هر گام یک پرسش متفاوت را پاسخ بده؛ سپس توضیح پاسخ و دلیل گزینه درست را بررسی کن.</p></div></div><div class="cv-step-nav" role="group" aria-label="گام‌های مرور">'+sections.map((s,i)=>'<button type="button" data-cv-step="'+i+'" onclick="setChapterVisualStep('+i+')" class="'+(i===0?"active":"")+'" aria-current="'+(i===0?"step":"false")+'"><span>'+(i+1)+'</span><b>'+esc(s[0])+'</b></button>').join("")+'</div><div class="cv-progress-track" aria-hidden="true"><span id="cv-step-progress" style="width:'+(sections.length?100/sections.length:0)+'%"></span></div><div id="cv-step-panel" aria-live="polite">'+chapterVisualStepHTML(c,0)+'</div></section>'+
+(q?'<section class="cv-block cv-quiz-block"><div class="cv-section-head"><span class="cv-section-number">۰۳</span><div><h3>چالش سریع</h3><p>قبل از دیدن توضیح، گزینه‌ای را که درست می‌دانی انتخاب کن.</p></div></div><p class="cv-question">'+esc(q.q)+'</p><div class="cv-answer-grid">'+q.o.map((o,i)=>'<button type="button" data-cv-answer="'+i+'" aria-pressed="false" onclick="checkChapterVisualAnswer('+i+',5)"><span>'+String.fromCharCode(65+i)+'</span>'+esc(o)+'</button>').join("")+'</div><div id="cv-quiz-feedback" class="cv-quiz-feedback" aria-live="polite">پس از انتخاب پاسخ، توضیح و پاسخ صحیح نمایش داده می‌شود.</div></section>':'')+
 '<p class="cv-simulation-note">این بخش ابزار آموزشی است؛ نتیجه‌ای از تجهیزات واقعی نمی‌خواند و جایگزین آزمایش میدانی یا دستورالعمل سازنده نیست.</p></section>';
 }
 function lessonHTML(){
