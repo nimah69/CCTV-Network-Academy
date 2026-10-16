@@ -36,7 +36,12 @@ for (const page of pages) {
 }
 assert.ok(register.includes('navigator.serviceWorker.register("./service-worker.js"'));
 assert.ok(register.includes('location.protocol !== "https:"'), "Service worker should only register in secure contexts or localhost");
-assert.ok(worker.includes("cctv-academy-static-v2026-10-16-"), "Cache name must be versioned for controlled updates");
+assert.ok(worker.includes("cctv-academy-static-v__BUILD_VERSION__"), "Source cache name must use a build-time version placeholder");
+const pagesWorkflow = fs.readFileSync(path.join(root, ".github/workflows/pages.yml"), "utf8");
+const androidBundler = fs.readFileSync(path.join(root, "scripts/bundle-android-assets.sh"), "utf8");
+assert.match(pagesWorkflow, /sed -i .*__BUILD_VERSION__.*GITHUB_SHA/, "Pages build must inject the commit SHA into the cache version");
+assert.match(androidBundler, /BUILD_VERSION=.*GITHUB_SHA/, "Android bundling must derive the cache version from the build commit");
+assert.match(androidBundler, /sed -i .*__BUILD_VERSION__/, "Android bundle must replace the cache version placeholder");
 assert.match(worker, /request.destination === "script"/, "JavaScript must use network-first freshness handling");
 assert.ok(worker.includes('url.pathname.endsWith(".js")'), "JavaScript paths must use network-first freshness handling");
 assert.ok(worker.includes('request.mode === "navigate"') || worker.includes("const isNavigation = request.mode === \"navigate\""), "Offline navigation fallback must be implemented");
