@@ -44,6 +44,11 @@ assert.match(capacity,/fig-fill-risk/,"Capacity chart must flag usage above the 
 assert.match(capacity,/۸۲|82/,"Capacity chart must expose the actual measured percentage");
 assert.ok(css.includes("root.CCTVCalculations") && css.includes("c.bandwidth") && css.includes("c.storage"),"Tool diagrams must use actual calculation functions");
 assert.ok(!css.includes("text.matchAll(/\\d+(?:\\.\\d+)?/g)"),"Tool diagrams must not infer values by parsing formatted result text");
+const compareMobile=api.render({...sample,type:"compare",items:[{title:"Switch",detail:"اتصال دستگاه‌ها در شبکه محلی؛ به‌تنهایی سیاست امنیتی کامل نیست"},{title:"Router",detail:"هدایت بسته میان شبکه‌ها؛ جایگزین کنترل دسترسی نیست"},{title:"Firewall / ACL",detail:"اعمال قواعد دسترسی؛ VLAN به‌تنهایی جایگزین آن نیست"}]});
+assert.match(compareMobile,/height="348"/,"Comparison cards need enough vertical room for Persian copy on mobile");
+assert.match(compareMobile,/width="320" height="104"/,"Comparison text must remain inside a taller card");
+assert.match(compareMobile,/fig-compare-detail/,"Comparison descriptions must use the mobile-safe detail layout");
+assert.ok((compareMobile.match(/<tspan/g)||[]).length>=9,"Long comparison text should wrap across multiple lines instead of overflowing");
 const semanticFlow=api.render({...sample,type:"flow",nodes:[{label:"دوربین IP",kind:"data"},{label:"سوئیچ PoE",kind:"power"}]});
 assert.match(semanticFlow,/fig-node-data/,"Flow nodes must visually identify data roles");
 assert.match(semanticFlow,/fig-node-power/,"Flow nodes must visually identify power roles");
