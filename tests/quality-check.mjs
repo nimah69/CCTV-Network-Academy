@@ -159,7 +159,7 @@ assert.match(html, /class="step-list"/, "Chapter one must use the reusable StepL
 assert.match(html, /class="compare-card"/, "Chapter one must compare Switch and Router with reusable cards");
 assert.match(html, /function chooseChapterOneAction\(action\)/, "Mission actions must return interactive feedback");
 assert.match(html, /data-ch1-action="service"/, "The mission must offer a technically sound first action");
-assert.match(html, /data-status="success"/, "Mission feedback must support semantic status styling");
+assert.match(html, /status:"success"/, "Mission feedback must support semantic status styling");
 assert.match(html, /Switch|سوئیچ \(Switch\)/, "Chapter one must explain the switch role");
 assert.match(html, /Router|مسیریاب \(Router\)/, "Chapter one must explain the router role");
 assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
