@@ -376,17 +376,21 @@ function shortenOption(text){
   return (boundary>95?cut.slice(0,boundary):cut)+"…";
 }
 const questionStems = [
-  (t)=>"در بررسی «"+t+"»، کدام اصل را باید رعایت کرد؟",
-  (t)=>"کدام اقدام برای «"+t+"» مناسب‌تر است؟",
-  (t)=>"اگر با موضوع «"+t+"» روبه‌رو شویم، کدام گزاره دقیق‌تر است؟",
-  (t)=>"کدام نکته در تصمیم‌گیری درباره «"+t+"» اهمیت بیشتری دارد؟",
-  (t)=>"برای کاهش خطا در «"+t+"»، کدام رویکرد بهتر است؟",
-  (t)=>"کدام گزینه رابطه درست‌تری با «"+t+"» دارد؟",
-  (t)=>"در سناریوی مرتبط با «"+t+"»، کدام تصمیم فنی منطقی‌تر است؟",
-  (t)=>"کدام توضیح، مفهوم «"+t+"» را بهتر بیان می‌کند؟"
+  {build:(t)=>"کدام توضیح درباره «"+t+"» از نظر فنی دقیق‌تر است؟",difficulty:"پایه",explanation:"این پرسش تعریف فنی مفهوم را می‌سنجد؛ گزینه‌های دیگر ممکن است به بخش‌های متفاوتی از سامانه اشاره کنند."},
+  {build:(t)=>"کدام گزاره نقش اصلی «"+t+"» را درست بیان می‌کند؟",difficulty:"پایه",explanation:"پاسخ صحیح باید نقش اصلی را روشن کند؛ شباهت واژه‌ها به‌تنهایی دلیل درستی گزینه نیست."},
+  {build:(t)=>"کدام گزینه کاربرد معمول «"+t+"» را بهتر توصیف می‌کند؟",difficulty:"پایه",explanation:"کاربرد را با هدف و شرایط استفاده بسنجید؛ نام یک قابلیت به‌تنهایی نتیجه نهایی را تضمین نمی‌کند."},
+  {build:(t)=>"کدام بیان درباره «"+t+"» از تعمیم بیش از حد پرهیز می‌کند؟",difficulty:"متوسط",explanation:"پاسخ دقیق باید محدوده کاربرد و محدودیت‌ها را در نظر بگیرد؛ هیچ قابلیت منفردی سلامت کل سامانه را ثابت نمی‌کند."},
+  {build:(t)=>"کدام توضیح رابطه «"+t+"» با عملکرد سامانه را درست‌تر بیان می‌کند؟",difficulty:"متوسط",explanation:"اثر این مفهوم را در ارتباط با اجزای دیگر بررسی کنید؛ یک بخش سالم، عملکرد کل مسیر را تضمین نمی‌کند."},
+  {build:(t)=>"کدام گزاره با محدودیت‌های فنی «"+t+"» سازگارتر است؟",difficulty:"متوسط",explanation:"در تصمیم واقعی، سازگاری تجهیزات، شرایط نصب و مشخصات سازنده را کنار تعریف مفهومی بررسی کنید."},
+  {build:(t)=>"کدام توضیح برای تصمیم‌گیری درباره «"+t+"» قابل اتکاتر است؟",difficulty:"متوسط",explanation:"برای انتخاب فنی، داده واقعی و معیار پذیرش لازم است؛ فرض‌های طراحی را از نتیجه اندازه‌گیری‌شده جدا نگه دارید."},
+  {build:(t)=>"کدام تعریف عملیاتی «"+t+"» را روشن‌تر می‌کند؟",difficulty:"پایه",explanation:"تعریف عملیاتی باید به رفتار یا نشانه‌ای قابل مشاهده وصل شود، نه فقط به نام یک فناوری یا تجهیز."},
+  {build:(t)=>"کدام بیان، هم نقش و هم محدودیت «"+t+"» را بهتر جمع‌بندی می‌کند؟",difficulty:"پیشرفته",explanation:"تحلیل کامل علاوه بر کارکرد، محدودیت و ریسک باقی‌مانده را هم مشخص می‌کند؛ نتیجه باید با آزمون مناسب تأیید شود."},
+  {build:(t)=>"کدام توضیح درباره «"+t+"» در بررسی یک رخداد واقعی قابل راستی‌آزمایی‌تر است؟",difficulty:"پیشرفته",explanation:"برای راستی‌آزمایی، شواهدی مانند لاگ، اندازه‌گیری، دیتاشیت یا نتیجه آزمون ثبت کنید و از حدس قطعی بپرهیزید."},
+  {build:(t)=>"کدام گزینه «"+t+"» را از مفاهیم نزدیک به آن درست تفکیک می‌کند؟",difficulty:"پیشرفته",explanation:"برای جلوگیری از اشتباه مفهومی، نقش، محدوده کاربرد و محدودیت این مفهوم را با گزینه‌های مشابه مقایسه کنید."},
+  {build:(t)=>"کدام توضیح، «"+t+"» را به نیاز واقعی پروژه پیوند می‌دهد؟",difficulty:"متوسط",explanation:"کاربرد باید با هدف نظارتی، ظرفیت، سازگاری و شرایط محل هماهنگ باشد؛ انتخاب را با سناریوی واقعی بررسی کنید."}
 ];
 
-function curatedQuestion(q,o,a,e){return {q,o,a,e,kind:"تمرین مفهومی تکمیلی"}}
+function curatedQuestion(q,o,a,e){return {q,o,a,e,kind:"تمرین مفهومی تکمیلی",difficulty:"متوسط"}}
 const targetedQuestionBanks={
 0:[
 curatedQuestion("اگر دوربین پس از اتصال به شبکه IP نمی‌گیرد، کدام بررسی اولویت دارد؟",["بررسی دسترسی دوربین به DHCP و وضعیت محدوده آدرس‌ها","تغییر رزولوشن تصویر و نرخ فریم دوربین","افزایش ظرفیت هارد دستگاه ضبط","تعویض لنز دوربین بدون آزمون شبکه"],0,"دریافت IP به سرویس DHCP و پیکربندی شبکه وابسته است؛ پیش از تغییر تنظیمات تصویر، وضعیت آدرس‌دهی را بررسی کنید."),
@@ -491,10 +495,10 @@ chapters.forEach((c,ci)=>{
     const options=distractors.slice();
     options.splice(answerIndex,0,correct);
     c.quiz.push({
-      q:n<concepts.length?questionStems[n%questionStems.length](concept.title):n<concepts.length*2?"در یک پروژه واقعی، چگونه باید «"+concept.title+"» را ارزیابی کرد؟":"برای تأیید عملی «"+concept.title+"»، کدام آزمون مناسب‌تر است؟",
+      q:questionStems[(n+ci)%questionStems.length].build(concept.title),
       o:options,
       a:answerIndex,
-      e:"مفهوم اصلی: "+concept.summary+"\n\nدر عمل، این اصل را در شرایط واقعی پروژه بررسی کنید و نتیجه را با مشاهده، اندازه‌گیری یا مستندات معتبر تأیید کنید.",
+      e:"مفهوم اصلی: "+concept.summary+"\n\n"+questionStems[(n+ci)%questionStems.length].explanation,\n      difficulty:questionStems[(n+ci)%questionStems.length].difficulty,
       kind:"تمرین مفهومی تکمیلی"
     });
     n++;
@@ -529,6 +533,14 @@ sourceQuizChapter.quiz = [...sourceQuizQuestions,...remainingSourceChapterQuesti
 
 
 const questionEntries=chapters.flatMap((chapter,chapterIndex)=>chapter.quiz.map((question,questionIndex)=>({question,chapterIndex,questionIndex})));
+questionEntries.forEach(({question})=>{
+ if(question.difficulty)return;
+ if(question.kind==="بازنویسی پرسش‌های جزوه")question.difficulty="پایه";
+ else if(question.kind==="سناریوی کاربردی")question.difficulty="متوسط";
+ else if(question.kind==="سواد منبع")question.difficulty="پیشرفته";
+ else if(question.kind==="پرسش تمرینی")question.difficulty="پایه";
+ else question.difficulty="متوسط";
+});
 const focusedChapters=new Set([0,1,2,8]);
 const longestCandidates=questionEntries.map(entry=>{
  const q=entry.question,lengths=q.o.map(option=>option.length),otherMax=Math.max(...lengths.filter((_,i)=>i!==q.a));
