@@ -57,6 +57,21 @@ assert.ok(workshopHtml.includes("localStorage"),
 assert.ok(!/\b(?:fetch|XMLHttpRequest)\s*\(/.test(mainHtml + workshopHtml),
   "Core pages should not require network requests for their initial content");
 
+
+const javaSource = fs.readFileSync(path.join(root, "android/app/src/main/java/ir/nimah69/cctvnetworkacademy/MainActivity.java"), "utf8");
+for (const token of ["@JavascriptInterface", "saveTextFile", "addJavascriptInterface(", "onShowFileChooser", "parseResult", "file:///android_asset/academy/"]) {
+  assert.ok(javaSource.includes(token), `Android WebView wrapper must include ${token}`);
+}
+const exportStart = mainHtml.indexOf("function exportProgress");
+const exportEnd = mainHtml.indexOf("function importProgressFile", exportStart);
+assert.ok(exportStart >= 0 && exportEnd > exportStart, "Could not isolate exportProgress");
+const exportFunction = mainHtml.slice(exportStart, exportEnd);
+assert.ok(exportFunction.includes("AndroidBridge") && exportFunction.indexOf("AndroidBridge") < exportFunction.indexOf("createObjectURL"),
+  "APK progress export must use Android's document picker before browser Blob fallback");
+for (const requiredPath of ["android/settings.gradle", "android/build.gradle", "android/app/build.gradle", "android/app/src/main/AndroidManifest.xml"]) {
+  assert.ok(fs.existsSync(path.join(root, requiredPath)), `Android build configuration is missing: ${requiredPath}`);
+}
+
 console.log(JSON.stringify({
   status: "passed",
   pagesChecked: pages.length,
