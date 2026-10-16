@@ -8,6 +8,7 @@ const CORE_ASSETS = [
   "./manifest.webmanifest",
   "./icons/academy-icon.svg",
   "./js/academy-data.js",
+  "./js/micro-lessons.js",
   "./js/calculations.js",
   "./js/chapter-labs.js",
   "./js/chapter-lab-ui.js",
