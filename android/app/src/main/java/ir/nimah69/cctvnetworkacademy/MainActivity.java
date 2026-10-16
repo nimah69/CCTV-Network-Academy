@@ -129,7 +129,21 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) webView.goBack();
+        if (webView == null) {
+            super.onBackPressed();
+            return;
+        }
+        String currentUrl = webView.getUrl();
+        if (currentUrl != null && currentUrl.startsWith("file:///android_asset/academy/")
+                && !currentUrl.endsWith("/workshops.html")) {
+            webView.evaluateJavascript(
+                    "(function(){return window.CCTVAcademyHandleBack ? window.CCTVAcademyHandleBack() : false})()",
+                    value -> {
+                        if (!"true".equals(value)) MainActivity.super.onBackPressed();
+                    });
+            return;
+        }
+        if (webView.canGoBack()) webView.goBack();
         else super.onBackPressed();
     }
 
