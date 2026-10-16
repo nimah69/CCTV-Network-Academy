@@ -48,4 +48,9 @@ assert.match(coverage,/شناسایی/,"Camera coverage concepts should be local
 const raid=api.render(bank.byChapter["6"].find(x=>x.id==="ch6-raid-backup"));
 assert.match(raid,/نسخه مستقل کمک می‌کند/,"RAID and independent backup must be distinguished clearly");
 assert.ok(!raid.includes('<text x="330" y='),"RAID matrix must not place a row label on top of its cells");
+const decision=api.render(bank.byChapter["9"].find(x=>x.id==="ch9-offline-tree"));
+assert.match(decision,/بله:/,"Troubleshooting tree must show the positive decision branch");
+assert.match(decision,/خیر:/,"Troubleshooting tree must show the negative decision branch");
+assert.match(decision,/fig-branch-good/,"Positive branch must have a visible semantic color");
+assert.match(decision,/fig-branch-risk/,"Negative branch must have a visible semantic color");
 console.log(JSON.stringify({status:"passed",types:types.length,figures:specs.length,bytes:Buffer.byteLength(css+data,"utf8")},null,2));
