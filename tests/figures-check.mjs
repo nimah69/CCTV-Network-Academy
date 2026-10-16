@@ -35,4 +35,17 @@ const chapterFigures=api.figuresHTML(0);assert.match(chapterFigures,/<details cl
 assert.ok(css.includes("data-fig-tool-legend") && css.includes("fig-tool-legend"),"Interactive tools must provide one shared legend");
 assert.equal((css.match(/\+legend\(\)\+\x27<\/figure>\x27/g)||[]).length,0,"Generated calculator diagrams must not repeat the legend under each figure");
 assert.ok(css.includes(".fig-legend-global>summary:focus-visible"),"Shared legend summary must have a visible keyboard-focus state");
+const risk=api.render(bank.byChapter["7"][0]);
+assert.match(risk,/پیامد: کم ← زیاد/,"Risk matrix must label its horizontal axis in Persian");
+assert.match(risk,/احتمال: کم در بالا، زیاد در پایین/,"Risk matrix must explain the vertical axis in Persian");
+const bits=api.render(bank.byChapter["1"].find(x=>x.id==="ch1-bits"));
+assert.match(bits,/شبکه \(N\)/,"Subnet diagram must identify network bits");
+assert.match(bits,/میزبان \(H\)/,"Subnet diagram must identify host bits");
+assert.match(bits,/fig-bit-network/,"Network bits need a distinct visual treatment");
+assert.match(bits,/fig-bit-host/,"Host bits need a distinct visual treatment");
+const coverage=api.render(bank.byChapter["2"].find(x=>x.id==="ch2-coverage"));
+assert.match(coverage,/شناسایی/,"Camera coverage concepts should be localized into Persian");
+const raid=api.render(bank.byChapter["6"].find(x=>x.id==="ch6-raid-backup"));
+assert.match(raid,/نسخه مستقل کمک می‌کند/,"RAID and independent backup must be distinguished clearly");
+assert.ok(!raid.includes('<text x="330" y='),"RAID matrix must not place a row label on top of its cells");
 console.log(JSON.stringify({status:"passed",types:types.length,figures:specs.length,bytes:Buffer.byteLength(css+data,"utf8")},null,2));
