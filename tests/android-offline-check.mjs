@@ -28,5 +28,5 @@ assert.match(license,/SIL OPEN FONT LICENSE Version 1\.1/);
 assert.match(index,/Vazirmatn-Variable\.woff2/);
 assert.match(workshops,/Vazirmatn-Variable\.woff2/);
 assert.match(sw,/\.\/fonts\/Vazirmatn-Variable\.woff2/);
-assert.match(sw,/cctv-academy-static-v2026-10-16-5/);
+assert.match(sw,/cctv-academy-static-v2026-10-16-6/);
 console.log(JSON.stringify({status:"passed",fontBytes:fs.statSync(font).size,targetSdk:34,allowBackup:false,externalLinks:true},null,2));
