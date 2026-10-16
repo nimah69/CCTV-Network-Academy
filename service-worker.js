@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "cctv-academy-static-v1";
+const CACHE_NAME = "cctv-academy-static-v2026-10-16-1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -42,17 +42,27 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  if (request.mode === "navigate") {
+  const isNavigation = request.mode === "navigate";
+  const isFreshContent = isNavigation ||
+    request.destination === "document" ||
+    request.destination === "script" ||
+    /\\.m?js$/i.test(url.pathname) ||
+    /\\.html?$/i.test(url.pathname);
+
+  if (isFreshContent) {
     event.respondWith(
-      fetch(request).then((response) => {
+      fetch(request).then(async (response) => {
         if (response && response.ok) {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(request, copy);
         }
         return response;
       }).catch(async () => {
         const cached = await caches.match(request);
-        return cached || caches.match("./index.html");
+        if (cached) return cached;
+        if (isNavigation) return caches.match("./index.html");
+        throw new Error("Network unavailable and no cached copy exists for " + request.url);
       })
     );
     return;
@@ -61,10 +71,11 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
-      return fetch(request).then((response) => {
+      return fetch(request).then(async (response) => {
         if (response && response.ok) {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(request, copy);
         }
         return response;
       });
