@@ -16,7 +16,9 @@ assert.match(html, /studyPosition:/, "New study-position field must be preserved
 assert.match(html, /function saveStudyPosition\(/, "Lesson scroll and section must be persisted");
 assert.match(html, /function resumeStudy\(/, "Resume action must restore the saved lesson position");
 assert.match(html, /class="bottom-nav"/, "Mobile bottom navigation must exist");
-assert.equal((html.match(/class="bottom-nav"[^>]*>[\s\S]*?<button data-view=/)?.[0].match(/<button data-view=/g)||[]).length, 3, "Bottom navigation must have three internal destinations plus the workshop link");
+const bottomNav = html.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || "";
+assert.equal((bottomNav.match(/<button data-view=/g)||[]).length, 3, "Bottom navigation must have three internal destinations");
+assert.equal((bottomNav.match(/<a href="workshops\.html"/g)||[]).length, 1, "Bottom navigation must have one workshop destination");
 assert.match(html, /href="workshops\.html"/, "Workshops must remain reachable from mobile navigation");
 assert.match(activity, /CCTVAcademyHandleBack/, "Android native Back must use the app route handler");
 assert.ok(html.includes('cctvAcademyProgressV1'), "Existing progress storage key must remain unchanged");
