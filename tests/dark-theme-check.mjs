@@ -19,6 +19,9 @@ for (const token of ["--bg:#07111f", "--panel:#0f1d30", "--ink:#eaf2ff", "--bran
 assert.ok(css.includes("Dark Cyber Lab + Interactive Learning + Blueprint visual system"), "The main academy must include the dark design layer");
 assert.ok(css.includes(".chapter-visual .cv-concept-grid") && css.includes("background-size:20px 20px"), "Concept cards must have the subtle blueprint grid");
 assert.ok(css.includes(".chapter-visual .cv-answer-grid button{background:#10243a!important;color:#eaf2ff!important"), "Dark quiz options must keep readable foreground/background contrast");
+assert.ok(css.includes(".tool-panel .calc-fields input{") && css.includes("background:#091726"), "Calculator inputs must not retain white backgrounds");
+assert.ok(css.includes(".cv-step-nav button,.cv-answer-grid button{") && css.includes("background:#10243a"), "Lesson step controls must use dark surfaces");
+assert.ok(css.includes(".chapter-visual .cv-concept{background:#0e2033!important"), "Concept cards must not retain legacy white backgrounds");
 assert.ok(css.includes("@media(max-width:620px)") && css.includes("min-height:48px"), "Visual learning controls must remain touch-friendly on mobile");
 
 for (const token of ["--bg:#07111f", "--panel:#0f1d30", "--cyan:#67e8f9", "--blue:#38bdf8"]) {
