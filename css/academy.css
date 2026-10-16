@@ -889,3 +889,46 @@ hr,.divider{border-color:var(--line)}
  .chapter-visual .cv-concept-grid details{border-radius:11px}
  .chapter-visual .cv-answer-grid button{min-height:48px;padding:10px 12px;line-height:1.65}
 }
+
+
+/* Stage 5: remove legacy light surfaces left in nested tools and lesson controls */
+.panel,.result,.supplement-item,.lab-schematic-card,.cv-step-content,.tool-fields-intro{
+  background:#0e2033;
+  color:var(--ink);
+  border-color:#2a435d;
+}
+.lab-node{background:#10243a;border-color:#355a75;color:var(--ink)}
+.lab-node.node-done{background:#12352f;border-color:#2c8b72}
+.option:has(input:checked),.tool-start .preset-card,.tool-tab.active{
+  background:#123447;
+  border-color:#38bdf8;
+  color:#eaf2ff;
+}
+.feedback.bad,.feedback-incorrect,.cv-quiz-feedback.is-wrong{
+  background:#351f2a;
+  border-color:#8b4056;
+  color:#ffd8e0;
+}
+.tool-panel .calc-fields input{
+  background:#091726;
+  border-color:#2a455f;
+  color:var(--ink);
+}
+.tool-panel .calc-fields input[aria-invalid=true]{background:#351f2a;border-color:#fb7185}
+.tool-panel .calc-result{background:#102d3a;border-color:#2c6574;color:#eafcff}
+.cv-step-nav button,.cv-answer-grid button{
+  background:#10243a;
+  border-color:#2a455f;
+  color:var(--ink);
+}
+.cv-step-nav button.active,.cv-answer-grid button.chosen{
+  background:#123b4b;
+  border-color:#38bdf8;
+  color:#effcff;
+}
+.cv-quiz-feedback{background:#0d1d2e;border-color:#35516e;color:var(--ink)}
+.tool-fields-intro{color:#b7c9de}
+.hamb{background:#10243a;border-color:#2a455f;color:var(--ink)}
+.secondary{background:#10243a;color:var(--ink)}
+.chapter-visual .cv-concept{background:#0e2033!important;border-color:#2a435d;color:var(--ink)}
+.chapter-visual .cv-concept p,.chapter-visual .cv-concept li{color:#b7c9de}
