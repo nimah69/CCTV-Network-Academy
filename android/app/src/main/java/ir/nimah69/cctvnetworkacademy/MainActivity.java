@@ -83,8 +83,23 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String target = request.getUrl().toString();
-                return !target.startsWith("file:///android_asset/academy/");
+                Uri target = request.getUrl();
+                String targetText = target.toString();
+                String scheme = target.getScheme();
+                String path = target.getPath();
+                if ("file".equalsIgnoreCase(scheme)
+                        && targetText.startsWith("file:///android_asset/academy/")
+                        && (path == null || !path.contains(".."))) {
+                    return false;
+                }
+                if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, target));
+                    } catch (ActivityNotFoundException exception) {
+                        Toast.makeText(MainActivity.this, "مرورگر مناسبی برای بازکردن لینک پیدا نشد.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                return true;
             }
         });
 
