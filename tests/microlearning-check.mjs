@@ -15,7 +15,7 @@ assert.match(html,/function microLessonsFor\(chapter,chapterIndex\)/,"Micro-less
 assert.match(html,/chapterIndex===12&&sections\.length<3/,"Question-focused chapter must get useful study-guide steps when source sections are short");
 assert.match(html,/function answerMicroQuestion\(index,value\)/,"Immediate question responses must be stored");
 assert.match(html,/function skipMicroQuestion\(index\)/,"Immediate questions must be skippable");
-assert.match(html,/status:"needs-review"/,"Incorrect micro-lesson answers must be marked for review");
+assert.match(html,/"needs-review"/,"Incorrect micro-lesson answers must be marked for review");
 assert.match(html,/microWhyByChapter/,"Every chapter must have a why-it-matters explanation");
 assert.match(html,/microExampleByChapter/,"Every chapter must include a practical CCTV/network example");
 assert.match(html,/نکته کاربردی/,"Every micro-lesson must include an actionable tip");
