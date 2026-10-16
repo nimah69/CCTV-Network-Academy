@@ -134,6 +134,12 @@ assert.ok(!workshopsHtml.includes("font-size:8px") && !workshopsHtml.includes("f
 assert.ok(workshopsHtml.includes("Mobile diagram and typography redesign") && workshopsHtml.includes("grid-template-columns:minmax(0,1fr)"), "Workshop diagrams must stack cleanly on narrow screens");
 assert.ok(workshopsHtml.includes("overflow-wrap:anywhere"), "Long diagram labels must wrap instead of causing horizontal overflow");
 
+assert.ok(workshopsHtml.includes("const flowTimers=new WeakMap()"), "Flow simulator must manage its timers independently per schematic");
+assert.ok(workshopsHtml.includes('status.setAttribute("aria-live","polite")'), "Flow simulator must announce its current step accessibly");
+assert.ok(workshopsHtml.includes("setInterval(showStep,1100)") && workshopsHtml.includes("clearInterval(timer)"), "Flow simulator must advance through steps and stop its timer");
+assert.ok(workshopsHtml.includes('node.classList.add("flow-active")') && workshopsHtml.includes(".schematic-node.flow-active rect"), "Flow simulator must visibly highlight the current device");
+assert.ok(workshopsHtml.includes("مسیر آموزشی کامل شد"), "Flow simulator must announce when the data path is complete");
+
 
 assert.match(appScript, /function updateLessonProgress\(\)/, "Lesson reading progress must update as the user scrolls");
 assert.match(appScript, /function restoreStudyPosition\(p\)/, "Saved lesson position must be restored after navigation or reload");
