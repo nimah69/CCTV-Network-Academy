@@ -29,7 +29,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Run all academy quality and offline checks
+      - name: Run all academy quality checks
         run: |
           set -e
           for f in tests/*.mjs; do
@@ -37,7 +37,7 @@ jobs:
             node "$f"
           done
 
-      - name: Bundle all local website assets
+      - name: Bundle local website files
         run: |
           set -e
           mkdir -p android/app/src/main/assets/academy/js android/app/src/main/assets/academy/icons
