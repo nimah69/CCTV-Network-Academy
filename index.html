@@ -390,8 +390,50 @@ function technicalDetailHTML(p){
 }
 function diagramHTML(c){return '';
 }
+function chapterOneStepContent(step){
+const steps=[
+{title:"۱. بررسی برق و لینک فیزیکی",goal:"آیا دوربین روشن است و اتصال فیزیکی برقرار است؟",actions:["چراغ وضعیت دوربین و سوئیچ را بررسی کن.","کابل، سوکت و پورت را از نظر آسیب یا شل‌بودن بررسی کن.","در صورت استفاده از PoE، سازگاری استاندارد و بودجه توان را بررسی کن."],result:"اگر لینک برقرار نیست، هنوز سراغ تغییر IP نرو؛ ابتدا برق، کابل و پورت را بررسی کن."},
+{title:"۲. بررسی آدرس و مسیر شبکه",goal:"آیا رایانه و دوربین از نظر آدرس‌دهی می‌توانند با هم ارتباط بگیرند؟",actions:["آدرس IP و Subnet Mask هر دو دستگاه را بخوان.","تداخل IP و قرارگرفتن ناخواسته در VLAN متفاوت را بررسی کن.","از یک دستگاه مجاز، Ping را آزمایش کن؛ نتیجه را به‌تنهایی معیار سلامت تصویر ندان."],result:"Ping ناموفق، احتمال مشکل آدرس‌دهی یا مسیر را مطرح می‌کند؛ Ping موفق هنوز سلامت سرویس ویدئو را ثابت نمی‌کند."},
+{title:"۳. بررسی سرویس تصویر",goal:"اگر شبکه پاسخ می‌دهد، چرا تصویر نمایش داده نمی‌شود؟",actions:["آدرس و پورت سرویس، نام کاربری و مجوز دسترسی را بررسی کن.","تنظیمات زمان، سازگاری جریان ویدئو و وضعیت ثبت دوربین در NVR را بررسی کن.","پیام خطا و نتیجه هر آزمون را ثبت کن و فقط یک تغییر را در هر مرحله انجام بده."],result:"اگر Ping موفق است ولی تصویر نداریم، سرویس، احراز هویت، تنظیمات جریان و NVR را بررسی کن؛ قطعه را بدون شواهد تعویض نکن."}
+];
+const s=steps[step]||steps[0];
+return '<div class="ch1-step-kicker">گام '+(step+1)+' از ۳</div><h3>'+s.title+'</h3><p class="ch1-step-goal">'+s.goal+'</p><ol class="ch1-action-list">'+s.actions.map(x=>'<li>'+x+'</li>').join('')+'</ol><div class="ch1-step-result"><b>تفسیر نتیجه</b><p>'+s.result+'</p></div>';
+}
+function setChapterOneStep(step){
+state.ch1Step=Math.max(0,Math.min(2,Number(step)||0));
+const panel=document.getElementById("ch1-step-panel");
+if(panel)panel.innerHTML=chapterOneStepContent(state.ch1Step);
+document.querySelectorAll("[data-ch1-step]").forEach(b=>{const active=Number(b.dataset.ch1Step)===state.ch1Step;b.classList.toggle("active",active);if(active)b.setAttribute("aria-current","step");else b.removeAttribute("aria-current")});
+const back=document.getElementById("ch1-step-back"),next=document.getElementById("ch1-step-next");
+if(back)back.disabled=state.ch1Step===0;
+if(next)next.disabled=state.ch1Step===2;
+}
+function runChapterOneScenario(kind){
+const output=document.getElementById("ch1-scenario-result");if(!output)return;
+const results={
+link:{title:"آزمون بعدی: لایه فیزیکی",text:"ابتدا برق، لینک، کابل و پورت سوئیچ را بررسی کن. تا وقتی لینک برقرار نشده، تغییر IP یا تعویض NVR اقدام اول نیست."},
+ping:{title:"آزمون بعدی: مسیر سرویس تصویر",text:"ارتباط IP تا حدی برقرار است؛ آدرس/پورت سرویس، اعتبارنامه، مجوز، جریان ویدئو و وضعیت ثبت در NVR را بررسی کن. Ping موفق به معنی سالم‌بودن تصویر نیست."},
+drop:{title:"آزمون بعدی: بررسی ناپایداری",text:"هم‌زمانی قطع‌و‌وصل با لینک، توان PoE، خطاهای پورت، ازدحام شبکه و ثبت رویدادها را بررسی کن. هر بار یک متغیر را آزمایش و نتیجه را ثبت کن."}
+};
+const r=results[kind]||results.link;
+output.innerHTML="<b>"+r.title+"</b><p>"+r.text+"</p>";
+document.querySelectorAll("[data-ch1-scenario]").forEach(b=>b.classList.toggle("active",b.dataset.ch1Scenario===kind));
+}
+function chapterOneLearningHTML(){
+return '<section class="ch1-learning" aria-labelledby="ch1-learning-title"><div class="ch1-learning-head"><span class="ch1-eyebrow">یادگیری دیداری · فصل اول</span><h2 id="ch1-learning-title">شبکه را مثل یک مسیر قابل‌ردیابی ببین</h2><p>به‌جای نمودار فشرده، نقش هر دستگاه و ترتیب واقعی عیب‌یابی را قدم‌به‌قدم یاد بگیر.</p></div>'+
+'<section class="ch1-block"><div class="ch1-block-heading"><span class="ch1-number">۰۱</span><div><h3>نقش تجهیزات در یک سامانه ساده</h3><p>هر کارت یک مسئولیت مشخص و یک محدودیت مهم دارد.</p></div></div><div class="ch1-equipment-grid">'+
+'<article class="ch1-equipment-card"><span class="ch1-device-icon">◉</span><h4>دوربین IP</h4><p class="ch1-role">تولید تصویر و ارسال داده</p><div><b>ورودی</b><span>برق یا PoE، نور صحنه، تنظیمات شبکه</span></div><div><b>خروجی</b><span>جریان ویدئو و رویدادها</span></div><small>محدودیت: کیفیت تصویر به لنز، نور، تنظیمات و شبکه وابسته است.</small></article>'+
+'<article class="ch1-equipment-card"><span class="ch1-device-icon">▦</span><h4>سوئیچ (Switch)</h4><p class="ch1-role">اتصال دستگاه‌های شبکه محلی</p><div><b>ورودی</b><span>لینک شبکه از دوربین‌ها و دستگاه‌ها</span></div><div><b>خروجی</b><span>ارسال فریم به پورت مقصد</span></div><small>محدودیت: مدل عادی الزاماً PoE ندارد؛ ظرفیت و VLAN باید بررسی شوند.</small></article>'+
+'<article class="ch1-equipment-card"><span class="ch1-device-icon">⇄</span><h4>مسیریاب (Router)</h4><p class="ch1-role">هدایت بسته میان شبکه‌ها</p><div><b>ورودی</b><span>بسته و اطلاعات مقصد IP</span></div><div><b>خروجی</b><span>ارسال به مسیر یا شبکه بعدی</span></div><small>محدودیت: مسیریابی به‌تنهایی سیاست امنیتی کامل نیست.</small></article>'+
+'<article class="ch1-equipment-card"><span class="ch1-device-icon">▣</span><h4>ضبط‌کننده / NVR</h4><p class="ch1-role">دریافت، ضبط و بازپخش تصویر</p><div><b>ورودی</b><span>جریان ویدئوی دوربین‌های مجاز</span></div><div><b>خروجی</b><span>ضبط، جست‌وجو و نمایش تصویر</span></div><small>محدودیت: ظرفیت شبکه، مجوز، سازگاری و فضای ذخیره‌سازی مهم‌اند.</small></article>'+
+'</div><div class="ch1-data-path" aria-label="مسیر کلی تصویر"><span>دوربین IP</span><i>داده</i><span>سوئیچ شبکه</span><i>داده</i><span>NVR / ایستگاه مشاهده</span></div><p class="ch1-caption">این مسیر مفهومی است؛ برق دوربین ممکن است از PoE سوئیچ تأمین شود، اما برق و داده دو مفهوم جدا هستند.</p></section>'+
+'<section class="ch1-block"><div class="ch1-block-heading"><span class="ch1-number">۰۲</span><div><h3>آزمایشگاه عیب‌یابی سه‌مرحله‌ای</h3><p>هر مرحله را کامل کن؛ بی‌دلیل از یک لایه به لایه بعد نپر.</p></div></div><div class="ch1-step-tabs" role="group" aria-label="انتخاب گام عیب‌یابی"><button type="button" class="ch1-step-tab active" data-ch1-step="0" aria-current="step" onclick="setChapterOneStep(0)">۱. لینک</button><button type="button" class="ch1-step-tab" data-ch1-step="1" onclick="setChapterOneStep(1)">۲. IP</button><button type="button" class="ch1-step-tab" data-ch1-step="2" onclick="setChapterOneStep(2)">۳. تصویر</button></div><div id="ch1-step-panel" class="ch1-step-panel" aria-live="polite">'+chapterOneStepContent(state.ch1Step||0)+'</div><div class="ch1-step-controls"><button type="button" class="secondary" id="ch1-step-back" onclick="setChapterOneStep((state.ch1Step||0)-1)" '+((state.ch1Step||0)===0?'disabled':'')+'>گام قبلی</button><button type="button" class="primary" id="ch1-step-next" onclick="setChapterOneStep((state.ch1Step||0)+1)" '+((state.ch1Step||0)===2?'disabled':'')+'>گام بعدی</button></div></section>'+
+'<section class="ch1-block"><div class="ch1-block-heading"><span class="ch1-number">۰۳</span><div><h3>مأموریت کوتاه: تصویر قطع شده است</h3><p>نشانه را انتخاب کن تا آزمون بعدی و دلیل آن را ببینی.</p></div></div><div class="ch1-scenario-options" role="group" aria-label="نشانه خرابی"><button type="button" class="ch1-scenario-option active" data-ch1-scenario="link" onclick="runChapterOneScenario(\'link\')"><b>چراغ لینک خاموش</b><span>اتصال فیزیکی مشکوک است</span></button><button type="button" class="ch1-scenario-option" data-ch1-scenario="ping" onclick="runChapterOneScenario(\'ping\')"><b>Ping موفق، تصویر نیست</b><span>شبکه پاسخ می‌دهد؛ سرویس را بررسی کن</span></button><button type="button" class="ch1-scenario-option" data-ch1-scenario="drop" onclick="runChapterOneScenario(\'drop\')"><b>تصویر گاهی قطع می‌شود</b><span>به ناپایداری لینک یا بار شبکه فکر کن</span></button></div><div id="ch1-scenario-result" class="ch1-scenario-result" aria-live="polite"><b>آزمون بعدی: لایه فیزیکی</b><p>ابتدا برق، لینک، کابل و پورت سوئیچ را بررسی کن. تا وقتی لینک برقرار نشده، تغییر IP یا تعویض NVR اقدام اول نیست.</p></div><p class="ch1-note"><b>یادآوری:</b> این یک شبیه‌سازی آموزشی است؛ هیچ دستگاه واقعی را تغییر نمی‌دهد و نتیجه واقعی شبکه را اندازه‌گیری نمی‌کند.</p></section></section>';
+}
+
+
 function lessonHTML(){
-const c=chapters[state.chapter];return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　فصل ${state.chapter+1} از ${chapters.length}</div><article class="panel"><span class="pill">صفحات PDF: ${esc(c.pages)} — منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)</span><h1 class="lesson-title">${esc(c.title)}</h1><p class="lesson-intro">${esc(c.intro)}</p><div class="lesson-content">${c.sections.map((s,si)=>`<h3>${esc(s[0])}</h3><p>${esc(s[1])}</p>`).join("")}<div class="callout"><b>نکته کاربردی:</b> ${esc(c.tips)}</div><section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>${c.supplemental.items.map((s,i)=>`<details class="supplement-item" ${i===0?"open":""}><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</section></div><section class="chapter-lab-launch"><div><span class="lab-launch-kicker">PRACTICE LAB · ۵ مأموریت</span><h2>آماده‌ای دانسته‌ها را در عمل امتحان کنی؟</h2><p>پنج سناریوی عملی متناسب با همین فصل، با انتخاب اقدام، توضیح دلیل و بازخورد مرحله‌ای.</p></div><button class="primary" onclick="go('chapterLab',${state.chapter})">ورود به آزمایشگاه تعاملی فصل ←</button></section><div class="lesson-actions"><button class="primary" onclick="go('chapterQuiz',${state.chapter})">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone(${state.chapter})">${state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده"}</button><button class="secondary" onclick="go('lesson',${Math.max(0,state.chapter-1)})" ${state.chapter===0?"disabled":""}>فصل قبلی</button><button class="secondary" onclick="go('lesson',${Math.min(chapters.length-1,state.chapter+1)})" ${state.chapter===chapters.length-1?"disabled":""}>فصل بعدی</button></div></article>`;
+const c=chapters[state.chapter];return `<div class="crumb"><button class="secondary" onclick="go('home')">داشبورد</button>　/　فصل ${state.chapter+1} از ${chapters.length}</div><article class="panel"><span class="pill">صفحات PDF: ${esc(c.pages)} — منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)</span><h1 class="lesson-title">${esc(c.title)}</h1><p class="lesson-intro">${esc(c.intro)}</p><div class="lesson-content">${c.sections.map((s,si)=>`<h3>${esc(s[0])}</h3><p>${esc(s[1])}</p>`).join("")}<div class="callout"><b>نکته کاربردی:</b> ${esc(c.tips)}</div>${state.chapter===0?chapterOneLearningHTML():''}<section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>${c.supplemental.items.map((s,i)=>`<details class="supplement-item" ${i===0?"open":""}><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</section></div><section class="chapter-lab-launch"><div><span class="lab-launch-kicker">PRACTICE LAB · ۵ مأموریت</span><h2>آماده‌ای دانسته‌ها را در عمل امتحان کنی؟</h2><p>پنج سناریوی عملی متناسب با همین فصل، با انتخاب اقدام، توضیح دلیل و بازخورد مرحله‌ای.</p></div><button class="primary" onclick="go('chapterLab',${state.chapter})">ورود به آزمایشگاه تعاملی فصل ←</button></section><div class="lesson-actions"><button class="primary" onclick="go('chapterQuiz',${state.chapter})">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone(${state.chapter})">${state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده"}</button><button class="secondary" onclick="go('lesson',${Math.max(0,state.chapter-1)})" ${state.chapter===0?"disabled":""}>فصل قبلی</button><button class="secondary" onclick="go('lesson',${Math.min(chapters.length-1,state.chapter+1)})" ${state.chapter===chapters.length-1?"disabled":""}>فصل بعدی</button></div></article>`;
 }
 function legacyChapterLabHTML(i){
 const heads=["ماموریت شبکه: تصویر قطع است","آزمایشگاه میدان دید و جزئیات","اتاق طراحی سامانه","بازدید هوشمند محل نصب","دفاع سایبری دوربین‌ها","اتاق فرمان بازیابی","ماتریس تصمیم ریسک","کارگاه استانداردشناسی","درخت عیب‌یابی زنده","کارآگاه تصویر شب","آزمایشگاه لایه‌های شبکه","تحویل پروژه بدون نقص","چالش تشخیص مفهومی","مصاحبه‌گر فنی"];
@@ -565,6 +607,62 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
 @media(max-width:480px){.wrap{padding-inline:12px}.panel{padding:14px}.lesson-content p,.lesson-content li{font-size:16px}.lesson-intro{font-size:14px;line-height:1.9}}
 
 .review-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.review-actions .secondary{min-height:42px;padding:8px 12px}.review-status{font-size:12px;font-weight:700;padding:7px 10px;border-radius:9px}.review-status.is-due{color:#8a3412;background:#ffedd5}.review-status.is-scheduled{color:#166534;background:#dcfce7}@media(max-width:420px){.review-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.review-actions button{width:100%;min-width:0}}
+/* Chapter 1: card-based visual learning, mobile-first and dependency-free */
+.ch1-learning{display:grid;gap:16px;margin:26px 0;min-width:0}
+.ch1-learning-head{padding:20px;border:1px solid #2b5970;border-radius:17px;background:radial-gradient(circle at 8% 8%,#164b61 0,transparent 45%),linear-gradient(130deg,#0c1b2c,#102c43)}
+.ch1-eyebrow{font-size:11px;color:#75e5e8;font-weight:800}
+.ch1-learning-head h2{font-size:clamp(19px,4vw,25px);line-height:1.55;margin:6px 0}
+.ch1-learning-head p,.ch1-block-heading p{font-size:12px;color:#aebfd4;margin:0}
+.ch1-block{min-width:0;border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:clamp(13px,2.8vw,21px)}
+.ch1-block-heading{display:flex;align-items:flex-start;gap:11px;margin-bottom:15px}
+.ch1-number{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:11px;background:#123b4d;color:#78e7e8;font-size:12px;font-weight:800}
+.ch1-block-heading h3{font-size:16px;margin:0 0 3px;color:#e7f2ff}
+.ch1-equipment-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ch1-equipment-card{min-width:0;padding:14px;border:1px solid #2b435b;border-radius:13px;background:#0b1727}
+.ch1-device-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#12394a;color:#71e2e7;font-size:21px}
+.ch1-equipment-card h4{font-size:14px;margin:9px 0 0;color:#f0f6ff}
+.ch1-role{font-size:11px!important;color:#73e4e2!important;margin:2px 0 10px!important}
+.ch1-equipment-card>div{display:grid;grid-template-columns:52px minmax(0,1fr);gap:6px;padding:7px 0;border-top:1px solid #263a50;font-size:11px}
+.ch1-equipment-card>div b{color:#a9c6df}
+.ch1-equipment-card>div span{overflow-wrap:anywhere;color:#d0ddec}
+.ch1-equipment-card small{display:block;margin-top:8px;padding-top:8px;border-top:1px dashed #314760;color:#a9bed4;font-size:10px;line-height:1.8}
+.ch1-data-path{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:16px 0 7px}
+.ch1-data-path span{display:inline-flex;justify-content:center;align-items:center;min-height:42px;padding:8px 12px;border:1px solid #2b5970;border-radius:11px;background:#102a3e;color:#e1f8ff;font-size:12px;font-weight:700}
+.ch1-data-path i{font-size:10px;color:#75e5e8;font-style:normal}
+.ch1-caption{font-size:11px!important;color:#a8bad0!important;margin:5px 0 0!important}
+.ch1-step-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:12px}
+.ch1-step-tab{min-width:0;min-height:44px;border:1px solid #30465f;border-radius:10px;background:#0b1727;color:#b8c9dc;font-size:12px}
+.ch1-step-tab.active{background:#103b4b;border-color:#3ac8d1;color:#e3ffff;font-weight:800}
+.ch1-step-panel{padding:16px;border:1px solid #294e68;border-radius:13px;background:#0b192a}
+.ch1-step-kicker{font-size:10px;color:#78e7e8;font-weight:800}
+.ch1-step-panel h3{font-size:16px;margin:5px 0;color:#f0f6ff}
+.ch1-step-goal{font-size:12px;color:#b8cde1;margin:0}
+.ch1-action-list{padding-right:22px;margin:13px 0;color:#d7e4f4;font-size:12px}
+.ch1-action-list li{margin:7px 0;padding-right:2px}
+.ch1-step-result,.ch1-scenario-result{padding:12px;border-radius:10px;background:#102f34;border-right:3px solid #40d9c6;color:#d7f7f2;font-size:12px}
+.ch1-step-result p,.ch1-scenario-result p{margin:5px 0 0}
+.ch1-step-controls{display:flex;justify-content:space-between;gap:8px;margin-top:11px}
+.ch1-step-controls button{min-height:44px}
+.ch1-step-controls button:disabled{opacity:.45;cursor:not-allowed}
+.ch1-scenario-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.ch1-scenario-option{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:right;min-width:0;min-height:82px;padding:12px;border:1px solid #30465f;border-radius:12px;background:#0b1727;color:#e5efff}
+.ch1-scenario-option b{font-size:12px}
+.ch1-scenario-option span{font-size:10px;color:#a9bed4}
+.ch1-scenario-option.active{border-color:#40d9c6;background:#10343e}
+.ch1-note{font-size:11px!important;color:#9fb2ca!important;margin:12px 0 0!important}
+@media(max-width:560px){
+ .ch1-equipment-grid{grid-template-columns:1fr}
+ .ch1-scenario-options{grid-template-columns:1fr}
+ .ch1-scenario-option{min-height:60px}
+ .ch1-data-path{flex-direction:column;align-items:stretch}
+ .ch1-data-path span{width:100%}
+ .ch1-data-path i{text-align:center;line-height:1}
+ .ch1-block{padding:13px}
+ .ch1-learning-head{padding:16px}
+}
+@media(min-width:561px) and (max-width:850px){.ch1-equipment-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
 </style><a class="workshops-launch" href="workshops.html" aria-label="ورود به کارگاه‌های تعاملی">🧪 کارگاه‌های تعاملی</a>
 </body>
 </html>
