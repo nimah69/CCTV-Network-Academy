@@ -3,6 +3,8 @@ name: Deploy educational app to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -45,6 +47,7 @@ jobs:
             node "$f"
           done
   deploy:
+    if: github.event_name != 'pull_request'
     needs: [build, quality]
     environment:
       name: github-pages
