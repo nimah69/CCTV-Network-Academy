@@ -158,7 +158,7 @@ assert.ok(["دوربین IP","سوئیچ (Switch)","مسیریاب (Router)","ض
 assert.match(html, /function chapterVisualLearningHTML\(c,chapterIndex\)/, "Every non-first chapter must use the shared visual learning renderer");
 assert.match(html, /state\.chapter===0\?chapterOneLearningHTML\(\):chapterVisualLearningHTML\(c,state\.chapter\)/, "All chapter lessons must render the new visual learning experience");
 assert.match(html, /function setChapterVisualStep\(step\)/, "All-chapter step navigation must work");
-assert.match(html, /function checkChapterVisualAnswer\\(choice,questionIndex=5\\)/, "Review and quick-challenge answers must select the correct question");
+assert.match(html, /function checkChapterVisualAnswer\(choice,questionIndex=5\)/, "Review and quick-challenge answers must select the correct question");
 const guidedRenderer = html.slice(html.indexOf("function chapterVisualStepHTML"), html.indexOf("function setChapterVisualStep"));
 assert.ok(guidedRenderer.includes("const q=(c.quiz||[])[step]"), "Guided review must use quiz questions, not repeat concept explanations");
 assert.ok(!guidedRenderer.includes("esc(s[1])"), "Guided review must not render the same explanatory text as key concepts");
