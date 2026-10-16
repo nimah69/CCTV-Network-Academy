@@ -14,6 +14,7 @@ const questions = chapters.flatMap((chapter, chapterIndex) => {
   return chapter.quiz.map((question, questionIndex) => ({ ...question, chapterIndex, questionIndex, chapterTitle: chapter.title }));
 });
 assert.equal(questions.length, 350, "Learning quality audit expects 350 questions");
+assert.ok(source.includes("وضعیت Profileهای ONVIF") && source.includes("https://www.onvif.org/profiles/"), "Standards chapter must include a dated ONVIF lifecycle note with official reference");
 
 const normalize = (value) => String(value || "").trim().toLocaleLowerCase().replace(/\s+/g, " ");
 const questionKeys = questions.map((q) => normalize(q.q));
