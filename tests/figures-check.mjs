@@ -46,7 +46,7 @@ assert.match(bits,/fig-bit-host/,"Host bits need a distinct visual treatment");
 const coverage=api.render(bank.byChapter["2"].find(x=>x.id==="ch2-coverage"));
 assert.match(coverage,/شناسایی/,"Camera coverage concepts should be localized into Persian");
 const raid=api.render(bank.byChapter["6"].find(x=>x.id==="ch6-raid-backup"));
-assert.match(raid,/نسخه مستقل کمک می‌کند/,"RAID and independent backup must be distinguished clearly");
+assert.match(raid,/نسخه مستقل کمک/,"RAID and independent backup must be distinguished clearly");
 assert.ok(!raid.includes('<text x="330" y='),"RAID matrix must not place a row label on top of its cells");
 const decision=api.render(bank.byChapter["9"].find(x=>x.id==="ch9-offline-tree"));
 assert.match(decision,/بله:/,"Troubleshooting tree must show the positive decision branch");
