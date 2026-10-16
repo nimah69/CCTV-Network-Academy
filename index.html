@@ -1019,6 +1019,18 @@ img,svg,canvas,video{max-width:100%}
 }
 @media(max-width:420px){.resume-card{align-items:stretch;flex-direction:column}.resume-card .primary{width:100%}}
 .quiz-progress-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;margin:16px 0 7px}.quiz-page-progress{height:7px;margin-bottom:18px}.quiz-meta{font-size:13px;margin-bottom:8px}.quiz-page-controls{position:sticky;bottom:calc(72px + env(safe-area-inset-bottom));z-index:4;background:var(--panel);padding:12px 0 4px}.chapter-learning-template{display:grid;gap:14px;min-width:0}.chapter-learning-template>.ch1-learning,.chapter-learning-template>.chapter-visual{min-width:0;width:100%}.quiz-summary-list{display:grid;gap:10px;margin-top:20px}.quiz-summary-list .quiz-question{margin:0}@media(max-width:620px){.quiz-page-controls{bottom:calc(78px + env(safe-area-inset-bottom))}.quiz-meta{font-size:13px}.quiz-question h3{font-size:15px}}
+
+/* Mobile readability floor: keep readable text at least 13px on narrow phones. */
+@media (max-width: 390px) {
+  body, body * { font-size: max(13px, 1em) !important; }
+  button, [role="button"], input, select, summary, .nav button, .btn, .toplinks a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  input, select, textarea, button { max-width: 100%; }
+  p, li, label, small, span, a, button, div { overflow-wrap: anywhere; }
+  html, body { max-width: 100%; overflow-x: clip; }
+}
 </style>
 <nav class="bottom-nav" aria-label="ناوبری اصلی موبایل">
   <button data-view="all" type="button"><span aria-hidden="true">▤</span><small>درس‌ها</small></button>

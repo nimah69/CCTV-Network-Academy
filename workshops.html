@@ -58,6 +58,18 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
 @media(min-width:650px){.diagram{display:flex;flex-wrap:wrap}.arrow{transform:none}.node{width:auto;max-width:100%;flex:1 1 150px}}
 @media(max-width:420px){.shell{padding:10px}.hero{padding:15px}.heading h2{font-size:21px}.diagram{padding:10px}.node{font-size:15px}}
 @font-face{font-family:"Vazirmatn";src:url("./fonts/Vazirmatn-Variable.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
+
+/* Mobile readability floor: keep readable text at least 13px on narrow phones. */
+@media (max-width: 390px) {
+  body, body * { font-size: max(13px, 1em) !important; }
+  button, [role="button"], input, select, summary, .nav button, .btn, .toplinks a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  input, select, textarea, button { max-width: 100%; }
+  p, li, label, small, span, a, button, div { overflow-wrap: anywhere; }
+  html, body { max-width: 100%; overflow-x: clip; }
+}
 </style>
 </head>
 <body>
