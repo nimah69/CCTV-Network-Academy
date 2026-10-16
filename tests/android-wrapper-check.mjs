@@ -1,0 +1,30 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { spawnSync } from "node:child_process";
+
+const manifest=fs.readFileSync("android/app/src/main/AndroidManifest.xml","utf8");
+const gradle=fs.readFileSync("android/app/build.gradle","utf8");
+const activity=fs.readFileSync("android/app/src/main/java/ir/nimah69/cctvnetworkacademy/MainActivity.java","utf8");
+const workflow=fs.readFileSync(".github/workflows/offline-apk-ci.yml","utf8");
+const buildDoc=fs.readFileSync("docs/ANDROID-BUILD.md","utf8");
+const bundler="scripts/bundle-android-assets.sh";
+
+assert.match(manifest,/android:allowBackup="false"/,"Automatic Android backup must be disabled");
+assert.match(gradle,/compileSdk 35/,"Compile SDK must remain compatible with CI");
+assert.match(gradle,/targetSdk 34/,"Target SDK should avoid target-35 edge-to-edge behavior until tested");
+assert.match(activity,/file:\/\/\/android_asset\/academy\//,"Bundled academy pages must stay inside WebView");
+assert.match(activity,/new Intent\(Intent\.ACTION_VIEW, uri\)/,"External HTTP/HTTPS links must open with a browser intent");
+assert.match(activity,/https.*equalsIgnoreCase\(scheme\).*http.*equalsIgnoreCase\(scheme\)/s,"Only HTTP/HTTPS links should be sent to the browser");
+assert.match(activity,/Block unsupported schemes/,"Unsupported URI schemes must be blocked");
+assert.doesNotMatch(activity,/return !target\.startsWith/,"External links must not be silently swallowed");
+assert.ok(fs.existsSync(bundler),"Reusable Android asset bundler must exist");
+const syntax=spawnSync("bash",["-n",bundler],{encoding:"utf8"});
+assert.equal(syntax.status,0,"Asset bundler must pass bash syntax validation: "+syntax.stderr);
+assert.match(fs.readFileSync(bundler,"utf8"),/cp js\/\*\.js/,"All local JavaScript modules must be copied into APK assets");
+assert.match(fs.readFileSync(bundler,"utf8"),/interactive-displays\.js/,"Interactive demos must be included in APK assets");
+assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the same asset bundler");
+assert.match(workflow,/gradle -p android --no-daemon clean assembleDebug/,"CI must build the offline APK");
+assert.match(workflow,/actions\/upload-artifact@v4/,"CI must publish the APK artifact");
+assert.match(buildDoc,/فونت Vazirmatn/,"Font decision must be documented");
+assert.match(buildDoc,/Service Worker در file:\/\/ اجرا نمی‌شود/,"Service Worker limitations in file mode must be documented");
+console.log(JSON.stringify({status:"passed",targetSdk:34,compileSdk:35,allowBackup:false,externalLinks:"ACTION_VIEW",assetBundler:"bash -n passed"},null,2));
