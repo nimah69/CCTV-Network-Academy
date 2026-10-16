@@ -14,7 +14,7 @@
 <body>
 <div class="app">
 <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
-<aside class="side" id="sidebar">
+<aside class="side" id="sidebar" inert aria-hidden="true">
   <button class="sidebar-close" id="closeMenuBtn" type="button" aria-label="بستن منو" title="بستن منو">× <span>بستن منو</span></button>
   <div class="brand"><div class="brand-icon">◈</div><div><strong>آکادمی شبکه و نظارت تصویری</strong><small>یادگیری مرحله‌به‌مرحله • نسخه آزمایشی</small></div></div>
   <div><div class="side-label">فضای یادگیری</div><nav class="nav">
@@ -22,7 +22,7 @@
     <button data-view="all"><span>▤</span> فهرست فصل‌ها <span class="num">۱۴</span></button>
     <button data-view="quiz"><span>✓</span> آزمون جامع</button>
     <button data-view="saved"><span>◷</span> ادامه یادگیری</button>
-    <button data-view="tools"><span>⚙</span> ابزارهای تعاملی <span class="num">۴</span></button>
+    <button data-view="tools"><span>⚙</span> ابزارهای تعاملی <span class="num" id="toolsCount">۵</span></button>
     <a class="nav-link" href="workshops.html"><span>🧪</span> کارگاه‌های تعاملی</a>
   </nav></div>
   <div><div class="side-label">منبع آموزشی</div><div class="side-note"><b>جزوه جامع آمادگی آزمون و مصاحبه افتا</b>موضوع: پیاده‌سازی امنیت فیزیکی و محیط پیرامونی — نظارت تصویری. متن‌ها خلاصه و سازمان‌دهی شده‌اند؛ برای نقل دقیق به PDF اصلی مراجعه کنید.</div></div>
@@ -41,8 +41,9 @@
 <script src="js/micro-lessons.js"></script>
 <script src="js/pwa-register.js"></script>
 <script>
+if(!window.CCTVAcademyData||!Array.isArray(window.CCTVAcademyData.chapters)){const view=document.getElementById("view");if(view)view.innerHTML='<section class="panel load-error" role="alert"><h1>بارگذاری داده‌ها ناموفق بود</h1><p>صفحه را دوباره باز کنید.</p><button class="primary" type="button" onclick="location.reload()">بارگذاری دوباره</button></section>';throw new Error("CCTVAcademyData failed to load");}
 const chapters = window.CCTVAcademyData.chapters;
-const icons=["⌘","◉","▦","⬡","⌑","↻","◇","▧","⌕","▣","∴","☑","☷","☏"];
+const icons=["⌘","◉","▦","⬡","⌑","↻","◇","▧","⌕","▣","∴","☑","☷","☏"];const toolCatalog=["poe","bandwidth","storage","link","subnet"];
 const $=s=>document.querySelector(s);
 const faNum=value=>String(value).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
 const storeKey="cctvAcademyProgressV1";
@@ -67,7 +68,7 @@ function buildComprehensiveQuiz(){
  shuffleArray(byChapter).slice(0,2).forEach(entry=>selected.push(entry.ordered[2]));
  return shuffleArray(selected).map(shuffleQuestion);
 }
-function closeSidebar(){$("#sidebar").classList.remove("open");$("#sidebarBackdrop").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").setAttribute("aria-label","بازکردن منو");}
+function closeSidebar(){const side=$("#sidebar"),wasOpen=side.classList.contains("open");side.classList.remove("open");$("#sidebarBackdrop").classList.remove("open");side.setAttribute("inert","");side.setAttribute("aria-hidden","true");$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").setAttribute("aria-label","بازکردن منو");if(wasOpen)$("#menuBtn").focus({preventScroll:true});}
 function routeHash(view,chapter=state.chapter){const n=Number(chapter)+1;if(view==="lesson")return "#/lesson/"+n;if(view==="chapterLab")return "#/lab/"+n;if(view==="chapterQuiz")return "#/chapter-quiz/"+n;if(view==="quiz")return "#/quiz";if(view==="tools")return "#/tools";if(view==="saved")return "#/saved";if(view==="all")return "#/chapters";return "#/home"}
 function applyRouteFromHash(restorePosition=false){const parts=(location.hash||"#/home").slice(1).split("/").filter(Boolean);let view="home",chapter=state.chapter;const n=Number(parts[1]);if(parts[0]==="lesson"&&Number.isInteger(n)&&n>=1&&n<=chapters.length){view="lesson";chapter=n-1}else if(parts[0]==="lab"&&Number.isInteger(n)&&n>=1&&n<=chapters.length){view="chapterLab";chapter=n-1}else if(parts[0]==="chapter-quiz"&&Number.isInteger(n)&&n>=1&&n<=chapters.length){view="chapterQuiz";chapter=n-1}else if(parts[0]==="quiz")view="quiz";else if(parts[0]==="tools")view="tools";else if(parts[0]==="saved")view="saved";else if(parts[0]==="chapters")view="all";state.view=view;state.chapter=chapter;state.quizAnswers={};state.quizSubmitted=false;state.quizIndex=0;state.quizRevealed={};if(view==="quiz")state.quizQuestions=buildComprehensiveQuiz();else if(view==="chapterQuiz")state.quizQuestions=buildChapterQuiz(state.chapter);else state.quizQuestions=[];document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));render();closeSidebar();if(restorePosition&&view==="lesson"){const p=state.progress.studyPosition;if(p&&Number(p.chapter)===state.chapter)restoreStudyPosition(p);else window.scrollTo({top:0,behavior:"auto"})}}
 function studyHeadings(){return [...document.querySelectorAll(".chapter-learning-template h3, .lesson-content h3")].filter(h=>h.getClientRects().length>0)}
@@ -76,7 +77,7 @@ function saveStudyPosition(){if(state.view!=="lesson")return;const headings=stud
 function restoreStudyPosition(p){requestAnimationFrame(()=>requestAnimationFrame(()=>{let target=Number(p&&p.scrollY);if(!Number.isFinite(target)&&p&&Number.isFinite(Number(p.scrollRatio)))target=Number(p.scrollRatio)*Math.max(0,document.documentElement.scrollHeight-window.innerHeight);if(!Number.isFinite(target)&&p){const headings=studyHeadings();const heading=headings[Number(p.section)];if(heading)target=heading.getBoundingClientRect().top+window.scrollY-120+Math.max(0,Number(p.sectionOffset)||0)}window.scrollTo({top:Math.max(0,Number.isFinite(target)?target:0),behavior:"auto"});updateLessonProgress()}))}
 function resumeStudy(){const p=state.progress.studyPosition;if(!p||!Number.isInteger(Number(p.chapter))||Number(p.chapter)<0||Number(p.chapter)>=chapters.length){go("all");return}go("lesson",Number(p.chapter));restoreStudyPosition(p)}
 function go(view,idx){if(state.view==="lesson")saveStudyPosition();state.view=view;if(idx!==undefined)state.chapter=idx;if(view==="chapterLab"){state.labScenario=0;state.labDraft=null}state.quizAnswers={};state.quizSubmitted=false;state.quizIndex=0;state.quizRevealed={};if(view==="quiz")state.quizQuestions=buildComprehensiveQuiz();else if(view==="chapterQuiz")state.quizQuestions=buildChapterQuiz(state.chapter);else state.quizQuestions=[];const nextHash=routeHash(view,state.chapter);if(location.hash!==nextHash)history.pushState({academyRoute:true},"",nextHash);document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));render();closeSidebar();window.scrollTo({top:0,behavior:"smooth"})}
-function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="chapterLab")root.innerHTML=chapterLabHTML();else if(state.view==="chapterQuiz")root.innerHTML=quizHTML(false);else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else if(state.view==="tools")root.innerHTML=calculatorHTML();else root.innerHTML=homeHTML(state.view==="all");wire();updateLessonProgress();if(state.view==="tools"){calculatePoE();calculateBandwidth();calculateStorage();calculateLink();calculateSubnet()}}
+function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="chapterLab")root.innerHTML=chapterLabHTML();else if(state.view==="chapterQuiz")root.innerHTML=quizHTML(false);else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else if(state.view==="tools")root.innerHTML=calculatorHTML();else root.innerHTML=homeHTML(state.view==="all");wire();const count=$("#toolsCount");if(count)count.textContent=faNum(toolCatalog.length);updateLessonProgress();if(state.view==="tools"){calculatePoE();calculateBandwidth();calculateStorage();calculateLink();calculateSubnet()}}
 function calculatorHTML(){
  return `<section class="tools-hero tools-hero-v2"><div class="tools-kicker">CCTV DESIGN LAB • ابزارهای مهندسی</div><h1>ابزارهای تعاملی؛ قدم‌به‌قدم</h1><p>اول سناریو را انتخاب کن، بعد یک ابزار را باز کن و فقط مقادیر معلوم پروژه را وارد کن. نتیجه همراه با راهنمای تفسیر نمایش داده می‌شود؛ اعداد تخمینی‌اند و باید با مشخصات واقعی تجهیزات تطبیق داده شوند.</p><div class="tools-steps"><span><b>۱</b> انتخاب سناریو</span><span><b>۲</b> انتخاب ابزار</span><span><b>۳</b> بررسی نتیجه</span></div></section>
  <div class="tool-summary tool-summary-v2"><div class="stat"><div class="stat-icon">⚡</div><div><small>برق و توان</small><strong>PoE</strong></div></div><div class="stat"><div class="stat-icon">⇄</div><div><small>شبکه</small><strong>ترافیک و IP</strong></div></div><div class="stat"><div class="stat-icon">▣</div><div><small>ذخیره‌سازی</small><strong>هارد و زمان</strong></div></div></div>
@@ -152,12 +153,13 @@ function calculateSubnet(){
   out.innerHTML="نشانی واردشده: <b>"+r.address+"</b><br>ماسک شبکه: <b>"+r.maskText+"</b><br>نشانی شبکه: <b>"+r.networkText+"</b><br>بازه آدرس‌ها: <b>"+r.firstText+" تا "+r.lastText+"</b><br>تعداد آدرس‌های قابل‌شمارش: <b>"+r.hostCount+"</b><br>نشانی Broadcast: <b>"+r.broadcastText+"</b>";
  }catch(error){ipEl.setAttribute("aria-invalid","true");out.textContent=error&&error.message?error.message:"نشانی IP معتبر نیست؛ چهار بخش عددی وارد کن."}
 }
+function normalizeSearch(value){return String(value==null?"":value).toLocaleLowerCase("fa").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[\u200c\u200d\u200e\u200f\u202a-\u202e\ufeff]/g,"").replace(/[٠-٩۰-۹]/g,d=>d.charCodeAt(0)>=0x6f0&&d.charCodeAt(0)<=0x6f9?String(d.charCodeAt(0)-0x6f0):String(d.charCodeAt(0)-0x660)).replace(/\s+/g," ").trim()}
 function searchMicroLessons(query){
-const q=String(query||"").trim().toLocaleLowerCase("fa");
+const q=normalizeSearch(query);
 if(!q)return [];
 return chapters.flatMap((chapter,chapterIndex)=>window.CCTVMicroLessons.build(chapter).map((lesson,lessonIndex)=>({chapterIndex,lessonIndex,chapter,lesson}))).filter(item=>{
 const m=item.lesson,qbank=m.question?[m.question.q,...m.question.o,m.question.e||""].join(" "):"";
-return [item.chapter.title,m.title,m.definition,m.expandedExplanation,m.why,m.example,m.commonMistake,m.systemConnection,m.tip,qbank].join(" ").toLocaleLowerCase("fa").includes(q);
+return normalizeSearch([item.chapter.title,m.title,m.definition,m.expandedExplanation,m.why,m.example,m.commonMistake,m.systemConnection,m.tip,qbank].join(" ")).includes(q);
 });
 }
 function openSearchMicroLesson(chapterIndex,lessonIndex){
@@ -168,7 +170,7 @@ requestAnimationFrame(()=>document.querySelector(".micro-course")?.scrollIntoVie
 function homeHTML(showAll=false){
 const done=state.progress.done.length, percent=Math.round(done/chapters.length*100);
 const microMatches=searchMicroLessons(state.query).slice(0,30);
-const filtered=chapters.map((c,i)=>({...c,i})).filter(c=>!state.query||[c.title,c.desc,c.intro,c.sections.map(s=>s.join(" ")).join(" "),window.CCTVMicroLessons.build(c).map(m=>[m.title,m.definition,m.expandedExplanation,m.why,m.example,m.commonMistake,m.systemConnection,m.tip,m.question?[m.question.q,...m.question.o,m.question.e||""].join(" "):""].join(" ")).join(" ")].join(" ").toLocaleLowerCase("fa").includes(state.query.toLocaleLowerCase("fa")));
+const filtered=chapters.map((c,i)=>({...c,i})).filter(c=>!state.query||[c.title,c.desc,c.intro,c.sections.map(s=>s.join(" ")).join(" "),window.CCTVMicroLessons.build(c).map(m=>[m.title,m.definition,m.expandedExplanation,m.why,m.example,m.commonMistake,m.systemConnection,m.tip,m.question?[m.question.q,...m.question.o,m.question.e||""].join(" "):""].join(" ")).join(" ")].join(" ")).includes(normalizeSearch(state.query)));
 return `<section class="welcome"><div class="eyebrow">مسیر یادگیری • شبکه، CCTV و امنیت</div><h1>مهارتت را از مبانی تا طراحی و عیب‌یابی بساز</h1><p>دوره‌ای ساختاریافته بر پایه جزوه آمادگی آزمون و مصاحبه افتا، با درس‌های خلاصه، آزمون فصل‌به‌فصل و ذخیره پیشرفت روی همین دستگاه.</p><button class="primary" onclick="go('lesson',${state.progress.done.length<chapters.length?chapters.findIndex((c,i)=>!state.progress.done.includes(i)):0})">ادامه یادگیری ←</button></section>
 <div class="stats"><div class="stat"><div class="stat-icon">▤</div><div><small>فصل‌های دوره</small><strong>${chapters.length}</strong></div></div><div class="stat"><div class="stat-icon">✓</div><div><small>فصل‌های تکمیل‌شده</small><strong>${done}</strong></div></div><div class="stat"><div class="stat-icon">◷</div><div><small>پیشرفت دوره</small><strong>${percent}٪</strong></div></div></div>
 
@@ -475,10 +477,10 @@ function submitQuiz(comprehensive){state.quizSubmitted=true;const qs=state.quizQ
 function retryQuiz(){state.quizAnswers={};state.quizSubmitted=false;state.quizIndex=0;state.quizRevealed={};state.quizQuestions=state.view==="quiz"?buildComprehensiveQuiz():buildChapterQuiz(state.chapter);render()}
 function resetProgress(){if(confirm("پیشرفت ذخیره‌شده این دوره روی همین دستگاه پاک شود؟")){state.progress=normalizeProgress({});state.quizMode=state.progress.quizMode;saveProgress();render()}}
 $("#searchInput").addEventListener("input",e=>{state.query=e.target.value;if(state.view!=="all"){state.view="all";history.pushState({academyRoute:true},"",routeHash("all",state.chapter))}render()});
-$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").addEventListener("click",()=>{const opened=$("#sidebar").classList.toggle("open");$("#sidebarBackdrop").classList.toggle("open",opened);$("#menuBtn").setAttribute("aria-expanded",String(opened));$("#menuBtn").setAttribute("aria-label",opened?"بستن منو":"بازکردن منو");});
+$("#menuBtn").setAttribute("aria-expanded","false");$("#menuBtn").addEventListener("click",()=>{const side=$("#sidebar"),opened=!side.classList.contains("open");side.classList.toggle("open",opened);$("#sidebarBackdrop").classList.toggle("open",opened);side.toggleAttribute("inert",!opened);side.setAttribute("aria-hidden",String(!opened));$("#menuBtn").setAttribute("aria-expanded",String(opened));$("#menuBtn").setAttribute("aria-label",opened?"بستن منو":"بازکردن منو");if(opened)$("#closeMenuBtn").focus({preventScroll:true});else $("#menuBtn").focus({preventScroll:true});});
 $("#closeMenuBtn").addEventListener("click",closeSidebar);
 $("#sidebarBackdrop").addEventListener("click",closeSidebar);
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSidebar()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#sidebar").classList.contains("open")){e.preventDefault();closeSidebar()}});
 window.addEventListener("popstate",()=>{saveStudyPosition();applyRouteFromHash(true)});
 window.addEventListener("pagehide",saveStudyPosition);
 window.addEventListener("scroll",()=>{if(state.view!=="lesson")return;updateLessonProgress();clearTimeout(window.__academyStudySaveTimer);window.__academyStudySaveTimer=setTimeout(saveStudyPosition,250)},{passive:true});
