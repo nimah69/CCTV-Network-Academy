@@ -769,3 +769,26 @@ button,
   .mission-card__title { font-size: 16px; }
   .step-list > li { padding-inline-end: 44px; }
 }
+
+
+/* Semantic status colors tuned for the academy's current dark theme. */
+:root {
+  --success: #4ade80;
+  --success-bg: #15352d;
+  --warning: #fbbf24;
+  --warning-bg: #3a2d16;
+  --error: #fb7185;
+  --error-bg: #3b202b;
+  --info: #7ab8ff;
+  --info-bg: #192f49;
+}
+.mission-card__outcome,
+.compare-card__item,
+.step-list > li,
+.mission-card,
+.compare-card {
+  color: var(--ink);
+}
+.mission-card__choice {
+  color: var(--ink);
+}
