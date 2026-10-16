@@ -42,6 +42,7 @@ assert.match(design,/بودجه توان PoE/);
 displays.calculatePoE();
 assert.match(elements["display-poe-result"].innerHTML,/وضعیت: کافی/,"PoE display must use the shared calculation module");
 // Boundary checks: exact budget, configured margin, zero cameras, and invalid budget.
+// This is a deterministic DOM-stub test; it does not claim a physical switch test.
 elements["display-poe-budget"].value="76.8";
 displays.calculatePoE();
 assert.match(elements["display-poe-result"].innerHTML,/وضعیت: مرزی/,"Exact budget equality must be reported as marginal");
