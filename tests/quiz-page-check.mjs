@@ -14,7 +14,7 @@ assert.match(renderer,/state\.quizMode==="practice"&&selected/,"Feedback must be
 assert.match(renderer,/setQuizMode\(&#39;practice&#39;\)/,"Practice mode control must be available");
 assert.match(renderer,/setQuizMode\(&#39;exam&#39;\)/,"Exam mode control must be available");
 assert.match(renderer,/state\.quizMode==="exam"/,"Exam mode must suppress in-question feedback");
-assert.match(renderer,/function setQuizMode\(mode\)/,"Quiz mode selection must be persisted");
+assert.match(html,/function setQuizMode\(mode\)/,"Quiz mode selection must be persisted");
 assert.match(renderer,/previousQuizQuestion/,"Previous navigation must be available");
 assert.match(renderer,/nextQuizQuestion/,"Next navigation must be available");
 assert.match(renderer,/disabled aria-disabled="true"/,"Moving to the next question must be disabled until an answer is selected");
