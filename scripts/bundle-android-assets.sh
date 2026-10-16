@@ -5,6 +5,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DEST="$ROOT_DIR/android/app/src/main/assets/academy"
 mkdir -p "$DEST/js" "$DEST/icons" "$DEST/fonts"
 cp "$ROOT_DIR/index.html" "$ROOT_DIR/workshops.html" "$ROOT_DIR/manifest.webmanifest" "$ROOT_DIR/service-worker.js" "$DEST/"
+BUILD_VERSION="${GITHUB_SHA:-$(git -C "$ROOT_DIR" rev-parse --short HEAD 2>/dev/null || echo local)}"
+sed -i "s/__BUILD_VERSION__/${BUILD_VERSION}/g" "$DEST/service-worker.js"
 cp "$ROOT_DIR/icons/"*.svg "$DEST/icons/"
 cp "$ROOT_DIR/js/"*.js "$DEST/js/"
 if [[ -d "$ROOT_DIR/fonts" ]]; then cp "$ROOT_DIR/fonts/"* "$DEST/fonts/"; fi

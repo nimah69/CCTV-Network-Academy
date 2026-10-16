@@ -45,5 +45,5 @@ assert.match(html,/PDF اصلی در مخزن موجود نیست/,"Source avail
 assert.match(html,/اشتباه رایج/,"Micro lessons must call out common mistakes");
 assert.match(html,/ارتباط با سامانه کامل CCTV/,"Micro lessons must connect the topic to the full CCTV system");
 assert.match(sw,/js\/micro-lessons\.js/,"Micro lessons script must be cached for offline use");
-assert.match(sw,/cctv-academy-static-v2026-10-16-5/,"Cache version must change when adding a module");
+assert.match(sw,/cctv-academy-static-v__BUILD_VERSION__/,"Cache version must change when adding a module");
 console.log(JSON.stringify({status:"passed",chapters:chapters.length,features:["micro-lessons","optional-question","progress","bookmarks","offline-script","legacy-content-preserved"]},null,2));
