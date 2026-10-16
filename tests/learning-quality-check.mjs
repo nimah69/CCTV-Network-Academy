@@ -28,6 +28,7 @@ const templatePatterns = [
 ];
 let missingKind = 0;
 let shortExplanation = 0;
+const shortExplanationSamples = [];
 let templatedStems = 0;
 let correctLongest = 0;
 const answerPositions = [0, 0, 0, 0];
@@ -41,7 +42,7 @@ for (const question of questions) {
   if (!question.kind) missingKind++;
   const explanation = normalize(question.e);
   explanationCounts.set(explanation, (explanationCounts.get(explanation) || 0) + 1);
-  if (String(question.e || "").trim().length < 40) shortExplanation++;
+  if (String(question.e || "").trim().length < 40) { shortExplanation++; shortExplanationSamples.push({ chapter: question.chapterTitle, question: question.q, explanation: question.e }); }
   if (templatePatterns[0].test(String(question.q || ""))) templatedStems++;
   const lengths = (question.o || []).map((option) => String(option).length);
   if (lengths.length === 4 && lengths[question.a] === Math.max(...lengths)) correctLongest++;
@@ -72,6 +73,7 @@ console.log(JSON.stringify({
   repeatedExplanationGroups: [...explanationCounts.values()].filter((count) => count > 1).length,
   repeatedExplanations,
   explanationsUnder40Characters: shortExplanation,
+  shortExplanationSamples,
   templatedSupplementalStemCount: templatedStems,
   correctOptionLongestCount: correctLongest,
   answerPositions,
