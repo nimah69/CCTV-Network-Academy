@@ -255,6 +255,68 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .micro-full-content{margin:18px 0}.micro-full-content>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
 @media(max-width:380px){.micro-lesson-body{padding:13px}.micro-lesson-body h3{font-size:19px}.micro-node{min-width:78px}.micro-actions{gap:6px;padding:8px}.micro-actions button{font-size:12px}}
 
+
+/* Interactive teaching demos: plain HTML/CSS, no SVG or remote assets */
+.interactive-demos{display:grid;gap:16px;margin:20px 0;min-width:0;width:100%;max-width:100%}
+.demo-card{min-width:0;max-width:100%;overflow:hidden;border:1px solid var(--line,#293a52);border-radius:18px;background:var(--panel,#101b2d);color:var(--ink,#e7effb);padding:clamp(13px,3.5vw,20px)}
+.demo-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.demo-heading h2{font-size:18px;line-height:1.5;margin:3px 0}
+.demo-kicker{font-size:11px;font-weight:800;color:var(--brand2,#40d9e7)}
+.demo-tag{font-size:11px;border:1px solid var(--line,#293a52);border-radius:999px;padding:4px 8px;color:var(--muted,#9aabc3)}
+.demo-intro{font-size:14px;line-height:1.85;color:var(--muted,#9aabc3);margin:8px 0 14px}
+.demo-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.demo-controls button,.demo-actions button{min-height:44px;border:1px solid var(--line,#293a52);border-radius:10px;padding:9px 12px;background:transparent;color:inherit;font:inherit;font-size:13px}
+.demo-controls button.active{background:var(--soft,#172e49);border-color:var(--brand,#398bff);color:var(--ink,#e7effb)}
+.demo-path-flow{display:grid;grid-template-columns:minmax(0,1fr) minmax(32px,.48fr) minmax(0,1fr) minmax(32px,.48fr) minmax(0,1fr);align-items:stretch;gap:5px;width:100%;min-width:0;margin:12px 0}
+.demo-device{display:flex;min-width:0;min-height:104px;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;border:1px solid var(--line,#293a52);border-radius:13px;background:color-mix(in srgb,var(--brand,#398bff) 8%,var(--panel,#101b2d));padding:7px 3px}
+.demo-device-icon{font-size:22px;line-height:1.3}
+.demo-device b{font-size:clamp(10px,2.8vw,13px);overflow-wrap:anywhere}
+.demo-device small{font-size:10px;line-height:1.4;color:var(--muted,#9aabc3)}
+.demo-link{display:flex;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--brand2,#40d9e7);font-size:11px;text-align:center}
+.demo-link b{font-size:21px;line-height:1}
+.demo-link.cut{color:#ff8292}
+.demo-link.muted{opacity:.55}
+.demo-path-flow.is-cut .demo-device:first-child{border-color:#b98538}
+.demo-status{font-size:13px;line-height:1.8;padding:10px 12px;border-radius:11px;margin:12px 0}
+.demo-status.ok{background:#12372f;color:#c5f5e2;border:1px solid #3a9474}
+.demo-status.warn{background:#3b2c17;color:#ffe0a5;border:1px solid #b98538}
+.demo-status.bad{background:#401e2a;color:#ffc2cf;border:1px solid #b65c73}
+.demo-actions{display:flex;gap:8px;flex-wrap:wrap}
+.demo-actions .primary{background:var(--brand,#398bff);color:white}
+.demo-actions .secondary{background:transparent;color:inherit}
+.demo-note{font-size:12px;line-height:1.85;color:var(--muted,#9aabc3);margin:12px 0 0}
+.demo-input-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.demo-field{display:flex;min-width:0;flex-direction:column;gap:7px;font-size:12px;color:var(--muted,#9aabc3)}
+.demo-field input{width:100%;min-width:0;min-height:44px;border:1px solid var(--line,#293a52);border-radius:10px;padding:8px;background:var(--bg,#080f1c);color:var(--ink,#e7effb);font:inherit;font-size:14px}
+.demo-counter{display:grid;grid-template-columns:36px minmax(0,1fr) 36px;gap:4px;align-items:center}
+.demo-counter button{min-height:44px;border:1px solid var(--line,#293a52);border-radius:9px;background:var(--soft,#172e49);color:var(--ink,#e7effb);font-size:20px}
+.demo-counter output{text-align:center;font-weight:800;font-size:17px}
+.demo-result{border:1px solid var(--line,#293a52);border-radius:13px;padding:13px}
+.demo-result-main{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.demo-result-main strong{font-size:20px;white-space:nowrap}
+.demo-result-meter{height:9px;border-radius:999px;overflow:hidden;background:#26354b;margin:13px 0}
+.demo-result-meter span{display:block;height:100%;border-radius:inherit;background:#39d6a0}
+.demo-result-meter span.borderline{background:#e6b450}
+.demo-result-meter span.insufficient{background:#ff8292}
+.demo-result-stats{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--muted,#9aabc3)}
+.demo-advice{margin-top:12px;border-top:1px solid var(--line,#293a52);padding-top:10px}
+.demo-advice p{font-size:13px;line-height:1.8;margin:5px 0 0}
+.demo-tree-rail{display:grid;grid-template-columns:1fr 14px 1fr 14px 1fr;align-items:center;gap:3px;margin:14px 0}
+.demo-tree-rail span{font-size:11px;text-align:center;padding:7px 3px;border:1px solid var(--line,#293a52);border-radius:9px;color:var(--muted,#9aabc3)}
+.demo-tree-rail span.active{color:var(--ink,#e7effb);border-color:var(--brand2,#40d9e7);background:var(--soft,#172e49)}
+.demo-tree-rail i{height:2px;background:var(--line,#293a52)}
+.demo-tree-step,.demo-tree-terminal{border:1px solid var(--line,#293a52);border-radius:14px;padding:14px}
+.demo-step-label{font-size:11px;color:var(--brand2,#40d9e7)}
+.demo-tree-step h3,.demo-tree-terminal h3{font-size:16px;margin:5px 0}
+.demo-tree-step p,.demo-tree-terminal p,.demo-tree-feedback p{font-size:13px;line-height:1.85;margin:6px 0 12px}
+.demo-tree-options{display:grid;gap:8px}
+.demo-tree-options button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;text-align:right;border:1px solid var(--line,#293a52);border-radius:10px;padding:10px 12px;background:transparent;color:inherit;font:inherit;font-size:13px;line-height:1.7}
+.demo-tree-options button:hover{border-color:var(--brand2,#40d9e7)}
+.demo-tree-feedback{margin:10px 0;padding:10px;border-radius:10px;background:var(--soft,#172e49);font-size:13px}
+.demo-tree-terminal{border-color:#3a9474;background:color-mix(in srgb,#3a9474 8%,var(--panel,#101b2d))}
+.demo-tree-terminal button{min-height:44px}
+@media(max-width:380px){.demo-card{padding:12px}.demo-path-flow{grid-template-columns:minmax(0,1fr) 25px minmax(0,1fr) 25px minmax(0,1fr);gap:2px}.demo-device{min-height:92px;padding:5px 2px}.demo-device-icon{font-size:19px}.demo-device b{font-size:10px}.demo-device small{font-size:9px}.demo-link{font-size:9px}.demo-link b{font-size:17px}.demo-input-grid{gap:6px}.demo-field{font-size:11px}.demo-result-main{align-items:flex-start;flex-direction:column}.demo-tree-rail{grid-template-columns:1fr 8px 1fr 8px 1fr}.demo-tree-rail span{font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -280,6 +342,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 </div>
 <script src="js/academy-data.js"></script>
 <script src="js/calculations.js"></script>
+<script src="js/interactive-demos.js"></script>
 <script src="js/chapter-labs.js"></script>
 <script src="js/chapter-lab-ui.js"></script>
 <script src="js/spaced-review.js"></script>
@@ -550,7 +613,7 @@ function answerMicroLesson(chapterIndex,index,selected){const p=microProgressFor
 function skipMicroQuestion(chapterIndex,index){const p=microProgressFor(chapterIndex);saveMicroProgress(chapterIndex,{answers:{...p.answers,[String(index)]:{...(p.answers[String(index)]||{}),skipped:true,skippedAt:new Date().toISOString()}}});render()}
 function toggleMicroBookmark(chapterIndex,index){const key=String(chapterIndex),current=Array.isArray(state.progress.microBookmarks[key])?state.progress.microBookmarks[key]:[];state.progress.microBookmarks[key]=current.includes(index)?current.filter(i=>i!==index):[...current,index];saveProgress();render()}
 function lessonHTML(){
- const c=chapters[state.chapter];return '<div class="crumb"><button class="secondary" onclick="go(\'home\')">داشبورد</button>　/　فصل '+faNum(state.chapter+1)+' از '+faNum(chapters.length)+'</div><article class="panel"><span class="pill">صفحات PDF: '+esc(c.pages)+' — منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)</span><h1 class="lesson-title">'+esc(c.title)+'</h1><p class="lesson-intro">'+esc(c.intro)+'</p>'+microLessonHTML(state.chapter)+'<details class="micro-full-content"><summary>نمایش محتوای کامل فصل، مفاهیم کلیدی و توضیحات تکمیلی</summary><div class="lesson-content">'+c.sections.map((s,si)=>'<h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p>').join("")+'<div class="callout"><b>نکته کاربردی:</b> '+esc(c.tips)+'</div>'+chapterLearningTemplate(c,state.chapter)+'<section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>'+c.supplemental.items.map((s,i)=>'<details class="supplement-item" '+(i===0?"open":"")+'><summary>'+esc(s[0])+'</summary><p>'+esc(s[1])+'</p></details>').join("")+'</section></div></details><section class="chapter-lab-launch"><div><span class="lab-launch-kicker">PRACTICE LAB · ۵ مأموریت</span><h2>آماده‌ای دانسته‌ها را در عمل امتحان کنی؟</h2><p>پنج سناریوی عملی متناسب با همین فصل، با انتخاب اقدام، توضیح دلیل و بازخورد مرحله‌ای.</p></div><button class="primary" onclick="go(\'chapterLab\','+state.chapter+')">ورود به آزمایشگاه تعاملی فصل ←</button></section><div class="lesson-actions"><button class="primary" onclick="go(\'chapterQuiz\','+state.chapter+')">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone('+state.chapter+')">'+(state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده")+'</button><button class="secondary" onclick="go(\'lesson\','+Math.max(0,state.chapter-1)+')" '+(state.chapter===0?"disabled":"")+'>فصل قبلی</button><button class="secondary" onclick="go(\'lesson\','+Math.min(chapters.length-1,state.chapter+1)+')" '+(state.chapter===chapters.length-1?"disabled":"")+'>فصل بعدی</button></div></article>';
+ const c=chapters[state.chapter];return '<div class="crumb"><button class="secondary" onclick="go(\'home\')">داشبورد</button>　/　فصل '+faNum(state.chapter+1)+' از '+faNum(chapters.length)+'</div><article class="panel"><span class="pill">صفحات PDF: '+esc(c.pages)+' — منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)</span><h1 class="lesson-title">'+esc(c.title)+'</h1><p class="lesson-intro">'+esc(c.intro)+'</p>'+microLessonHTML(state.chapter)+window.CCTVInteractiveDemos.renderForChapter(state.chapter)+'<details class="micro-full-content"><summary>نمایش محتوای کامل فصل، مفاهیم کلیدی و توضیحات تکمیلی</summary><div class="lesson-content">'+c.sections.map((s,si)=>'<h3>'+esc(s[0])+'</h3><p>'+esc(s[1])+'</p>').join("")+'<div class="callout"><b>نکته کاربردی:</b> '+esc(c.tips)+'</div>'+chapterLearningTemplate(c,state.chapter)+'<section class="supplement"><h2>توضیحات تکمیلی و مثال‌های کاربردی</h2><p class="lesson-intro">این بخش توضیح تکمیلی بر پایه دانش فنی عمومی است و از محتوای مستقیم جزوه جدا شده است.</p>'+c.supplemental.items.map((s,i)=>'<details class="supplement-item" '+(i===0?"open":"")+'><summary>'+esc(s[0])+'</summary><p>'+esc(s[1])+'</p></details>').join("")+'</section></div></details><section class="chapter-lab-launch"><div><span class="lab-launch-kicker">PRACTICE LAB · ۵ مأموریت</span><h2>آماده‌ای دانسته‌ها را در عمل امتحان کنی؟</h2><p>پنج سناریوی عملی متناسب با همین فصل، با انتخاب اقدام، توضیح دلیل و بازخورد مرحله‌ای.</p></div><button class="primary" onclick="go(\'chapterLab\','+state.chapter+')">ورود به آزمایشگاه تعاملی فصل ←</button></section><div class="lesson-actions"><button class="primary" onclick="go(\'chapterQuiz\','+state.chapter+')">شروع آزمون فصل ←</button><button class="secondary" onclick="markDone('+state.chapter+')">'+(state.progress.done.includes(state.chapter)?"✓ فصل تکمیل شده":"علامت‌گذاری به‌عنوان مطالعه‌شده")+'</button><button class="secondary" onclick="go(\'lesson\','+Math.max(0,state.chapter-1)+')" '+(state.chapter===0?"disabled":"")+'>فصل قبلی</button><button class="secondary" onclick="go(\'lesson\','+Math.min(chapters.length-1,state.chapter+1)+')" '+(state.chapter===chapters.length-1?"disabled":"")+'>فصل بعدی</button></div></article>';
 }
 function legacyChapterLabHTML(i){
 const heads=["ماموریت شبکه: تصویر قطع است","آزمایشگاه میدان دید و جزئیات","اتاق طراحی سامانه","بازدید هوشمند محل نصب","دفاع سایبری دوربین‌ها","اتاق فرمان بازیابی","ماتریس تصمیم ریسک","کارگاه استانداردشناسی","درخت عیب‌یابی زنده","کارآگاه تصویر شب","آزمایشگاه لایه‌های شبکه","تحویل پروژه بدون نقص","چالش تشخیص مفهومی","مصاحبه‌گر فنی"];
