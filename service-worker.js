@@ -4,6 +4,7 @@ const CACHE_NAME = "cctv-academy-static-v__BUILD_VERSION__";
 const CORE_ASSETS = [
   "./",
   "./index.html",
+  "./css/academy.css",
   "./workshops.html",
   "./manifest.webmanifest",
   "./icons/academy-icon.svg",
