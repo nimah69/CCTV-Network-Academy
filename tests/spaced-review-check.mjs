@@ -14,6 +14,7 @@ assert.equal(review.isDue(initial, null, now), true);
 
 const firstGood = review.grade(initial, "good", now);
 assert.equal(firstGood.repetitions, 1);
+assert.equal(firstGood.box, 1);
 assert.equal(firstGood.intervalDays, 1);
 assert.equal(review.isDue(firstGood, null, now), false);
 assert.equal(review.isDue(firstGood, null, now + 86400000), true);
@@ -21,18 +22,29 @@ assert.equal(review.isDue(firstGood, null, now + 86400000), true);
 const secondGood = review.grade(firstGood, "good", now);
 assert.equal(secondGood.repetitions, 2);
 assert.equal(secondGood.intervalDays, 3);
+assert.equal(secondGood.box, 2);
+const thirdGood = review.grade(secondGood, "good", now);
+assert.equal(thirdGood.intervalDays, 7);
+assert.equal(thirdGood.box, 3);
+const fourthGood = review.grade(thirdGood, "good", now);
+assert.equal(fourthGood.intervalDays, 14);
+assert.equal(fourthGood.box, 4);
+assert.deepEqual(review.intervals, [1, 3, 7, 14]);
 
 const easy = review.grade(initial, "easy", now);
-assert.equal(easy.intervalDays, 2);
+assert.equal(easy.intervalDays, 1);
+assert.equal(easy.box, 1);
 assert.ok(easy.ease > initial.ease);
 
 const hard = review.grade(initial, "hard", now);
 assert.equal(hard.intervalDays, 1);
+assert.equal(hard.box, 1);
 assert.ok(hard.ease < initial.ease);
 
 const again = review.grade(secondGood, "again", now);
 assert.equal(again.repetitions, 0);
 assert.equal(again.intervalDays, 0);
+assert.equal(again.box, 0);
 assert.equal(review.isDue(again, null, now), true);
 assert.throws(() => review.grade(initial, "unknown", now), /Unknown review grade/);
 
