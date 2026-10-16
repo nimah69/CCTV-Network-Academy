@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1220">
+<meta name="theme-color" content="#101827">
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -773,6 +773,63 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
 .chapter-visual .cv-quiz-feedback.is-wrong { color: #92400e; }
 
 @media(prefers-reduced-motion:reduce){.cv-progress-track span{transition:none}}
+
+
+/* Design-system pass 1: unify legacy light components with the existing Cyber Academy palette. */
+:root{
+  --bg:#101827;--panel:#1b293b;--ink:#e8f0fb;--muted:#a6b5ca;--line:#304158;
+  --nav:#0b1220;--nav2:#18283e;--brand:#55a8ff;--brand2:#55d6d0;--teal:#55d6d0;
+  --soft:#20364d;--good:#4ade80;--bad:#fb7185;--shadow:0 12px 30px #02081740;
+  color-scheme:dark;
+}
+html{background:var(--bg);scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Vazirmatn,IRANSans,Tahoma,"Segoe UI",sans-serif;font-size:15px;line-height:1.85;overflow-wrap:anywhere}
+.top{background:#101827ed;border-bottom-color:#304158}
+.search input,.hamb{background:#172438;color:var(--ink);border-color:#354961}
+.search input::placeholder{color:#93a5bd}
+.course,.panel,.stat,.secondary,.cv-step-nav button,.cv-answer-grid button{
+  background:var(--panel);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow)
+}
+.course:hover,.cv-step-nav button:hover,.cv-answer-grid button:hover{border-color:#55d6d0;background:#20364b}
+.course-icon,.stat-icon{background:#20364b;color:#75e4df}
+.course p,.stat small,.panel p{color:var(--muted)}
+.chapter-lab-launch{background:linear-gradient(125deg,#17283c,#1b2940);border-color:#35536a;color:var(--ink)}
+.chapter-lab-launch p{color:#b5c6d9}
+.lab-node{background:#17283b;border-color:#35516a;color:#e8f0fb}
+.tool-panel .calc-fields input,.tool-panel .calc-fields input[aria-invalid=true]{
+  background:#111d2e;color:var(--ink);border-color:#3a526c
+}
+.tool-panel .calc-fields input::placeholder{color:#8fa3bd}
+.feedback.bad,.feedback-incorrect,.cv-quiz-feedback.is-wrong{
+  background:#3a202b;border-color:#82404e;color:#ffc0c9
+}
+.secondary:hover{border-color:var(--brand2);background:#22374c}
+button,input,select,textarea{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{
+  outline:3px solid #55d6d0;outline-offset:3px
+}
+.course,.stat,.panel,.chapter-lab-launch,.lab-node,.cv-step-nav button,.cv-answer-grid button{
+  min-width:0;overflow-wrap:anywhere
+}
+img,svg,canvas,video{max-width:100%}
+@media(max-width:850px){
+  .side{background:#0b1220;border-left:1px solid #304158;padding-top:64px}
+  .hamb{min-width:42px;min-height:42px;align-items:center;justify-content:center}
+  .top{padding-inline:12px;gap:10px}
+  .wrap{padding-inline:14px;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+}
+@media(max-width:520px){
+  body{font-size:15px}
+  .welcome{border-radius:18px}
+  .welcome p,.course p{font-size:12px}
+  .section-head h2{font-size:18px}
+  .course{padding:14px;gap:11px}
+  .course-icon{width:39px;height:39px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
 
 </style><a class="workshops-launch" href="workshops.html" aria-label="ورود به کارگاه‌های تعاملی">🧪 کارگاه‌های تعاملی</a>
 </body>
