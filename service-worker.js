@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "cctv-academy-static-v2026-10-16-1";
+const CACHE_NAME = "cctv-academy-static-v2026-10-16-2";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -11,8 +11,6 @@ const CORE_ASSETS = [
   "./js/calculations.js",
   "./js/chapter-labs.js",
   "./js/chapter-lab-ui.js",
-  "./js/figures-data.js",
-  "./js/figures.js",
   "./js/spaced-review.js",
   "./js/pwa-register.js"
 ];
