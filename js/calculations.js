@@ -22,13 +22,18 @@ function bandwidth(count,rateMbps,reservePercent){
   if(reserve>100)throw new RangeError("حاشیه نباید بیشتر از ۱۰۰٪ باشد");
   const base=n*rate;return {base,total:base*(1+reserve/100),gigabits:base*(1+reserve/100)/1000};
 }
-function storage(count,rateMbps,days,headroomPercent){
+function storage(count,rateMbps,days,headroomPercent,hoursPerDay,overheadPercent){
   const n=positive(count,"تعداد دوربین");
   if(!Number.isInteger(n))throw new RangeError("تعداد دوربین باید عدد صحیح باشد");
   const rate=positive(rateMbps,"نرخ بیت"),duration=positive(days,"روز");
   const headroom=nonNegative(headroomPercent===undefined?10:headroomPercent,"حاشیه ذخیره‌سازی");
+  const hours=positive(hoursPerDay===undefined?24:hoursPerDay,"ساعات ضبط روزانه");
+  const overhead=nonNegative(overheadPercent===undefined?0:overheadPercent,"سربار");
   if(headroom>100)throw new RangeError("حاشیه ذخیره‌سازی نباید بیشتر از ۱۰۰٪ باشد");
-  const tb=n*rate*10.8*duration/1000;return {tb,withHeadroom:tb*(1+headroom/100)};
+  if(hours>24)throw new RangeError("ساعات ضبط روزانه نباید بیشتر از ۲۴ باشد");
+  if(overhead>100)throw new RangeError("سربار نباید بیشتر از ۱۰۰٪ باشد");
+  const tb=n*rate*10.8*duration/1000*(hours/24);
+  return {tb,withHeadroom:tb*(1+headroom/100)*(1+overhead/100),hoursPerDay:hours,overheadPercent:overhead};
 }
 function link(loadMbps,speedMbps,limitPercent){
   const load=nonNegative(loadMbps,"بار لینک"),speed=positive(speedMbps,"سرعت لینک"),limit=positive(limitPercent,"حد طراحی");

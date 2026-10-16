@@ -22,20 +22,30 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Run academy quality checks
-        run: node tests/quality-check.mjs
+      - name: Run all academy quality checks
+        run: |
+          set -e
+          for f in tests/*.mjs; do
+            echo "== Running $f"
+            node "$f"
+          done
 
       - name: Bundle local website files
         run: |
-          mkdir -p android/app/src/main/assets/academy/js
-          cp index.html workshops.html android/app/src/main/assets/academy/
+          mkdir -p android/app/src/main/assets/academy/js android/app/src/main/assets/academy/icons
+          cp index.html workshops.html manifest.webmanifest service-worker.js android/app/src/main/assets/academy/
+          cp icons/*.svg android/app/src/main/assets/academy/icons/
           cp js/*.js android/app/src/main/assets/academy/js/
           test -s android/app/src/main/assets/academy/index.html
           test -s android/app/src/main/assets/academy/workshops.html
+          test -s android/app/src/main/assets/academy/manifest.webmanifest
+          test -s android/app/src/main/assets/academy/service-worker.js
+          test -s android/app/src/main/assets/academy/icons/academy-icon.svg
           test -s android/app/src/main/assets/academy/js/academy-data.js
           test -s android/app/src/main/assets/academy/js/calculations.js
           test -s android/app/src/main/assets/academy/js/chapter-labs.js
           test -s android/app/src/main/assets/academy/js/chapter-lab-ui.js
+          test -s android/app/src/main/assets/academy/js/spaced-review.js
 
       - name: Set up Java
         uses: actions/setup-java@v4

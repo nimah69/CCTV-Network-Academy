@@ -1,0 +1,20 @@
+{
+  "name": "آکادمی شبکه و نظارت تصویری",
+  "short_name": "آکادمی CCTV",
+  "description": "آموزش فارسی شبکه، دوربین مداربسته، طراحی و عیب‌یابی",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "./icons/academy-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
