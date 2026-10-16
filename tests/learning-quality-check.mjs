@@ -20,6 +20,7 @@ const questionKeys = questions.map((q) => normalize(q.q));
 assert.equal(new Set(questionKeys).size, questionKeys.length, "Question stems must be unique after whitespace normalization");
 
 const kindCounts = {};
+const difficultyCounts = {};
 const explanationCounts = new Map();
 const templatePatterns = [
   /^(در بررسی «|کدام اقدام برای «|اگر با موضوع «|کدام نکته در تصمیم‌گیری درباره «|برای کاهش خطا در «|کدام گزینه رابطه درست‌تری با «|در سناریوی مرتبط با «|کدام توضیح، مفهوم «)/,
@@ -35,6 +36,8 @@ const perChapter = [];
 for (const question of questions) {
   const kind = String(question.kind || "").trim() || "بدون برچسب";
   kindCounts[kind] = (kindCounts[kind] || 0) + 1;
+  assert.ok(["پایه", "متوسط", "پیشرفته"].includes(question.difficulty), "Question must have a valid difficulty label: " + question.q);
+  difficultyCounts[question.difficulty] = (difficultyCounts[question.difficulty] || 0) + 1;
   if (!question.kind) missingKind++;
   const explanation = normalize(question.e);
   explanationCounts.set(explanation, (explanationCounts.get(explanation) || 0) + 1);
@@ -64,6 +67,7 @@ console.log(JSON.stringify({
   chapters: chapters.length,
   questions: questions.length,
   kindCounts,
+  difficultyCounts,
   missingKind,
   repeatedExplanationGroups: [...explanationCounts.values()].filter((count) => count > 1).length,
   repeatedExplanations,
