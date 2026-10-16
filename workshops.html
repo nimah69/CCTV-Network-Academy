@@ -70,6 +70,9 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
   p, li, label, small, span, a, button, div { overflow-wrap: anywhere; }
   html, body { max-width: 100%; overflow-x: clip; }
 }
+
+/* Respect Android/iOS display cutouts and gesture navigation safe area. */
+body{padding-bottom:env(safe-area-inset-bottom)}
 </style>
 </head>
 <body>

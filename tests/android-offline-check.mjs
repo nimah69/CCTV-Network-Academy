@@ -18,6 +18,9 @@ assert.match(activity,/Intent\.ACTION_VIEW/,"External HTTP/HTTPS links must open
 assert.match(activity,/path\.contains\("\.\."\)/,"Local file URLs must not traverse outside the academy asset directory");
 assert.match(activity,/equalsIgnoreCase\(scheme\)/,"External routing must check the URL scheme");
 assert.match(activity,/CCTVAcademyHandleBack/,"Native Back must keep using the route handler");
+assert.match(activity,/webView\.restoreState\(savedInstanceState\)/,"WebView navigation state must be restored");
+assert.match(activity,/webView\.saveState\(outState\)/,"WebView navigation state must be saved");
+assert.match(activity,/webView\.canGoBack\(\)\) webView\.goBack\(\)/,"Native Back must use WebView history before exiting");
 assert.match(gradle,/targetSdk 34/,"Target SDK should remain at the reviewed conservative level");
 assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the same bundler as local builds");
 assert.match(bundler,/cp "\$ROOT_DIR\/js\/"\*\.js/);

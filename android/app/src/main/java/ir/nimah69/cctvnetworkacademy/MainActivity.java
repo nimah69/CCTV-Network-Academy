@@ -11,6 +11,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebBackForwardList;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -104,7 +105,10 @@ public class MainActivity extends Activity {
         });
 
         if (savedInstanceState != null) {
-            webView.restoreState(savedInstanceState);
+            WebBackForwardList restored = webView.restoreState(savedInstanceState);
+            if (restored == null || restored.getSize() == 0) {
+                webView.loadUrl("file:///android_asset/academy/index.html");
+            }
         } else {
             webView.loadUrl("file:///android_asset/academy/index.html");
         }
@@ -154,7 +158,9 @@ public class MainActivity extends Activity {
             webView.evaluateJavascript(
                     "(function(){return window.CCTVAcademyHandleBack ? window.CCTVAcademyHandleBack() : false})()",
                     value -> {
-                        if (!"true".equals(value)) MainActivity.super.onBackPressed();
+                        if ("true".equals(value)) return;
+                        if (webView != null && webView.canGoBack()) webView.goBack();
+                        else MainActivity.super.onBackPressed();
                     });
             return;
         }
