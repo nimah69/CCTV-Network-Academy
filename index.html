@@ -418,13 +418,28 @@ function calculateSubnet(){
   out.innerHTML="نشانی واردشده: <b>"+r.address+"</b><br>ماسک شبکه: <b>"+r.maskText+"</b><br>نشانی شبکه: <b>"+r.networkText+"</b><br>بازه آدرس‌ها: <b>"+r.firstText+" تا "+r.lastText+"</b><br>تعداد آدرس‌های قابل‌شمارش: <b>"+r.hostCount+"</b><br>نشانی Broadcast: <b>"+r.broadcastText+"</b>";
  }catch(error){ipEl.setAttribute("aria-invalid","true");out.textContent=error&&error.message?error.message:"نشانی IP معتبر نیست؛ چهار بخش عددی وارد کن."}
 }
+function searchMicroLessons(query){
+const q=String(query||"").trim().toLocaleLowerCase("fa");
+if(!q)return [];
+return chapters.flatMap((chapter,chapterIndex)=>window.CCTVMicroLessons.build(chapter).map((lesson,lessonIndex)=>({chapterIndex,lessonIndex,chapter,lesson}))).filter(item=>{
+const m=item.lesson,qbank=m.question?[m.question.q,...m.question.o,m.question.e||""].join(" "):"";
+return [item.chapter.title,m.title,m.definition,m.expandedExplanation,m.why,m.example,m.commonMistake,m.systemConnection,m.tip,qbank].join(" ").toLocaleLowerCase("fa").includes(q);
+});
+}
+function openSearchMicroLesson(chapterIndex,lessonIndex){
+saveMicroProgress(chapterIndex,{current:lessonIndex});
+go("lesson",chapterIndex);
+requestAnimationFrame(()=>document.querySelector(".micro-course")?.scrollIntoView({behavior:"smooth",block:"start"}));
+}
 function homeHTML(showAll=false){
 const done=state.progress.done.length, percent=Math.round(done/chapters.length*100);
-const filtered=chapters.map((c,i)=>({...c,i})).filter(c=>!state.query||[c.title,c.desc,c.intro,c.sections.map(s=>s.join(" ")).join(" ")].join(" ").toLowerCase().includes(state.query.toLowerCase()));
+const microMatches=searchMicroLessons(state.query).slice(0,30);
+const filtered=chapters.map((c,i)=>({...c,i})).filter(c=>!state.query||[c.title,c.desc,c.intro,c.sections.map(s=>s.join(" ")).join(" "),window.CCTVMicroLessons.build(c).map(m=>[m.title,m.definition,m.expandedExplanation,m.why,m.example,m.commonMistake,m.systemConnection,m.tip,m.question?[m.question.q,...m.question.o,m.question.e||""].join(" "):""].join(" ")).join(" ")].join(" ").toLocaleLowerCase("fa").includes(state.query.toLocaleLowerCase("fa")));
 return `<section class="welcome"><div class="eyebrow">مسیر یادگیری • شبکه، CCTV و امنیت</div><h1>مهارتت را از مبانی تا طراحی و عیب‌یابی بساز</h1><p>دوره‌ای ساختاریافته بر پایه جزوه آمادگی آزمون و مصاحبه افتا، با درس‌های خلاصه، آزمون فصل‌به‌فصل و ذخیره پیشرفت روی همین دستگاه.</p><button class="primary" onclick="go('lesson',${state.progress.done.length<chapters.length?chapters.findIndex((c,i)=>!state.progress.done.includes(i)):0})">ادامه یادگیری ←</button></section>
 <div class="stats"><div class="stat"><div class="stat-icon">▤</div><div><small>فصل‌های دوره</small><strong>${chapters.length}</strong></div></div><div class="stat"><div class="stat-icon">✓</div><div><small>فصل‌های تکمیل‌شده</small><strong>${done}</strong></div></div><div class="stat"><div class="stat-icon">◷</div><div><small>پیشرفت دوره</small><strong>${percent}٪</strong></div></div></div>
 
-<div class="section-head"><div><h2>${showAll?"فهرست همه فصل‌ها":"مسیر آموزشی"}</h2><p>هر فصل شامل درس خلاصه و آزمون مخصوص همان فصل است.</p></div><span class="pill">${filtered.length} فصل</span></div>
+<div class="section-head"><div><h2>${state.query?"نتایج جست‌وجو در ریزدرس‌ها":showAll?"فهرست همه فصل‌ها":"مسیر آموزشی"}</h2><p>${state.query?"جست‌وجو در عنوان، توضیح، مثال، اشتباه رایج و پرسش‌های ریزدرس‌ها انجام می‌شود.":"هر فصل شامل درس خلاصه و آزمون مخصوص همان فصل است."}</p></div><span class="pill">${filtered.length} فصل</span></div>
+${state.query?`<section class="micro-search-results" aria-label="نتایج جست‌وجو در متن ریزدرس‌ها"><div class="section-head"><div><h3>ریزدَرس‌های مرتبط</h3><p>${microMatches.length?"برای بازکردن نتیجه روی آن بزن.":"در متن ریزدرس‌ها نتیجه‌ای پیدا نشد."}</p></div><span class="pill">${faNum(microMatches.length)} نتیجه</span></div><div class="course-grid">${microMatches.map(item=>`<button class="course" type="button" onclick="openSearchMicroLesson(${item.chapterIndex},${item.lessonIndex})"><div class="course-icon">⌕</div><div class="course-body"><h3>${esc(item.lesson.title)}</h3><p>${esc(item.chapter.title)} · ریزدرس ${faNum(item.lessonIndex+1)}</p><p>${esc(item.lesson.example)}</p><div class="course-foot"><span>بازکردن ریزدرس</span></div></div></button>`).join("")||`<div class="panel empty">عبارت دیگری را امتحان کن.</div>`}</div></section>`:""}
 <div class="course-grid">${filtered.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">${c.icon}</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>مفاهیم آموزشی</span><div class="progress"><i style="width:${pct(c.i)}%"></i></div><span>${pct(c.i)?"تکمیل":"شروع درس"}</span></div></div></button>`).join("")||'<div class="empty">فصلی با این عبارت پیدا نشد.</div>'}</div>
 <div class="footer">محتوا خلاصه‌سازی آموزشی از PDF پیوست است. پیشرفت فقط در حافظه محلی همین مرورگر ذخیره می‌شود.</div>`;
 }
