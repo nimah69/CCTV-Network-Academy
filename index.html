@@ -214,6 +214,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 <script src="js/chapter-lab-ui.js"></script>
 <script src="js/figures-data.js"></script>
 <script src="js/figures.js"></script>
+<script src="js/spaced-review.js"></script>
 <script>
 const chapters = window.CCTVAcademyData.chapters;
 const icons=["⌘","◉","▦","⬡","⌑","↻","◇","▧","⌕","▣","∴","☑","☷","☏"];
@@ -456,15 +457,40 @@ return `<div class="crumb"><button class="secondary" onclick="go('home')">داش
 ${state.quizSubmitted?`<div class="result"><h2 style="margin:0 0 5px">نتیجه: ${score} از ${qs.length}</h2><p style="margin:0;font-size:13px">درصد پاسخ درست: ${Math.round(score/qs.length*100)}٪</p><div class="progress" style="margin-top:12px;height:8px"><i style="width:${Math.round(score/qs.length*100)}%"></i></div></div>`:""}
 <div class="quiz-toolbar">${state.quizSubmitted?'<button class="primary" onclick="retryQuiz()">تلاش دوباره</button>':'<button class="primary" onclick="submitQuiz('+comprehensive+')">ثبت پاسخ‌ها و مشاهده نتیجه</button>'}<button class="secondary" onclick="go('lesson',${state.chapter})">بازگشت به درس</button></div></section>`;
 }
+function reviewCardHTML(q,i){
+ const review=window.CCTVSpacedReview.normalize(q.review,q.savedAt);
+ const due=window.CCTVSpacedReview.isDue(review);
+ const dueLabel=due?"آماده مرور":"موعد بعدی: "+new Date(review.dueAt).toLocaleDateString("fa-IR");
+ return '<article class="quiz-question review-card"><h3>'+(i+1)+'. '+esc(q.q)+'</h3>'+
+ '<p class="muted" style="font-size:11px">فصل: '+esc(q.tag||chapters[q.chapter]?.title||"نامشخص")+'</p>'+
+ '<p><b>پاسخی که انتخاب شد:</b> '+esc(q.selectedAnswer||"بدون پاسخ")+'</p>'+
+ '<p><b>پاسخ صحیح:</b> '+esc(q.correctAnswer||q.o?.[q.a]||"نامشخص")+'</p>'+
+ '<p class="review-status '+(due?'is-due':'is-scheduled')+'" role="status">'+dueLabel+' · فاصله مرور: '+review.intervalDays+' روز</p>'+
+ '<details class="answer-explanation"><summary>توضیح پاسخ</summary><div class="explanation-body">'+esc(q.e||"توضیحی ذخیره نشده است.").replace(/\\r?\\n/g,"<br>")+'</div></details>'+
+ '<div class="review-actions" aria-label="ارزیابی یادآوری">'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'again\\')">فراموش کردم</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'hard\\')">سخت بود</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'good\\')">به‌خاطر آوردم</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'easy\\')">آسان بود</button>'+
+ '</div></article>';
+}
+function gradeReviewQuestion(index,grade){
+ const question=state.progress.wrongQuestions[index];
+ if(!question||!window.CCTVSpacedReview)return;
+ question.review=window.CCTVSpacedReview.grade(question.review||window.CCTVSpacedReview.normalize(null,question.savedAt),grade);
+ saveProgress();
+ render();
+}
 function savedHTML(){
  const list=chapters.map((c,i)=>({...c,i})).filter(c=>state.progress.done.includes(c.i));
  const wrong=state.progress.wrongQuestions||[];
+ const dueCount=wrong.filter(q=>window.CCTVSpacedReview.isDue(q.review,q.savedAt)).length;
  const result=state.progress.comprehensive;
  return `<div class="section-head"><div><h2>ادامه یادگیری</h2><p>پیشرفت ذخیره‌شده، نتیجه آزمون جامع و سؤال‌هایی که نیاز به مرور دارند.</p></div></div>
  ${result?`<section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">آخرین نتیجه آزمون جامع</h3><p>امتیاز: <b>${result.score} از ${result.total}</b> — ${result.percent}٪</p><p class="muted" style="font-size:11px">زمان ثبت: ${esc(result.at||"نامشخص")}</p></section>`:""}
  <section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">پشتیبان‌گیری از پیشرفت</h3><p class="muted" style="font-size:12px">فایل JSON را برای نگهداری یا انتقال پیشرفت ذخیره کن. ورود فایل، داده‌های موجود را ادغام می‌کند و به‌طور پیش‌فرض آن‌ها را جایگزین نمی‌کند.</p><div class="lesson-actions"><button class="secondary" onclick="exportProgress()">خروجی پیشرفت (JSON)</button><button class="secondary" onclick="document.getElementById('progressImportInput').click()">ورود پیشرفت (JSON)</button><input id="progressImportInput" type="file" accept=".json,application/json" style="display:none" onchange="importProgressFile(this)"></div></section>
- <div class="section-head"><div><h2>سؤال‌های نیازمند مرور</h2><p>${wrong.length} سؤال ثبت شده از آزمون‌های قبلی</p></div></div>
- ${wrong.length?wrong.map((q,i)=>`<article class="quiz-question"><h3>${i+1}. ${esc(q.q)}</h3><p class="muted" style="font-size:11px">فصل: ${esc(q.tag||chapters[q.chapter]?.title||"نامشخص")}</p><p><b>پاسخی که انتخاب شد:</b> ${esc(q.selectedAnswer||"بدون پاسخ")}</p><p><b>پاسخ صحیح:</b> ${esc(q.correctAnswer||q.o?.[q.a]||"نامشخص")}</p><details class="answer-explanation"><summary>توضیح پاسخ</summary><div class="explanation-body">${esc(q.e||"توضیحی ذخیره نشده است.").replace(/\r?\n/g,"<br>")}</div></details></article>`).join(""):'<div class="panel empty">فعلاً سؤال اشتباهی برای مرور ثبت نشده است. پس از شرکت در آزمون، پاسخ‌های اشتباه اینجا نمایش داده می‌شوند.</div>'}
+ <div class="section-head"><div><h2>سؤال‌های نیازمند مرور</h2><p>${wrong.length} سؤال ثبت‌شده · ${dueCount} مورد آماده مرور</p></div></div>
+ ${wrong.length?wrong.map(reviewCardHTML).join(""):'<div class="panel empty">فعلاً سؤال اشتباهی برای مرور ثبت نشده است. پس از شرکت در آزمون، پاسخ‌های اشتباه اینجا نمایش داده می‌شوند.</div>'}
  <div class="section-head"><div><h2>فصل‌های تکمیل‌شده</h2><p>فصل‌هایی که به‌عنوان مطالعه‌شده علامت زده‌اید.</p></div></div>
  ${list.length?'<div class="course-grid">'+list.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">✓</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>تکمیل‌شده</span><div class="progress"><i style="width:100%"></i></div></div></div></button>`).join("")+'</div>':'<div class="panel empty">هنوز فصلی را تکمیل نکرده‌اید. از داشبورد یک فصل را باز کنید و پس از مطالعه آن را علامت بزنید.</div>'}
  <div class="lesson-actions"><button class="secondary" onclick="resetProgress()">پاک‌کردن پیشرفت ذخیره‌شده</button></div>`;
@@ -536,6 +562,8 @@ body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","No
 .lesson-content p,.lesson-content li{font-size:16px;line-height:2}
 .lesson-content h3{font-size:clamp(17px,4.5vw,20px);line-height:1.8}
 @media(max-width:480px){.wrap{padding-inline:12px}.panel{padding:14px}.lesson-content p,.lesson-content li{font-size:16px}.lesson-intro{font-size:14px;line-height:1.9}}
+
+.review-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.review-actions .secondary{min-height:42px;padding:8px 12px}.review-status{font-size:12px;font-weight:700;padding:7px 10px;border-radius:9px}.review-status.is-due{color:#8a3412;background:#ffedd5}.review-status.is-scheduled{color:#166534;background:#dcfce7}@media(max-width:420px){.review-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.review-actions button{width:100%;min-width:0}}
 </style><a class="workshops-launch" href="workshops.html" aria-label="ورود به کارگاه‌های تعاملی">🧪 کارگاه‌های تعاملی</a>
 </body>
 </html>
