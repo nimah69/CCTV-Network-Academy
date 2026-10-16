@@ -792,3 +792,18 @@ button,
 .mission-card__choice {
   color: var(--ink);
 }
+
+
+/* Stage 4: persistent lesson progress and mobile navigation feedback */
+.lesson-progress-sticky{position:sticky;top:76px;z-index:4;margin:0 0 14px;padding:11px 14px 10px;border:1px solid #2b4058;border-radius:13px;background:rgba(13,24,40,.96);color:#e6effb;box-shadow:0 8px 22px #0002;backdrop-filter:blur(12px)}
+.lesson-progress-topline,.lesson-progress-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.lesson-progress-topline strong{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lesson-progress-topline>span{font-size:12px;font-weight:700;color:#75e1df;flex:none;font-variant-numeric:tabular-nums}
+.lesson-progress-track{height:5px;overflow:hidden;border-radius:99px;background:#26384e;margin:8px 0 6px}
+.lesson-progress-track span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#38bdf8,#2dd4bf);transition:width .12s linear}
+.lesson-progress-meta{font-size:11px;color:#a9bad0}
+.lesson-progress-meta span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+.bottom-nav button:focus-visible,.bottom-nav a:focus-visible{outline:3px solid #67e8f9;outline-offset:-3px}
+.bottom-nav [data-view].active{background:#173c53;color:#e7fcff;box-shadow:inset 0 0 0 1px #2dd4bf55}
+@media(max-width:850px){.lesson-progress-sticky{top:66px;margin-inline:-2px;padding:9px 11px}.lesson-progress-topline strong{font-size:12px}.lesson-progress-meta{font-size:10px}.lesson-actions{scroll-margin-bottom:calc(80px + env(safe-area-inset-bottom))}}
+@media(max-width:380px){.lesson-progress-sticky{padding:8px 9px}.lesson-progress-topline strong{max-width:76vw}.lesson-progress-meta{gap:7px}}
