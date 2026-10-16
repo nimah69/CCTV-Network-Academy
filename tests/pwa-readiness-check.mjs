@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 
 const root = process.cwd();
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.webmanifest"), "utf8"));
 const worker = fs.readFileSync(path.join(root, "service-worker.js"), "utf8");
 const register = fs.readFileSync(path.join(root, "js/pwa-register.js"), "utf8");
+new vm.Script(worker, { filename: "service-worker.js" });
 const pages = ["index.html", "workshops.html"];
 
 assert.equal(manifest.lang, "fa");
