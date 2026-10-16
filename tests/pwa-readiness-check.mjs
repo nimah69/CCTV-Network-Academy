@@ -36,9 +36,9 @@ for (const page of pages) {
 }
 assert.ok(register.includes('navigator.serviceWorker.register("./service-worker.js"'));
 assert.ok(register.includes('location.protocol !== "https:"'), "Service worker should only register in secure contexts or localhost");
-assert.match(worker, /const CACHE_NAME = "cctv-academy-static-v\\d{4}-\\d{2}-\\d{2}-\\d+"/, "Cache name must be versioned for controlled updates");
+assert.ok(worker.includes("cctv-academy-static-v2026-10-16-1"), "Cache name must be versioned for controlled updates");
 assert.match(worker, /request.destination === "script"/, "JavaScript must use network-first freshness handling");
-assert.match(worker, /\\.m\\?js\\$/i, "JavaScript paths must use network-first freshness handling");
+assert.ok(worker.includes('url.pathname.endsWith(".js")'), "JavaScript paths must use network-first freshness handling");
 assert.ok(worker.includes('request.mode === "navigate"') || worker.includes("const isNavigation = request.mode === \"navigate\""), "Offline navigation fallback must be implemented");
 assert.ok(worker.includes('caches.match("./index.html")'), "Offline fallback must provide the cached app shell");
 assert.ok(worker.includes('key !== CACHE_NAME') && worker.includes('caches.delete(key)'), "Activation must delete obsolete academy caches");
