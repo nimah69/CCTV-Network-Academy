@@ -12,7 +12,7 @@ const scenarioBlock=scripts[0].match(/const scenarios=\[([\s\S]*?)\n\];/);
 assert.ok(scenarioBlock,"Scenario bank must exist");
 assert.equal((scenarioBlock[1].match(/title:"/g)||[]).length,12,"Expected 12 troubleshooting scenarios");
 assert.ok(html.includes("localStorage"),"Workshop progress should persist locally");
-assert.ok(html.includes('src="./js/calculations.js?v=20261016-2"'),"Shared tested calculation module must load before workshop code");
+assert.ok(html.includes('src="./js/calculations.js?v=20261016-3"'),"Shared tested calculation module must load before workshop code");
 assert.ok(html.includes("function requiredNumber"),"Numeric fields must reject empty and invalid values");
 assert.ok(html.includes('id="poeResult" aria-live="polite"'),"PoE validation messages must be announced politely");
 assert.ok(html.includes('id="subnetResult" aria-live="polite"'),"Subnet validation messages must be announced politely");
