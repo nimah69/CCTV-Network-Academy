@@ -831,6 +831,30 @@ img,svg,canvas,video{max-width:100%}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+
+/* Keep the chapter-visual components internally consistent: dark surfaces need light text. */
+.chapter-visual .cv-block,
+.chapter-visual .cv-concept,
+.chapter-visual .cv-concept summary,
+.chapter-visual .cv-step-nav button,
+.chapter-visual .cv-question,
+.chapter-visual .cv-answer-grid button{
+  background:#1b293b;color:#e8f0fb;border-color:#304158;
+}
+.chapter-visual .cv-concept summary b,
+.chapter-visual .cv-section-head h3{color:#e8f0fb}
+.chapter-visual .cv-concept>p,
+.chapter-visual .cv-concept small,
+.chapter-visual .cv-section-head p{color:#a6b5ca}
+.chapter-visual .cv-concept[open] summary,
+.chapter-visual .cv-step-nav button.active,
+.chapter-visual .cv-answer-grid button.chosen{
+  background:#203b50;color:#f2fbff;border-color:#55d6d0;
+}
+.chapter-visual .cv-quiz-feedback{background:#17283b;color:#dbe8f5;border-color:#304158}
+.chapter-visual .cv-quiz-feedback.is-correct{background:#15382f;color:#a7f3d0;border-color:#28785f}
+.chapter-visual .cv-quiz-feedback.is-wrong{background:#3a202b;color:#ffc0c9;border-color:#82404e}
+
 </style><a class="workshops-launch" href="workshops.html" aria-label="ورود به کارگاه‌های تعاملی">🧪 کارگاه‌های تعاملی</a>
 </body>
 </html>
