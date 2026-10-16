@@ -468,10 +468,10 @@ function reviewCardHTML(q,i){
  '<p class="review-status '+(due?'is-due':'is-scheduled')+'" role="status">'+dueLabel+' · فاصله مرور: '+review.intervalDays+' روز</p>'+
  '<details class="answer-explanation"><summary>توضیح پاسخ</summary><div class="explanation-body">'+esc(q.e||"توضیحی ذخیره نشده است.").replace(/\\r?\\n/g,"<br>")+'</div></details>'+
  '<div class="review-actions" aria-label="ارزیابی یادآوری">'+
- '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'again\\')">فراموش کردم</button>'+
- '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'hard\\')">سخت بود</button>'+
- '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'good\\')">به‌خاطر آوردم</button>'+
- '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',\\'easy\\')">آسان بود</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',&#39;again&#39;)">فراموش کردم</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',&#39;hard&#39;)">سخت بود</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',&#39;good&#39;)">به‌خاطر آوردم</button>'+
+ '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',&#39;easy&#39;)">آسان بود</button>'+
  '</div></article>';
 }
 function gradeReviewQuestion(index,grade){
