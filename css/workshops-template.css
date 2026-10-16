@@ -1,0 +1,85 @@
+/* Template refresh — Stage 1: matching the academy's technical-workspace template */
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{
+ background:
+  radial-gradient(ellipse at 10% 0%,rgba(24,92,126,.2),transparent 35rem),
+  linear-gradient(rgba(76,145,184,.035) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(76,145,184,.035) 1px,transparent 1px),
+  var(--bg);
+ background-size:auto,26px 26px,26px 26px,auto;
+}
+.shell{max-width:1320px;padding:clamp(12px,2.5vw,28px)}
+.top{padding:12px 0 24px}
+.brand{gap:14px}
+.logo{border:1px solid #5ce4e766;box-shadow:0 0 0 5px #38d9e80b,0 8px 22px #0003}
+.brand h1{letter-spacing:-.3px;line-height:1.65}
+.toplinks a,.btn{border-radius:12px;transition:transform .16s,border-color .16s,background .16s}
+.toplinks a:hover,.btn:hover{transform:translateY(-1px)}
+.hero{
+ position:relative;overflow:hidden;
+ border-radius:24px;padding:clamp(22px,4vw,40px);
+ background:radial-gradient(ellipse at 8% 8%,#16718a55,transparent 42%),linear-gradient(118deg,#0b1a2b,#102b42 58%,#0c3a49);
+ box-shadow:0 22px 50px #0003,inset 0 1px #ffffff0b;
+}
+.hero:after{content:"";position:absolute;left:-55px;top:-105px;width:240px;height:240px;border:1px solid #7cecf222;border-radius:50%;box-shadow:0 0 0 35px #38d9e808,0 0 0 70px #38d9e805;pointer-events:none}
+.hero h2{font-size:clamp(22px,3vw,32px);letter-spacing:-.4px;line-height:1.7}
+.hero p{max-width:850px;line-height:2;color:#c0d4e6}
+.metrics{gap:12px;margin:18px 0 22px}
+.metric,.card{border-radius:17px;box-shadow:0 12px 32px #0002,inset 0 1px #ffffff05}
+.metric{background:linear-gradient(150deg,#102238,#0b192a);border-color:#28445d}
+.metric strong{font-size:clamp(20px,2.4vw,27px)}
+.layout{grid-template-columns:238px minmax(0,1fr);gap:16px}
+.tabs{padding:8px;border:1px solid #223e55;border-radius:17px;background:#091827;box-shadow:0 12px 28px #0002}
+.tab{border-radius:11px;transition:background .15s,border-color .15s}
+.tab.active,.tab:hover{background:linear-gradient(100deg,#10354a,#102438);border-color:#2d687a}
+.tab.active{box-shadow:inset -3px 0 #38d9e8}
+.workspace>.heading{padding:4px 2px 12px;border-bottom:1px solid #233f57}
+.heading h2{font-size:clamp(20px,2.5vw,27px);letter-spacing:-.3px}
+.heading p{line-height:1.9}
+.workshop>.card{border-radius:18px;box-shadow:0 12px 32px #0002,inset 0 1px #ffffff05}
+.workshop .card h3{line-height:1.8}
+.field{gap:7px}
+.field label{color:#b7ccdf;line-height:1.8}
+.field input,.field select,.field textarea{border-radius:11px!important;min-height:46px!important;background:#071523!important;border-color:#2b4b64!important}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#38d9e8!important;box-shadow:0 0 0 3px #38d9e81c;outline:0}
+.output{border-radius:13px;line-height:2;padding:14px}
+.diagram,.schematic-canvas{border-radius:15px}
+.lab-schematic{border-radius:17px;background:linear-gradient(145deg,#102238,#091827);border-color:#2a4b63}
+.schematic-canvas{background:radial-gradient(ellipse at center,#123047,#071523 78%);border-color:#2b4a63}
+.schematic-top h3{font-size:16px;line-height:1.8}
+.schematic-top p{line-height:1.9}
+.schematic-foot{color:#9bb2c8}
+.scenario-pick,.choice,.check,.equipment label{border-radius:12px;min-height:44px}
+.scenario-pick{padding:9px 12px}
+.scenario-pick.active{background:#10384a;border-color:#38d9e8;color:#effcff}
+.check,.choice{line-height:1.9}
+.progress{height:7px;background:#1b3146}
+.progress i{background:linear-gradient(90deg,#38bdf8,#2dd4bf)}
+.section-label{font-weight:800;letter-spacing:.3px}
+.result-big{color:#8cebf0}
+.footer{line-height:2}
+@media(max-width:800px){
+ .layout{grid-template-columns:minmax(0,1fr)}
+ .tabs{display:flex;overflow-x:auto;gap:6px;padding:7px;scrollbar-width:thin}
+ .tab{flex:0 0 auto;min-width:max-content}
+ .workspace>.heading{padding-top:8px}
+ .hero{border-radius:19px}
+ .grid{grid-template-columns:1fr}
+}
+@media(max-width:460px){
+ .shell{padding:10px}
+ .top{padding-bottom:15px}
+ .hero{padding:18px}
+ .metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .metric{padding:9px;min-width:0}
+ .metric strong{font-size:17px;overflow-wrap:anywhere}
+ .metric small{font-size:10px}
+ .layout{gap:10px}
+ .tabs{margin-inline:-2px}
+ .tab{padding:9px 11px;font-size:12px}
+ .workshop>.card{padding:12px}
+ .schematic-top{flex-wrap:wrap}
+ .sim-toggle{width:100%}
+ .schematic-canvas svg{min-height:96px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
