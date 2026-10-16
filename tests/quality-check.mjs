@@ -3,6 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const html = fs.readFileSync("index.html", "utf8");
+const workshops = fs.readFileSync("workshops.html", "utf8");
 const academyCss = fs.readFileSync("css/academy.css", "utf8");
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
 assert.ok(scripts.length > 0, "index.html must contain a JavaScript script");
