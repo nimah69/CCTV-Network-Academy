@@ -9,7 +9,7 @@ const appScript = scripts.find((script) => script.includes("const chapters = win
 assert.ok(appScript, "Could not find the main application script");
 new vm.Script(appScript, { filename: "index.html:inline-script" });
 assert.ok(html.includes('<script src="js/calculations.js"></script>'), "Pure calculator module must be loaded by the page");
-assert.ok(["poe(n,w,r)", "bandwidth(n,rate,r)", "storage(n,rate,days,10)", "link(load,speed,limit)"].every((call) => appScript.includes("window.CCTVCalculations." + call)), "UI calculators must call the pure calculation module");
+assert.ok(["poe(n,w,r)", "bandwidth(n,rate,r)", "storage(n,rate,days,10,hours,overhead)", "link(load,speed,limit)"].every((call) => appScript.includes("window.CCTVCalculations." + call)), "UI calculators must call the pure calculation module");
 
 const dataSource = fs.readFileSync("js/academy-data.js", "utf8");
 new vm.Script(dataSource, { filename: "js/academy-data.js" });
@@ -81,6 +81,8 @@ for (const chapterIndex of [0, 1, 2, 8]) {
 assert.ok(appScript.includes('const storeKey="cctvAcademyProgressV1";'), "Existing localStorage key must remain unchanged");
 assert.ok(appScript.includes("function normalizeProgress"), "Legacy progress data must be normalized without discarding existing fields");
 assert.ok(appScript.includes("function exportProgress") && appScript.includes("function importProgressFile"), "JSON progress export/import must be available");
+assert.ok(html.includes('id="hddHours"') && html.includes('id="hddOverhead"'), "Storage calculator must expose recording-hours and overhead inputs");
+assert.ok(html.includes('id="hddResult" aria-live="polite"'), "Storage estimate must announce updated results accessibly");
 assert.ok(appScript.includes("function buildComprehensiveQuiz") && appScript.includes("function shuffleQuestion"), "Randomized quiz generation must be available");
 assert.ok(appScript.includes("state.progress.wrongQuestions"), "Incorrect answers must be persisted for review");
 assert.ok(appScript.includes("منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)"), "Verified source and PDF page references must be displayed");
