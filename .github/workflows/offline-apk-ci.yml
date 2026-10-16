@@ -1,4 +1,4 @@
-name: Validate Offline Android APK
+name: Build Offline Android APK
 
 on:
   workflow_dispatch:
@@ -6,10 +6,12 @@ on:
     paths:
       - "index.html"
       - "workshops.html"
+      - "manifest.webmanifest"
+      - "service-worker.js"
+      - "icons/**"
       - "js/**"
       - "tests/**"
       - "android/**"
-      - ".github/workflows/android-apk.yml"
       - ".github/workflows/offline-apk-ci.yml"
 
 permissions:
@@ -22,7 +24,12 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Run all academy quality checks
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run all academy quality and offline checks
         run: |
           set -e
           for f in tests/*.mjs; do
@@ -30,8 +37,9 @@ jobs:
             node "$f"
           done
 
-      - name: Bundle local website files
+      - name: Bundle all local website assets
         run: |
+          set -e
           mkdir -p android/app/src/main/assets/academy/js android/app/src/main/assets/academy/icons
           cp index.html workshops.html manifest.webmanifest service-worker.js android/app/src/main/assets/academy/
           cp icons/*.svg android/app/src/main/assets/academy/icons/
@@ -41,11 +49,16 @@ jobs:
           test -s android/app/src/main/assets/academy/manifest.webmanifest
           test -s android/app/src/main/assets/academy/service-worker.js
           test -s android/app/src/main/assets/academy/icons/academy-icon.svg
+          for f in js/*.js; do
+            test -s "android/app/src/main/assets/academy/$f"
+          done
           test -s android/app/src/main/assets/academy/js/academy-data.js
           test -s android/app/src/main/assets/academy/js/calculations.js
           test -s android/app/src/main/assets/academy/js/chapter-labs.js
           test -s android/app/src/main/assets/academy/js/chapter-lab-ui.js
           test -s android/app/src/main/assets/academy/js/spaced-review.js
+          echo "Bundled files:"
+          find android/app/src/main/assets/academy -type f | sort
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -67,7 +80,18 @@ jobs:
           gradle-version: "8.7"
 
       - name: Build offline APK
-        run: gradle -p android --no-daemon assembleDebug
+        run: gradle -p android --no-daemon clean assembleDebug
+
+      - name: Verify APK package and signature
+        run: |
+          set -e
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 5
+          sha256sum "$APK"
+          ls -lh "$APK"
 
       - name: Upload offline APK
         uses: actions/upload-artifact@v4
