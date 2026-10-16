@@ -52,6 +52,11 @@ assert.match(compareMobile,/text-anchor="middle" class="fig-compare-title"/,"Com
 assert.match(compareMobile,/text-anchor="middle" class="fig-muted fig-compare-detail"/,"Comparison details must be centered to avoid RTL end-anchor overflow");
 assert.ok(!/x="316"[^>]*class="fig-(?:compare-title|muted fig-compare-detail)"/.test(compareMobile),"Comparison text must not use the fragile right-edge anchor");
 assert.ok((compareMobile.match(/<tspan/g)||[]).length>=9,"Long comparison text should wrap across multiple lines instead of overflowing");
+const compareFigure=api.figureHTML({id:"ch1-compare-regression",type:"compare",title:"مرز وظایف تجهیزات شبکه",caption:"هر کارت یک وظیفه و محدودیت را نشان می‌دهد",note:"نمای ساده‌شده",items:[{title:"Switch",detail:"اتصال دستگاه‌ها در شبکه محلی؛ به‌تنهایی سیاست امنیتی کامل نیست"},{title:"Router",detail:"هدایت بسته میان شبکه‌ها؛ جایگزین کنترل دسترسی نیست"},{title:"Firewall / ACL",detail:"اعمال قواعد دسترسی؛ VLAN به‌تنهایی جایگزین آن نیست"}]});
+assert.match(compareFigure,/<div class="fig-compare-list" role="list">/,"Comparison cards must use responsive HTML text instead of SVG text");
+assert.match(compareFigure,/به‌تنهایی سیاست امنیتی کامل نیست/,"Long Persian comparison copy must remain present");
+assert.match(css,/\.fig-compare-copy p\{[^}]*overflow-wrap:anywhere/,"Comparison descriptions must wrap within mobile card bounds");
+assert.match(css,/grid-template-columns:30px minmax\(0,1fr\)/,"Comparison card content must reserve a flexible text column");
 const semanticFlow=api.render({...sample,type:"flow",nodes:[{label:"دوربین IP",kind:"data"},{label:"سوئیچ PoE",kind:"power"}]});
 assert.match(semanticFlow,/fig-node-data/,"Flow nodes must visually identify data roles");
 assert.match(semanticFlow,/fig-node-power/,"Flow nodes must visually identify power roles");
