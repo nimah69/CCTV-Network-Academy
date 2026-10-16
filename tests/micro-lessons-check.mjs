@@ -22,7 +22,13 @@ for(const chapter of chapters){
  for(const [i,lesson] of lessons.entries()){
   assert.ok(lesson.title&&lesson.definition&&lesson.sourceLabel&&lesson.expandedExplanation&&lesson.why&&lesson.example&&lesson.commonMistake&&lesson.systemConnection&&lesson.tip,"Each micro lesson must have the required learning fields: "+chapter.title+" / "+i);
   assert.equal(lesson.minutes,4,"Each micro lesson should target a 3–5 minute duration");
-  assert.ok(lesson.question&&chapter.quiz.includes(lesson.question),"Immediate question must come from this chapter's question bank");
+  if(lesson.question){
+    assert.ok(chapter.quiz.includes(lesson.question),"Immediate question must come from its chapter bank");
+    assert.equal(lesson.question.o.length,4,"Immediate question must have four options: "+chapter.title+" / "+i);
+    assert.ok(Number.isInteger(lesson.question.a)&&lesson.question.a>=0&&lesson.question.a<lesson.question.o.length,"Correct answer index must match options: "+chapter.title+" / "+i);
+    assert.ok(lesson.question.q&&lesson.question.e,"Question stem and explanation must exist");
+    assert.ok(sandbox.window.CCTVMicroLessons.questionScore({title:lesson.title,body:lesson.definition},lesson.question)>0,"Question must share topic terms with the lesson: "+chapter.title+" / "+i);
+  }
  }
 }
 assert.match(html,/function microLessonHTML\(chapterIndex\)/,"Lesson page must render micro lessons");
@@ -46,4 +52,4 @@ assert.match(html,/اشتباه رایج/,"Micro lessons must call out common mi
 assert.match(html,/ارتباط با سامانه کامل CCTV/,"Micro lessons must connect the topic to the full CCTV system");
 assert.match(sw,/js\/micro-lessons\.js/,"Micro lessons script must be cached for offline use");
 assert.match(sw,/cctv-academy-static-v2026-10-16-5/,"Cache version must change when adding a module");
-console.log(JSON.stringify({status:"passed",chapters:chapters.length,features:["micro-lessons","optional-question","progress","bookmarks","offline-script","legacy-content-preserved"]},null,2));
+console.log(JSON.stringify({status:"passed",chapters:chapters.length,features:["topic-matched-immediate-questions","four-option-answer-index-validation","micro-lessons","optional-question","progress","bookmarks","offline-script","legacy-content-preserved"]},null,2));
