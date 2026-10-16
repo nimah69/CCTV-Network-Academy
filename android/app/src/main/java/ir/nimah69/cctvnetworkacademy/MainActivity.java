@@ -83,8 +83,27 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String target = request.getUrl().toString();
-                return !target.startsWith("file:///android_asset/academy/");
+                Uri uri = request.getUrl();
+                String target = uri.toString();
+                String scheme = uri.getScheme();
+
+                // Keep the bundled academy pages and their hash routes inside this WebView.
+                if ("file".equalsIgnoreCase(scheme)
+                        && target.startsWith("file:///android_asset/academy/")
+                        && (uri.getPath() == null || !uri.getPath().contains(".."))) {
+                    return false;
+                }
+
+                // Open ordinary external web links in the user's browser instead of swallowing them.
+                if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)) {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                    } catch (ActivityNotFoundException exception) {
+                        Toast.makeText(MainActivity.this, "مرورگری برای بازکردن این پیوند پیدا نشد.", Toast.LENGTH_LONG).show();
+                    }
+                }
+                // Block unsupported schemes (including arbitrary intent: URLs).
+                return true;
             }
         });
 
