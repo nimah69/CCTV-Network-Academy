@@ -62,9 +62,9 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       }).catch(async () => {
-        const cached = await caches.match(request);
+        const cached = await caches.match(request, { ignoreSearch: true });
         if (cached) return cached;
-        if (isNavigation) return caches.match("./index.html");
+        if (isNavigation) return caches.match("./index.html", { ignoreSearch: true });
         throw new Error("Network unavailable and no cached copy exists for " + request.url);
       })
     );
