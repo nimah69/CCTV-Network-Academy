@@ -265,7 +265,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .display-tree-option.active{border-color:#28d9c0;background:#123e4b}.display-tree-actions{display:flex;gap:9px;flex-wrap:wrap}.display-tree-actions button{flex:1}.display-tree-actions button:disabled{opacity:.4}
 @media(max-width:420px){.display-path{grid-template-columns:minmax(0,1fr);gap:7px;padding:12px}.display-link{min-height:32px}.display-link span{display:inline}.display-node{padding:12px}.display-inputs{grid-template-columns:minmax(0,1fr)}.display-tree-options{grid-template-columns:minmax(0,1fr)}.display-head{padding:15px}.display-head h2{font-size:18px}}
 
-@font-face{font-family:"Vazirmatn";src:url("./fonts/Vazirmatn-Variable.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
+@font-face{font-family:"Vazirmatn";src:url("../fonts/Vazirmatn-Variable.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
 
 /* CSS منتقل‌شده از بلوک بعد از اسکریپت اصلی */
 
