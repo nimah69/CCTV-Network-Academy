@@ -654,12 +654,18 @@ function gradeReviewQuestion(index,grade){
  saveProgress();
  render();
 }
+function openBookmarkedMicroLesson(chapterIndex,lessonIndex){saveMicroProgress(chapterIndex,{current:lessonIndex});go("lesson",chapterIndex)}
+function microBookmarksHTML(){
+ const entries=Object.entries(state.progress.microBookmarks||{}).flatMap(([chapterKey,indices])=>(Array.isArray(indices)?indices:[]).map(index=>({chapterIndex:Number(chapterKey),lessonIndex:Number(index)}))).filter(item=>Number.isInteger(item.chapterIndex)&&chapters[item.chapterIndex]&&Number.isInteger(item.lessonIndex)&&item.lessonIndex>=0&&item.lessonIndex<window.CCTVMicroLessons.build(chapters[item.chapterIndex]).length);
+ if(!entries.length)return '<div class="panel empty">هنوز ریزدرسی نشان‌گذاری نشده است. هنگام مطالعه از دکمه «نشان‌کردن» استفاده کن.</div>';
+ return '<div class="course-grid">'+entries.map(item=>{const m=window.CCTVMicroLessons.build(chapters[item.chapterIndex])[item.lessonIndex];return '<button class="course" onclick="openBookmarkedMicroLesson('+item.chapterIndex+','+item.lessonIndex+')"><div class="course-icon">★</div><div class="course-body"><h3>'+esc(m.title)+'</h3><p>'+esc(chapters[item.chapterIndex].title)+' · ریزدرس '+faNum(item.lessonIndex+1)+'</p></div></button>'}).join("")+'</div>';
+}
 function savedHTML(){
  const list=chapters.map((c,i)=>({...c,i})).filter(c=>state.progress.done.includes(c.i));
  const wrong=state.progress.wrongQuestions||[];
  const dueCount=wrong.filter(q=>window.CCTVSpacedReview.isDue(q.review,q.savedAt)).length;
  const result=state.progress.comprehensive;
- const position=state.progress.studyPosition;return `${position?`<section class="panel resume-card"><div><span class="pill">آخرین موقعیت مطالعه</span><h2>${esc(chapters[position.chapter]?.title||"ادامه درس")}</h2><p class="muted">بازگشت به همان فصل و موقعیت ذخیره‌شده.</p></div><button class="primary" onclick="resumeStudy()">ادامه از همان‌جا ←</button></section>`:""}<div class="section-head"><div><h2>ادامه یادگیری</h2><p>پیشرفت ذخیره‌شده، نتیجه آزمون جامع و سؤال‌هایی که نیاز به مرور دارند.</p></div></div>
+ const position=state.progress.studyPosition;return `${position?`<section class="panel resume-card"><div><span class="pill">آخرین موقعیت مطالعه</span><h2>${esc(chapters[position.chapter]?.title||"ادامه درس")}</h2><p class="muted">بازگشت به همان فصل و موقعیت ذخیره‌شده.</p></div><button class="primary" onclick="resumeStudy()">ادامه از همان‌جا ←</button></section>`:""}<div class="section-head"><div><h2>ادامه یادگیری</h2><p>پیشرفت ذخیره‌شده، نتیجه آزمون جامع و سؤال‌هایی که نیاز به مرور دارند.</p></div></div>\n <div class="section-head"><div><h2>نشان‌شده‌ها</h2><p>ریزدروس‌هایی که برای مراجعه دوباره ذخیره کرده‌ای.</p></div></div>${microBookmarksHTML()}
  ${result?`<section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">آخرین نتیجه آزمون جامع</h3><p>امتیاز: <b>${result.score} از ${result.total}</b> — ${result.percent}٪</p><p class="muted" style="font-size:11px">زمان ثبت: ${esc(result.at||"نامشخص")}</p></section>`:""}
  <section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">پشتیبان‌گیری از پیشرفت</h3><p class="muted" style="font-size:12px">فایل JSON را برای نگهداری یا انتقال پیشرفت ذخیره کن. ورود فایل، داده‌های موجود را ادغام می‌کند و به‌طور پیش‌فرض آن‌ها را جایگزین نمی‌کند.</p><div class="lesson-actions"><button class="secondary" onclick="exportProgress()">خروجی پیشرفت (JSON)</button><button class="secondary" onclick="document.getElementById('progressImportInput').click()">ورود پیشرفت (JSON)</button><input id="progressImportInput" type="file" accept=".json,application/json" style="display:none" onchange="importProgressFile(this)"></div></section>
  <div class="section-head"><div><h2>سؤال‌های نیازمند مرور</h2><p>${wrong.length} سؤال ثبت‌شده · ${dueCount} مورد آماده مرور</p></div></div>
