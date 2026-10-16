@@ -88,6 +88,10 @@ assert.ok(html.includes('id="hddResult" aria-live="polite"'), "Storage estimate 
 assert.ok(appScript.includes("function buildComprehensiveQuiz") && appScript.includes("function shuffleQuestion"), "Randomized quiz generation must be available");
 assert.ok(appScript.includes("state.progress.wrongQuestions"), "Incorrect answers must be persisted for review");
 assert.ok(appScript.includes("شماره صفحه PDF نیازمند تطبیق"), "Unverified PDF page numbers must be labeled as needing verification");
+const auditDocument = fs.readFileSync("docs/CONTENT-AUDIT-2026-10-15.md", "utf8");
+assert.match(auditDocument, /وضعیت نیازمند تطبیق/,"Content audit must clearly mark PDF page ranges as unverified");
+assert.match(auditDocument, /مدرک قابل بازتولیدی/,"Content audit must disclose the lack of reproducible evidence for prior page verification");
+assert.doesNotMatch(auditDocument, /شماره واقعی صفحات PDF|شماره‌ها، صفحه واقعی در PDF/,"Content audit must not state that stored page ranges are verified PDF pages");
 assert.ok(!appScript.includes("منبع: جزوه افتا (نسخه ۴۵ صفحه‌ای)"), "Unverified PDF provenance must not be presented as confirmed");
 assert.ok(appScript.includes("شماره سؤال در جزوه"), "Source quiz questions must display their original PDF question numbers");
 assert.equal(JSON.stringify(chapters.map((chapter) => chapter.pages)), JSON.stringify(["۱–۴","۵–۱۵","۱۶–۲۹","۳۰–۳۳","۳۳–۳۵","۳۶","۳۶–۳۷","۳۷–۳۸","۳۸–۴۰","۴۱–۴۵","۴۱–۴۲","۴۲–۴۳","۴۳–۴۴","۴۴–۴۵"]), "Legacy page metadata must remain unchanged until it can be checked against the source PDF");
