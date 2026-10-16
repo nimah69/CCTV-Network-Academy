@@ -63,6 +63,6 @@
 ## ساخت نسخه آفلاین اندروید (APK)
 - پوسته Android WebView در پوشه `android/` قرار دارد و محتوای سایت را از فایل‌های بسته‌بندی‌شده در `android/app/src/main/assets/academy/` بارگذاری می‌کند؛ اجرای درس‌ها و کارگاه‌ها به اینترنت وابسته نیست.
 - گردش‌کار `.github/workflows/offline-apk-ci.yml` در push به `main`، Pull Requestهای مرتبط یا اجرای دستی، آزمون‌های پروژه را اجرا، فایل‌های سایت را در بسته Android کپی و APK آزمایشی را می‌سازد.
-- در وضعیت فعلی CI از Gradle 8.7 نصب‌شده در runner استفاده می‌کند؛ Gradle Wrapper استاندارد و فایل `gradle-wrapper.jar` هنوز در مخزن نیست. بنابراین ساخت محلی با `./gradlew` فعلاً پشتیبانی نمی‌شود؛ روش ساخت در [`docs/ANDROID-BUILD.md`](docs/ANDROID-BUILD.md) آمده است.
+- CI با Gradle 8.7 یک Gradle Wrapper معتبر تولید می‌کند، ساخت APK را با همان Wrapper انجام می‌دهد و فایل‌های Wrapper را به‌صورت artifact موقت `Gradle-Wrapper-Bootstrap` ارائه می‌کند. این فایل‌ها هنوز در مخزن commit نشده‌اند؛ بنابراین اجرای محلی `./gradlew` تا اضافه‌شدن آن‌ها به مخزن پشتیبانی نمی‌شود. جزئیات در [`docs/ANDROID-BUILD.md`](docs/ANDROID-BUILD.md) آمده است.
 - پس از اجرای موفق، در GitHub Actions بخش Artifacts فایل ZIP با نام `CCTV-Network-Academy-Offline-APK` را دریافت و APK داخل آن را استخراج کنید.
 - این خروجی `debug APK` برای نصب و آزمایش است، نه بسته انتشار فروشگاه. آفلاین بودن نهایی باید با نصب روی گوشی و فعال‌کردن حالت پرواز بررسی شود.
