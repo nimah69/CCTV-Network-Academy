@@ -12,6 +12,8 @@ assert.match(renderer,/quiz-progress-meta/,"Progress and current question must b
 assert.match(renderer,/selectQuizAnswer\(index,value\)/,"Answers must trigger immediate feedback");
 assert.match(renderer,/previousQuizQuestion/,"Previous navigation must be available");
 assert.match(renderer,/nextQuizQuestion/,"Next navigation must be available");
+assert.match(renderer,/disabled aria-disabled="true"/,"Moving to the next question must be disabled until an answer is selected");
+assert.match(renderer,/ابتدا پاسخ بده · پرسش بعدی/,"The disabled next action must explain why it cannot be used");
 assert.match(renderer,/state\.quizAnswers\[index\]/,"Answers must persist while moving between questions");
 assert.match(renderer,/state\.quizSubmitted/,"Final summary must be a distinct finished state");
 assert.match(html,/state\.progress\.wrongQuestions\.push\(\.\.\.wrong\)/,"Wrong-answer review storage must remain intact");
