@@ -1,5 +1,11 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import review from "../js/spaced-review.js";
+
+const html = fs.readFileSync("index.html", "utf8");
+assert.ok(html.includes('<script src="js/spaced-review.js"></script>'), "Spaced-review module must load locally");
+assert.ok(html.includes("function gradeReviewQuestion") && html.includes("فراموش کردم") && html.includes("به‌خاطر آوردم"), "Saved progress must expose review grading controls");
+assert.ok(html.includes('const storeKey="cctvAcademyProgressV1";'), "Existing progress key must remain unchanged");
 
 const now = Date.parse("2026-10-16T00:00:00.000Z");
 const initial = review.normalize(null, new Date(now).toISOString(), now);
