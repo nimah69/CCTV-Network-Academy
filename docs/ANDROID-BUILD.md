@@ -22,4 +22,4 @@ CI آزمون‌های `tests/*.mjs` را اجرا می‌کند، فایل‌ه
 - نتیجه، مدل گوشی، نسخه Android و commit مورد آزمون را در `docs/MOBILE-ACCEPTANCE-CHECKLIST.md` ثبت کنید.
 
 ## محدودیت شناخته‌شده
-تا زمانی که Wrapper معتبر به مخزن اضافه نشده، CI به Gradle نصب‌شده در runner وابسته است. پس از اضافه‌کردن wrapper رسمی، `./gradlew --version` و `./gradlew -p android clean assembleDebug` باید در CI آزمایش شوند.
+محدودیت باقی‌مانده این است که Wrapper هنوز در Git ثبت نشده است؛ ساخت CI با Wrapper تولیدشده در همان اجرا موفق شده، اما ساخت محلی مستقل و تکرارپذیر با `./gradlew` هنوز آماده نیست.
