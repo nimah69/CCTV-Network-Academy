@@ -2,6 +2,9 @@ name: Build Offline Android APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
   pull_request:
     paths:
       - "index.html"
