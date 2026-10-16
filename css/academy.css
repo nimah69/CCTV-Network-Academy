@@ -807,3 +807,10 @@ button,
 .bottom-nav [data-view].active{background:#173c53;color:#e7fcff;box-shadow:inset 0 0 0 1px #2dd4bf55}
 @media(max-width:850px){.lesson-progress-sticky{top:66px;margin-inline:-2px;padding:9px 11px}.lesson-progress-topline strong{font-size:12px}.lesson-progress-meta{font-size:10px}.lesson-actions{scroll-margin-bottom:calc(80px + env(safe-area-inset-bottom))}}
 @media(max-width:380px){.lesson-progress-sticky{padding:8px 9px}.lesson-progress-topline strong{max-width:76vw}.lesson-progress-meta{gap:7px}}
+
+
+/* Stage 5: chapter-specific mission previews in the visible learning path */
+.cv-mission-preview .mission-card__context{margin:8px 0;color:var(--muted,#a9bad0);font-size:14px;line-height:1.85}
+.cv-mission-preview .mission-card .primary{width:100%;white-space:normal;line-height:1.65}
+.cv-mission-preview .callout{margin:12px 0;font-size:14px}
+@media(max-width:420px){.cv-mission-preview .mission-card__context{font-size:13px}.cv-mission-preview .mission-card .primary{padding:10px 12px}}
