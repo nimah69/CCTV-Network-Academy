@@ -135,6 +135,15 @@ assert.ok(workshopsHtml.includes("Mobile diagram and typography redesign") && wo
 assert.ok(workshopsHtml.includes("overflow-wrap:anywhere"), "Long diagram labels must wrap instead of causing horizontal overflow");
 
 
+assert.match(appScript, /function updateLessonProgress\(\)/, "Lesson reading progress must update as the user scrolls");
+assert.match(appScript, /function restoreStudyPosition\(p\)/, "Saved lesson position must be restored after navigation or reload");
+assert.match(appScript, /sectionOffset/, "Study position must retain a section-relative fallback");
+assert.match(html, /id="lessonProgress"/, "Lesson view must expose a sticky progress indicator");
+assert.match(html, /id="lessonProgressBar"/, "Lesson progress bar must be present");
+assert.match(html, /id="lessonSectionLabel"/, "Current lesson section must be identified");
+assert.match(academyCss, /\.lesson-progress-sticky\{position:sticky;top:76px/, "Lesson progress must stick below the desktop header");
+assert.match(academyCss, /@media\(max-width:850px\)\{\.lesson-progress-sticky\{top:66px/, "Lesson progress must stick below the mobile header");
+assert.match(academyCss, /\.bottom-nav \[data-view\]\.active/, "Mobile navigation must visibly indicate the current view");
 assert.match(html, /function chapterOneLearningHTML\(\)/, "Chapter one must use the new card-based visual learning experience");
 assert.match(html, /function chapterLearningTemplate\(chapter,chapterIndex\)/, "All chapters must use a shared outer learning template");
 assert.match(html, /function chapterOneStepContent\(step\)/, "Chapter one must provide explanatory step-by-step guidance");
