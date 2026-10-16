@@ -268,7 +268,7 @@ function topoMessage(message){$("topologyBuilderMessage").textContent=message}
 $("addTopologyNode").addEventListener("click",()=>{
  const name=$("topoDeviceName").value.trim(),type=$("topoDeviceType").value,ip=$("topoDeviceIp").value.trim(),vlan=$("topoDeviceVlan").value.trim(),poe=$("topoDevicePoe").value;
  if(!name){topoMessage("برای تجهیز یک نام وارد کن.");$("topoDeviceName").focus();return}
- if(ip&&!/^((25[0-5]|2[0-4]\d|1?\d?\d)(\.|$)){4}$/.test(ip)){topoMessage("قالب IP معتبر نیست؛ نمونه: 192.168.10.21");return}
+ if(ip&&!/^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(ip)){topoMessage("قالب IP معتبر نیست؛ نمونه: 192.168.10.21");return}
  if(vlan&&(!/^\d+$/.test(vlan)||Number(vlan)<1||Number(vlan)>4094)){topoMessage("VLAN باید عددی بین ۱ تا ۴۰۹۴ باشد.");return}
  const id="custom"+(++topologyNodeSeq);
  topologyNodes.push({id,name,type,ip,vlan,poe});
@@ -289,7 +289,7 @@ $("topologyCanvas").addEventListener("change",event=>{
  const field=event.target.dataset.nodeField,id=event.target.dataset.nodeId;
  if(!field||!id)return;const node=topoNode(id);if(!node)return;
  const value=event.target.value.trim();
- if(field==="ip"&&value&&!/^((25[0-5]|2[0-4]\d|1?\d?\d)(\.|$)){4}$/.test(value)){topoMessage("قالب IP معتبر نیست؛ مقدار قبلی حفظ شد.");event.target.value=node.ip;return}
+ if(field==="ip"&&value&&!/^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/.test(value)){topoMessage("قالب IP معتبر نیست؛ مقدار قبلی حفظ شد.");event.target.value=node.ip;return}
  if(field==="vlan"&&value&&(!/^\d+$/.test(value)||Number(value)<1||Number(value)>4094)){topoMessage("VLAN باید خالی یا عددی بین ۱ تا ۴۰۹۴ باشد.");event.target.value=node.vlan;return}
  node[field]=value;topoMessage("مشخصات «"+node.name+"» به‌روز شد.");
 });
