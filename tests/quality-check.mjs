@@ -194,7 +194,7 @@ assert.match(academyCss, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answ
 assert.match(academyCss, /\.chapter-visual \.cv-concept summary b,/, "Visual card titles must explicitly set a readable foreground color");
 assert.ok(academyCss.includes(".chapter-visual .cv-answer-grid button { background: #ffffff;") && academyCss.includes(".chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }"), "White answer cards must use dark readable text");
 const lessonRendererStart = appScript.indexOf("function lessonHTML()");
-const lessonRendererEnd = appScript.indexOf("function legacyChapterLabHTML", lessonRendererStart);
+const lessonRendererEnd = appScript.indexOf("function explanationHTML", lessonRendererStart);
 const lessonRenderer = appScript.slice(lessonRendererStart, lessonRendererEnd);
 const visibleTemplateIndex = lessonRenderer.indexOf("chapterLearningTemplate(c,state.chapter)");
 const collapsedTextIndex = lessonRenderer.indexOf('<details class="micro-full-content">');
