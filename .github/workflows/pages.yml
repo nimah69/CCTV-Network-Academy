@@ -37,8 +37,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Validate JavaScript and question bank
-        run: node tests/quality-check.mjs
+      - name: Run all required quality checks
+        run: |
+          set -e
+          for f in tests/*.mjs; do
+            echo "== Running $f"
+            node "$f"
+          done
   deploy:
     needs: [build, quality]
     environment:
