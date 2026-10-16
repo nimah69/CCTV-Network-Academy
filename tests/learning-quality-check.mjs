@@ -18,7 +18,8 @@ assert.ok(source.includes("وضعیت Profileهای ONVIF") && source.includes("
 
 const normalize = (value) => String(value || "").trim().toLocaleLowerCase().replace(/\s+/g, " ");
 const questionKeys = questions.map((q) => normalize(q.q));
-assert.equal(new Set(questionKeys).size, questionKeys.length, "Question stems must be unique after whitespace normalization");
+const duplicateStems = questions.filter((question, index) => questionKeys.indexOf(questionKeys[index]) !== index).map(question => ({ chapter: question.chapterTitle, question: question.q }));
+assert.equal(new Set(questionKeys).size, questionKeys.length, "Question stems must be unique after whitespace normalization. Duplicates: " + JSON.stringify(duplicateStems));
 
 const kindCounts = {};
 const difficultyCounts = {};
