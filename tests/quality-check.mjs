@@ -167,7 +167,7 @@ assert.match(html, /@media\(max-width:620px\)\{\.cv-concept-grid,\.cv-answer-gri
 
 assert.match(html, /\.chapter-visual \.cv-concept summary b,/, "Visual card titles must explicitly set a readable foreground color");
 assert.ok(html.includes(".chapter-visual .cv-answer-grid button { background: #ffffff;") && html.includes(".chapter-visual .cv-answer-grid button.chosen { background: #f1f2ff; color: #172033; }"), "White answer cards must use dark readable text");
-assert.match(html, /\.chapter-visual \.cv-section-head p \\{ color: #596579; \\}/, "Muted section descriptions must retain readable contrast");
+assert.ok(html.includes(".chapter-visual .cv-section-head p { color: #596579; }"), "Muted section descriptions must retain readable contrast");
 
 
 console.log(JSON.stringify({
