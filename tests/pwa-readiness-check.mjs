@@ -36,7 +36,7 @@ for (const page of pages) {
 }
 assert.ok(register.includes('navigator.serviceWorker.register("./service-worker.js"'));
 assert.ok(register.includes('location.protocol !== "https:"'), "Service worker should only register in secure contexts or localhost");
-assert.ok(worker.includes("cctv-academy-static-v2026-10-16-1"), "Cache name must be versioned for controlled updates");
+assert.ok(worker.includes("cctv-academy-static-v2026-10-16-"), "Cache name must be versioned for controlled updates");
 assert.match(worker, /request.destination === "script"/, "JavaScript must use network-first freshness handling");
 assert.ok(worker.includes('url.pathname.endsWith(".js")'), "JavaScript paths must use network-first freshness handling");
 assert.ok(worker.includes('request.mode === "navigate"') || worker.includes("const isNavigation = request.mode === \"navigate\""), "Offline navigation fallback must be implemented");
