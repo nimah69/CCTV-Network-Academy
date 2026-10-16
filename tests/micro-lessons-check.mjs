@@ -30,6 +30,10 @@ assert.match(html,/function completeAndMoveMicroLesson/,"Micro lessons must trac
 assert.match(html,/function answerMicroLesson/,"Immediate questions must save answers");
 assert.match(html,/function skipMicroQuestion/,"Immediate questions must be skippable");
 assert.match(html,/function toggleMicroBookmark/,"Micro lessons must support bookmarks");
+assert.match(html,/function searchMicroLessons\(query\)/,"Search must index micro lesson text");
+assert.match(html,/m\.commonMistake,m\.systemConnection/,"Search must include supplemental explanation fields");
+assert.match(html,/function openSearchMicroLesson/,"Search results must open the matching micro lesson");
+assert.match(html,/micro-search-results/,"Search results must be visibly rendered");
 assert.match(html,/function microBookmarksHTML/,"Bookmarks must be listed in continue learning");
 assert.match(html,/microLessons:/,"New progress field must be normalized");
 assert.match(html,/microBookmarks:/,"Bookmark progress field must be normalized");
