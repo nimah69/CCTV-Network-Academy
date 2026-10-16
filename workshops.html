@@ -118,7 +118,7 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 <div class="card"><div class="grid"><div class="field"><label for="projectName">نام پروژه</label><input id="projectName" value="سامانه نظارت فروشگاه"></div><div class="field"><label for="projectCams">تعداد دوربین</label><input id="projectCams" type="number" min="1" value="12"></div><div class="field"><label for="projectRate">Bitrate هر دوربین (Mbps)</label><input id="projectRate" type="number" min=".1" step=".1" value="4"></div><div class="field"><label for="projectDays">روزهای نگهداری</label><input id="projectDays" type="number" min="1" value="30"></div><div class="field"><label for="projectWatts">توان هر دوربین (وات)</label><input id="projectWatts" type="number" min=".1" value="9"></div><div class="field"><label for="projectCable">میانگین طول کابل (متر)</label><input id="projectCable" type="number" min="1" value="55"></div><div class="field"><label for="projectStorage">ضبط</label><select id="projectStorage"><option value="continuous">پیوسته ۲۴ ساعته</option><option value="motion">تشخیص حرکت (برآورد ۵۰٪ زمان)</option></select></div><div class="field"><label for="projectSecurity">سطح امنیت هدف</label><select id="projectSecurity"><option>پایه</option><option selected>استاندارد</option><option>بالا</option></select></div></div><button class="btn primary" id="buildReport">ساخت گزارش پروژه</button><button class="btn" id="downloadReport">ذخیره گزارش TXT</button><button class="btn" id="printReport">چاپ / ذخیره PDF</button><div id="capstoneResult" aria-live="polite"></div></div></section>
 </main></div><footer class="footer">این آزمایشگاه آموزشی است؛ نتایج محاسبات برآورد اولیه‌اند و جایگزین دیتاشیت، استاندارد لازم‌الاجرا، اندازه‌گیری یا آزمون میدانی نیستند.</footer>
 </div>
-<script src="./js/calculations.js?v=20261016-2"></script>
+<script src="./js/calculations.js?v=20261016-3"></script>
 <script>
 (function(){
 "use strict";
@@ -164,5 +164,5 @@ document.querySelectorAll("[data-sim-toggle]").forEach(button=>{button.addEventL
 renderScenarioPicks();renderScenario();updateMetrics();
 })();
 </script>
-<script src="./js/pwa-register.js?v=20261016-2"></script>
+<script src="./js/pwa-register.js?v=20261016-3"></script>
 </body></html>
