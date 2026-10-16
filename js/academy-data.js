@@ -333,9 +333,7 @@ const systemConnections = [
 ["ارتباط با سامانه کامل — توضیح تکمیلی","سؤال‌های منبعی را به مفاهیم اصلی شبکه، تصویربرداری، PoE، امنیت، ذخیره‌سازی و استانداردها وصل کن. اگر پاسخ به نسخه منبع وابسته است، آن را با متن منبع تطبیق بده و توضیح تکمیلی را با پاسخ PDF یکی نکن."],
 ["ارتباط با سامانه کامل — توضیح تکمیلی","در مصاحبه فنی، سامانه را به‌صورت زنجیره دوربین، انتقال داده، NVR، ذخیره‌سازی، نمایش و نگهداری توضیح بده. سپس فرضیه و آزمون را در همین زنجیره جای بده تا اقدام پیشنهادی از زمینه واقعی جدا نماند."]
 ];
-chapters.forEach((chapter,index)=>{
-  chapter.supplemental.items.push(commonMistakes[index],systemConnections[index]);
-});
+
 
 // یادداشت زمان‌دار استاندارد: وضعیت Profileهای ONVIF باید پیش از خرید با منبع رسمی دوباره بررسی شود.
 chapters[7].supplemental.items.push([
@@ -599,6 +597,10 @@ for(const entry of longestCandidates.slice(0,100)){
 questionEntries.forEach((entry,index)=>{
  const q=entry.question,target=index%4;
  if(q.a!==target){const correct=q.o.splice(q.a,1)[0];q.o.splice(target,0,correct);q.a=target}
+});
+
+chapters.forEach((chapter,index)=>{
+  chapter.supplemental.items.push(commonMistakes[index],systemConnections[index]);
 });
 
 return { chapters };
