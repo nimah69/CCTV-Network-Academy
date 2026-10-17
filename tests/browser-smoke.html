@@ -3,6 +3,7 @@
 <style>html,body{margin:0;padding:0}iframe{display:block;border:0}</style><body data-smoke-result="pending"><iframe id="app" src="/workshops.html" title="برنامه کارگاه‌ها" style="width:100%;height:800px"></iframe><pre id="result">در حال آزمون…</pre>
 <script>
 const done=(state,message)=>{document.body.dataset.smokeResult=state;document.getElementById("result").textContent=message};
+const requestedWidth=Number(new URLSearchParams(location.search).get("width"));if(requestedWidth>0)document.getElementById("app").style.width=requestedWidth+"px";
 document.getElementById("app").addEventListener("load",()=>{
  try{
   const w=document.getElementById("app").contentWindow,d=w.document;
