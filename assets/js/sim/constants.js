@@ -6,17 +6,17 @@ export const ENGINEERING = Object.freeze({
   poe: Object.freeze({
     // Nominal voltage is a model input only; real PSE/PD voltage depends on class, load and cabling.
     nominalVoltageV: 48,
-    // IEEE 802.3af Type 1: maximum PSE output and minimum power available at PD.
+    // IEEE 802.3af Type 1: maximum PSE output and minimum power available at PD. Cross-check IEEE 802.3-2022 and the exact PSE/PD datasheet.
     af: Object.freeze({ label: "IEEE 802.3af / Type 1", pseW: 15.4, pdW: 12.95, pairs: 2 }),
     // IEEE 802.3at Type 2.
     at: Object.freeze({ label: "IEEE 802.3at / Type 2", pseW: 30, pdW: 25.5, pairs: 2 }),
     // IEEE 802.3bt Type 3; check implementation and class-specific limits in the PSE/PD datasheets.
     bt3: Object.freeze({ label: "IEEE 802.3bt / Type 3", pseW: 60, pdW: 51, pairs: 4 }),
-    // IEEE 802.3bt Type 4; 90 W PSE / 71.3 W PD are commonly cited maxima, not a promise for every port.
+    // IEEE 802.3bt Type 4; 90 W PSE / 71.3 W PD. Reference overview: https://www.ieee802.org/3/bt/public/mar15/yseboodt_2_0315.pdf; confirm exact class and device datasheets.
     bt4: Object.freeze({ label: "IEEE 802.3bt / Type 4", pseW: 90, pdW: 71.3, pairs: 4 })
   }),
   ethernet: Object.freeze({
-    // ISO/IEC 11801 and ANSI/TIA-568 channel design guidance: 100 m total channel, commonly 90 m permanent link + 10 m patch cords.
+    // ISO/IEC 11801 and ANSI/TIA-568 channel guidance: 100 m total channel, commonly 90 m permanent link + 10 m cords. Cord derating and current edition matter; see https://standards.tiaonline.org/node/7423.
     maxCopperChannelM: 100,
     typicalPermanentLinkM: 90,
     typicalPatchCordsTotalM: 10,
@@ -26,13 +26,13 @@ export const ENGINEERING = Object.freeze({
     ccaResistanceFactor: 1.575
   }),
   network: Object.freeze({
-    // RFC 1918 private IPv4 blocks.
+    // RFC 1918 private IPv4 blocks: https://www.rfc-editor.org/rfc/rfc1918.html.
     privateRanges: Object.freeze([
       Object.freeze({ cidr: "10.0.0.0/8", start: 0x0a000000, end: 0x0affffff }),
       Object.freeze({ cidr: "172.16.0.0/12", start: 0xac100000, end: 0xac1fffff }),
       Object.freeze({ cidr: "192.168.0.0/16", start: 0xc0a80000, end: 0xc0a8ffff })
     ]),
-    // RFC 3021 allows both addresses of a /31 on point-to-point links.
+    // RFC 3021 allows both addresses of a /31 on point-to-point links: https://www.rfc-editor.org/rfc/rfc3021.html.
     rfc3021Prefix: 31,
     linkLocalStart: 0xa9fe0000,
     linkLocalEnd: 0xa9feffff,
@@ -47,7 +47,7 @@ export const ENGINEERING = Object.freeze({
     typicalRemoteStreamMbps: 0.5,
     typicalPtzExtraW: 8,
     typicalNvrOtherLoadW: 80,
-    // Legacy DORI thresholds from IEC 62676-4:2014/2015; IEC 62676-4:2025 revised the density scale.
+    // Legacy DORI thresholds from IEC 62676-4:2014/2015. IEC 62676-4:2025 revises density levels; preview: https://assets.vde-verlag.de/iec-normen/preview-pdf/info_iec62676-4%7Bed2.0.RLV%7Den.pdf.
     legacyDori: Object.freeze({ detection: 25, observation: 62.5, recognition: 125, identification: 250 }),
     currentDensityLevels2025: Object.freeze([20, 40, 80, 125, 250, 500, 1500])
   }),
