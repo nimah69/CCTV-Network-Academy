@@ -67,7 +67,7 @@ if(root){
  });
  $("applyRealAction").addEventListener("click",()=>{
   const action=actionSelect.value,cost=actionCost(action==="replace-cable"?"replaceCable":action==="replace-disk"?"replaceDevice":action);
-  replaceGraph(action);attempts.push({tool:"action",target:targetSelect.value,action,ok:true,seconds:Math.round((Date.now()-startedAt)/1000)});downtime+=cost.minutes;
+  replaceGraph(action);attempts.push({tool:"action",target:targetSelect.value,action,ok:true,seconds:Math.round((Date.now()-startedAt)/1000)});downtime+=cost.minutes;virtualCost+=cost.cost;
   result.textContent="اقدام مجازی «"+actionSelect.options[actionSelect.selectedIndex].text+"» اجرا شد؛ "+cost.minutes+" دقیقه توقف و "+cost.cost+" واحد هزینه مدل شد. وضعیت را دوباره تست کن.";
   populatePoints();renderState();
  });
