@@ -101,7 +101,8 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const state=nodeState[node.id];
     if(node.type==="nvr"){
       state.recording=state.online&&node.recordingEnabled!==false&&node.diskHealthy!==false&&node.freeStorageTB!==0;
-      if(node.diskHealthy===false)state.reasons.push("خطای دیسک NVR");\n      if(node.raidDegraded)events.push({time:now,type:"raid-degraded",message:"یک دیسک از آرایه خارج شده؛ RAID در وضعیت degraded است."});
+      if(node.diskHealthy===false)state.reasons.push("خطای دیسک NVR");
+      if(node.raidDegraded)events.push({time:now,type:"raid-degraded",message:"یک دیسک از آرایه خارج شده؛ RAID در وضعیت degraded است."});
       if(node.freeStorageTB===0)state.reasons.push("فضای ذخیره‌سازی پر است");
       if(node.hdmiConnected===false)state.reasons.push("خروجی HDMI یا اتصال نمایشگر مشکل دارد");
       continue;
