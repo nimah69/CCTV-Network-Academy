@@ -1,4 +1,4 @@
-import { calculatePoe } from "../calc/poe.js";
+import { normalizeDigits } from "../units.js";\nimport { calculatePoe } from "../calc/poe.js";
 import { subnet, sameSubnet, validateGateway, planVLSM } from "../calc/subnet.js";
 import { calculateStorage } from "../calc/storage.js";
 import { recommendCable } from "../calc/cable.js";
@@ -9,7 +9,7 @@ import { designCCTV } from "../calc/design.js";
 
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n).toLocaleString("fa-IR",{maximumFractionDigits:2});
-const num=(id,label,min=0,max=Infinity,integer=false)=>{const el=$(id);if(!el)throw new Error("فیلد "+label+" پیدا نشد.");const raw=el.value.replace(/[۰-۹٠-٩]/g,d=>"۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩".indexOf(d)<10?"۰۱۲۳۴۵۶۷۸۹".indexOf(d):"٠١٢٣٤٥٦٧٨٩".indexOf(d)-10).replace(/٫/g,".");if(raw.trim()==="")throw new Error(label+" را وارد کن.");const n=Number(raw);if(!Number.isFinite(n)||n<min||n>max||(integer&&!Number.isInteger(n)))throw new Error(label+" باید "+(integer?"عدد صحیح ":"")+"در محدوده "+min+" تا "+max+" باشد.");return n};
+const num=(id,label,min=0,max=Infinity,integer=false)=>{const el=$(id);if(!el)throw new Error("فیلد "+label+" پیدا نشد.");const raw=normalizeDigits(el.value);if(raw.trim()==="")throw new Error(label+" را وارد کن.");const n=Number(raw);if(!Number.isFinite(n)||n<min||n>max||(integer&&!Number.isInteger(n)))throw new Error(label+" باید "+(integer?"عدد صحیح ":"")+"در محدوده "+min+" تا "+max+" باشد.");return n};
 function show(id,text,kind=""){const el=$(id);if(!el)return;el.className="output "+kind;el.style.whiteSpace="pre-wrap";el.textContent=text}
 function bind(id,handler){const el=$(id);if(!el)return;el.addEventListener("click",event=>{event.preventDefault();event.stopImmediatePropagation();try{handler(event)}catch(error){const outputId=({"calcPoe":"poeResult","runPoeSimulation":"poeSimulationResult","calcSubnet":"subnetResult","calcStorage":"storageResult","recommendCable":"cableResult","scoreSecurity":"securityResult","buildReport":"capstoneResult","downloadReport":"capstoneResult","downloadJsonReport":"capstoneResult","printReport":"capstoneResult","planVlsm":"vlsmResult","calcUps":"upsResult","calcLens":"lensResult","exportCommissioning":"commissioningResult","runSwitchFeatureSim":"switchFeaturesResult"})[id];if(outputId)show(outputId,"خطا: "+error.message,"bad")}},true)}
 function getPoe(){
