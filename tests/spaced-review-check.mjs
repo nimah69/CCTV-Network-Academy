@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import review from "../js/spaced-review.js";
+import vm from "node:vm";
+const reviewModule = { exports: {} };
+vm.runInNewContext(fs.readFileSync("js/spaced-review.js", "utf8"), { module: reviewModule, window: {} });
+const review = reviewModule.exports;
 
 const html = fs.readFileSync("index.html", "utf8");
 assert.ok(html.includes('<script src="js/spaced-review.js"></script>'), "Spaced-review module must load locally");
