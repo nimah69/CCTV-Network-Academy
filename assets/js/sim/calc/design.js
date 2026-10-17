@@ -10,17 +10,17 @@ import { createGraph } from "../graph.js";
 import { evaluateNetwork } from "../engine.js";
 
 function buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM,poeBudgetW,storage,raid,diskCount,trafficMbps}){
- const profile=ENGINEERING.poe[poeStandard]||ENGINEERING.poe.at,ports=Array.from({length:cameras+3},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,poeEnabled:i<cameras,poeBudgetW:profile.pseW,poeDrawW:i<cameras?poeWatts:0}));
+ const profile=ENGINEERING.poe[poeStandard]||ENGINEERING.poe.at,ports=Array.from({length:cameras+3},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,poeEnabled:i<cameras,poeBudgetW:profile.pseW,poeDrawW:i<cameras?poeWatts+((poeWatts/ENGINEERING.poe.nominalVoltageV)**2*ENGINEERING.ethernet.copperLoopResistanceOhmPerKm*cableLengthM/1000/(profile.pairs===4?2:1)):0}));
  const nodes=[{id:"sw",type:"poe-switch",poeBudgetW,ports}];
  for(let i=0;i<cameras;i++){
   const host=20+(i%230),third=Math.floor(i/230);
-  nodes.push({id:"cam"+(i+1),type:"camera",ip:"10.10."+third+"."+host,prefix:16,vlan:10,poeRequired:true,minPoeW:poeWatts*.85,rtspEnabled:true,ports:[{id:"eth0",vlan:10}]});
+  nodes.push({id:"cam"+(i+1),type:"camera",ip:"10.10."+third+"."+host,prefix:16,vlan:10,poeRequired:true,minPoeW:poeWatts*.9,rtspEnabled:true,ports:[{id:"eth0",vlan:10}]});
  }
  nodes.push({id:"nvr",type:"nvr",ip:"10.10.255.10",prefix:16,vlan:10,recordingEnabled:true,diskHealthy:true,freeStorageTB:storage.usableTB,raid,diskCount,ports:[{id:"eth0",vlan:10}]});
  nodes.push({id:"router",type:"router",ip:"10.10.255.1",prefix:16,vlan:10,ports:[{id:"lan",vlan:10}]});
  nodes.push({id:"service",type:"laptop",ip:"10.10.255.50",prefix:16,vlan:10,ports:[{id:"eth0",vlan:10}]});
  const links=[];
- for(let i=0;i<cameras;i++)links.push({id:"cam-link-"+(i+1),type:"poe",from:{node:"sw",port:"p"+(i+1)},to:{node:"cam"+(i+1),port:"eth0"},lengthM:cableLengthM});
+ for(let i=0;i<cameras;i++)links.push({id:"cam-link-"+(i+1),type:"poe",from:{node:"sw",port:"p"+(i+1)},to:{node:"cam"+(i+1),port:"eth0"},lengthM:cableLengthM,pairs:profile.pairs});
  links.push({id:"nvr-link",type:"ethernet",from:{node:"sw",port:"p"+(cameras+1)},to:{node:"nvr",port:"eth0"},lengthM:3});
  links.push({id:"router-link",type:"ethernet",from:{node:"sw",port:"p"+(cameras+2)},to:{node:"router",port:"lan"},lengthM:3});
  links.push({id:"service-link",type:"ethernet",from:{node:"sw",port:"p"+(cameras+3)},to:{node:"service",port:"eth0"},lengthM:3});
