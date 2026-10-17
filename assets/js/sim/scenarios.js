@@ -29,16 +29,16 @@ function random(seed){let x=seed>>>0;return()=>{x=(Math.imul(x,1664525)+10139042
 function baseGraph(seed){
  const r=random(seed),poePort=1+Math.floor(r()*8),host=20+Math.floor(r()*180),length=15+Math.floor(r()*80);
  const nodes=[
- {id:"sw",type:"poe-switch",poeBudgetW:120,ports:Array.from({length:10},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,duplex:"full",poeEnabled:i<8,poeBudgetW:30,poeDrawW:i===poePort-1?12:0}))},
+ {id:"sw",type:"poe-switch",poeBudgetW:120,ports:Array.from({length:12},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,duplex:"full",poeEnabled:i<8,poeBudgetW:30,poeDrawW:i===poePort-1?12:0}))},
  {id:"cam",type:"camera",ip:"192.168.10."+host,prefix:24,vlan:10,poeRequired:true,minPoeW:9,rtspEnabled:true,firmware:"stable",clockSynced:true,irHealthy:true,ports:[{id:"eth0",vlan:10}]},
  {id:"nvr",type:"nvr",ip:"192.168.10.10",prefix:24,vlan:10,recordingEnabled:true,diskHealthy:true,freeStorageTB:3,firmware:"stable",clockSynced:true,hdmiConnected:true,ports:[{id:"eth0",vlan:10}]},
  {id:"router",type:"router",ip:"192.168.10.1",prefix:24,vlan:10,ports:[{id:"lan",vlan:10}]},
- {id:"monitor",type:"monitor",input:"HDMI1",hdmiConnected:true,ports:[{id:"hdmi"}]}
+ {id:"monitor",type:"monitor",input:"HDMI1",hdmiConnected:true,ports:[{id:"hdmi"}]},\n {id:"service-laptop",type:"laptop",ip:"192.168.10.50",prefix:24,vlan:10,ports:[{id:"eth0",vlan:10}]}
  ];
  const links=[
  {id:"cam-link",type:"poe",from:{node:"sw",port:"p"+poePort},to:{node:"cam",port:"eth0"},lengthM:length,quality:"normal"},
  {id:"nvr-link",type:"ethernet",from:{node:"sw",port:"p9"},to:{node:"nvr",port:"eth0"},lengthM:3},
- {id:"router-link",type:"ethernet",from:{node:"sw",port:"p10"},to:{node:"router",port:"lan"},lengthM:2}
+ {id:"router-link",type:"ethernet",from:{node:"sw",port:"p10"},to:{node:"router",port:"lan"},lengthM:2},\n {id:"service-link",type:"ethernet",from:{node:"sw",port:"p11"},to:{node:"service-laptop",port:"eth0"},lengthM:3}
  ];
  return {nodes,links,vlans:[{id:10,name:"CCTV"},{id:20,name:"Management"}],meta:{poePort,length,host}};
 }
@@ -47,8 +47,8 @@ function inject(def,model,seed){
  switch(def.fix){
  case "enable-port": if(def.id==="basic-port")sw.ports[model.meta.poePort-1].adminUp=false;else sw.ports[model.meta.poePort-1].poeEnabled=false;break;
  case "replace-cable": link.cableFault="open";link.quality="marginal";break;
- case "fix-ip": n.push({...cam,id:"rogue",ip:cam.ip,type:"camera",ports:[{id:"eth0",vlan:10}]});break;
- case "select-hdmi": n.find(x=>x.id==="monitor").input="HDMI2";break;
+ case "fix-ip": n.push({...cam,id:"rogue",ip:cam.ip,type:"camera",poeRequired:false,ports:[{id:"eth0",vlan:10}]});break;
+ case "select-hdmi": n.find(x=>x.id==="monitor").input="HDMI2";nvr.hdmiConnected=false;break;
  case "free-storage": nvr.freeStorageTB=0;break;
  case "increase-budget": sw.poeBudgetW=55;for(const p of sw.ports)if(p.poeEnabled)p.poeDrawW=12;break;
  case "match-duplex": link.duplexMismatch=true;link.crcErrors=1200;break;
