@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, extname } from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 const root=resolve(".");
 const chromeCandidates=["google-chrome","google-chrome-stable","chromium","chromium-browser"];
 function findChrome(){for(const name of chromeCandidates){const r=spawnSync("which",[name],{encoding:"utf8"});if(r.status===0&&r.stdout.trim())return r.stdout.trim()}return null}
-test("headless browser exercises interactive workshops and engineering calculators",async()=>{
+function runChrome(chrome,args){return new Promise((resolveRun,reject)=>{const child=spawn(chrome,args,{stdio:["ignore","pipe","pipe"]});let stdout="",stderr="";const timer=setTimeout(()=>{child.kill("SIGKILL");reject(new Error("Chrome timed out after 45 seconds"))},45000);child.stdout.setEncoding("utf8").on("data",chunk=>stdout+=chunk);child.stderr.setEncoding("utf8").on("data",chunk=>stderr+=chunk);child.on("error",error=>{clearTimeout(timer);reject(error)});child.on("close",(code,signal)=>{clearTimeout(timer);resolveRun({status:code??-1,signal,stdout,stderr})})})}
+test("headless browser exercises interactive workshops at desktop and mobile widths",async()=>{
  const chrome=findChrome();
  assert.ok(chrome,"A headless Chromium/Chrome binary is required for browser smoke tests.");
  const server=createServer((req,res)=>{
@@ -22,11 +23,11 @@ test("headless browser exercises interactive workshops and engineering calculato
  try{
   const address=server.address();
   for(const width of [360,768,1280]){
-   const result=spawnSync(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--disable-extensions","--disable-background-networking",`--window-size=${width},900`,"--virtual-time-budget=10000","--dump-dom",`http://127.0.0.1:${address.port}/tests/browser-smoke.html`],{encoding:"utf8",timeout:45000,maxBuffer:8*1024*1024});
-   assert.equal(result.status,0,"Chrome exited unsuccessfully at "+width+"px:\\n"+result.stderr.slice(-4000));
-   assert.match(result.stdout,/data-smoke-result="pass"/,"Browser smoke failed at "+width+"px:\\n"+result.stdout.slice(-5000)+"\\n"+result.stderr.slice(-4000));
+   const result=await runChrome(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--disable-extensions","--disable-background-networking",`--window-size=${width},900`,"--virtual-time-budget=10000","--dump-dom",`http://127.0.0.1:${address.port}/tests/browser-smoke.html`]);
+   assert.equal(result.status,0,"Chrome exited unsuccessfully at "+width+"px:\n"+result.stderr.slice(-4000));
+   assert.match(result.stdout,/data-smoke-result="pass"/,"Browser smoke failed at "+width+"px:\n"+result.stdout.slice(-5000)+"\n"+result.stderr.slice(-4000));
    assert.match(result.stdout,new RegExp('data-smoke-width="'+width+'"'),"Browser viewport was not "+width+"px");
-  assert.doesNotMatch(result.stderr,/Uncaught (?:TypeError|ReferenceError|SyntaxError)|Failed to load module script|net::ERR_FAILED/,"Browser console/network errors:\n"+result.stderr.slice(-5000));
+   assert.doesNotMatch(result.stderr,/Uncaught (?:TypeError|ReferenceError|SyntaxError)|Failed to load module script|net::ERR_FAILED/,"Browser console/network errors:\n"+result.stderr.slice(-5000));
   }
  }finally{await new Promise(resolveClose=>server.close(resolveClose))}
 });
