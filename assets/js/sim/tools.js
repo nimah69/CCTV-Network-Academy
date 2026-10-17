@@ -48,12 +48,12 @@ export function runTool(graph,request={}){
   const link=graph.links.find(l=>l.id===linkId);
   if(!link||!(link.from.node===target||link.to.node===target))return {tool,ok:false,output:"کابل برای تعویض انتخاب نشده یا ابزار به آن متصل نیست."};
   const links=graph.links.map(l=>l.id===linkId?{...l,cableFault:"none",quality:"normal",cableMaterial:"copper",emi:false,lengthM:Math.min(l.lengthM,60),active:true}:l);
-  return {tool,ok:true,graph:{nodes:graph.nodes,links,vlans:graph.vlans,acl:graph.acl,trafficMbps:graph.trafficMbps},output:"کابل مجازی با مسیر کوتاه‌تر و هادی مسی جایگزین شد؛ دوباره آزمون بگیر.",cost:15,downtimeMinutes:5};
+  return {tool,ok:true,graph:{nodes:graph.nodes,links,vlans:graph.vlans,acl:graph.acl,trafficMbps:graph.trafficMbps},output:"کابل مجازی با مسیر کوتاه‌تر و هادی مسی جایگزین شد؛ دوباره آزمون بگیر.",cost:12,downtimeMinutes:15};
  }
  if(tool==="reboot"){
   const node=graph.nodes.find(n=>n.id===target);
   if(!node)return {tool,ok:false,output:"تجهیز انتخاب‌شده وجود ندارد."};
-  return {tool,ok:true,graph:{nodes:graph.nodes.map(n=>n.id===target?{...n,rebootCount:(n.rebootCount||0)+1,adminUp:true}:n),links:graph.links,vlans:graph.vlans,acl:graph.acl,trafficMbps:graph.trafficMbps},cost:5,downtimeMinutes:2,output:"تجهیز مجازی راه‌اندازی مجدد شد؛ علت ریشه‌ای برطرف نشده باشد، خطا ممکن است برگردد."};
+  return {tool,ok:true,graph:{nodes:graph.nodes.map(n=>n.id===target?{...n,rebootCount:(n.rebootCount||0)+1,adminUp:true}:n),links:graph.links,vlans:graph.vlans,acl:graph.acl,trafficMbps:graph.trafficMbps},cost:4,downtimeMinutes:8,output:"تجهیز مجازی راه‌اندازی مجدد شد؛ علت ریشه‌ای برطرف نشده باشد، خطا ممکن است برگردد."};
  }
  return {tool,target,ok:false,output:"ابزار ناشناخته است یا هنوز به نقطه معتبر متصل نشده است."};
 }
