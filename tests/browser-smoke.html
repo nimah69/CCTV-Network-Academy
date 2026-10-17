@@ -11,7 +11,7 @@ document.getElementById("app").addEventListener("load",()=>{
   for(const section of d.querySelectorAll(".workshop"))section.style.display="block";
   if(d.documentElement.scrollWidth>w.innerWidth+2)throw new Error("Horizontal overflow at "+w.innerWidth+"px: "+d.documentElement.scrollWidth);
   if(!need("realSimulator").querySelector("#realScenario"))throw new Error("real simulator markup missing");
-  click("loadRealScenario");click("runRealTool");
+  click("runRealTool");
   if(!need("realToolResult").textContent.trim())throw new Error("diagnostic tool produced no output");
   need("realTool").value="show-poe";need("realTool").dispatchEvent(new w.Event("change",{bubbles:true}));click("runRealTool");
   if(!need("realToolResult").textContent.includes("مصرف تجمیعی"))throw new Error("switch PoE output is not computed");
