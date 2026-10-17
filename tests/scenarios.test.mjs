@@ -31,7 +31,7 @@ test("optimal repair action changes the modeled fault state",()=>{
    case "basic-hdmi":assert.equal(nvr.hdmiConnected,true,item.id);break;
    case "basic-disk":assert.ok(nvr.freeStorageTB>0,item.id);break;
    case "mid-budget":assert.ok(sw.poeBudgetW>=state.totalPoeDrawW,item.id);break;
-   case "mid-cca":assert.equal(state.nodes.cam.online,true,item.id);break;
+   case "mid-cca":assert.equal(state.nodes.cam.online,true,item.id+" "+JSON.stringify({link:state.links["cam-link"],camera:state.nodes.cam,port:repaired.nodes.find(n=>n.id==="sw").ports.find(p=>p.id===repaired.links.find(l=>l.id==="cam-link").from.port)}));break;
    case "mid-duplex":assert.equal(repaired.links.find(l=>l.id==="cam-link").duplexMismatch,false,item.id);break;
    case "mid-vlan":assert.equal(state.links["cam-link"].up,true,item.id);break;
    case "mid-subnet":assert.equal(cam.prefix,24,item.id);break;
