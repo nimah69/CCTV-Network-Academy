@@ -77,7 +77,9 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     if(link.emi)linkState[link.id].reasons.push("نشانه‌های تداخل EMI روی مسیر مدل شده است");
     if(link.quality==="marginal"&&link.lengthM>60&&powerSource)linkState[link.id].reasons.push("حاشیه توان/کیفیت کابل پایین است و ممکن است قطعی متناوب ایجاد کند");
     if(!up)events.push({time:now,type:"link-down",link:link.id,message:"لینک "+link.id+" قطع یا ناسازگار است"});
-    if(loopRisk)events.push({time:now,type:"broadcast-storm",link:link.id,message:"الگوی Loop/Broadcast storm در شبکه شناسایی شد"});\n    if(loopPrevented)events.push({time:now,type:"rstp-blocked-loop",link:link.id,message:"RSTP مسیر افزونه حلقه‌ای را در حالت blocking قرار داد"});\n    if(loopRisk&&a.stormControl)events.push({time:now,type:"storm-control-active",link:link.id,message:"Storm control نرخ ترافیک سیلابی را محدود می‌کند اما Loop هنوز باید رفع شود"});
+    if(loopRisk)events.push({time:now,type:"broadcast-storm",link:link.id,message:"الگوی Loop/Broadcast storm در شبکه شناسایی شد"});
+    if(loopPrevented)events.push({time:now,type:"rstp-blocked-loop",link:link.id,message:"RSTP مسیر افزونه حلقه‌ای را در حالت blocking قرار داد"});
+    if(loopRisk&&a.stormControl)events.push({time:now,type:"storm-control-active",link:link.id,message:"Storm control نرخ ترافیک سیلابی را محدود می‌کند اما Loop هنوز باید رفع شود"});
     if(link.duplexMismatch||link.emi||link.crcErrors>0)events.push({time:now,type:"interface-errors",link:link.id,message:"خطاهای لایه فیزیکی/پیوند داده روی لینک "+link.id});
     if(pd?.poeRequired&&!powered){nodeState[pd.id].online=false;nodeState[pd.id].reasons.push("توان PoE کافی در لینک "+link.id+" وجود ندارد");}
     if(!up){for(const endpoint of [a,b])if(endpoint.id!==(powerSource?.node.id)&&!["switch","poe-switch"].includes(endpoint.type)){nodeState[endpoint.id].online=false;nodeState[endpoint.id].reasons.push(...linkState[link.id].reasons);}}
@@ -104,7 +106,8 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const blocked=target&&acl.some(rule=>rule.from===node.id&&rule.to===target.id&&rule.action==="deny");
     state.streamAvailable=state.ipReachable&&Boolean(target)&&!blocked&&node.rtspEnabled!==false&&node.firmware!=="incompatible";
     if(!target)state.reasons.push("NVR هم‌شبکه و متصل به این دوربین پیدا نشد");
-    if(blocked)state.reasons.push("ACL ارتباط دوربین و NVR را مسدود کرده است");\n    if(isolated)state.reasons.push("Port isolation ارتباط دوربین و NVR را مسدود کرده است");
+    if(blocked)state.reasons.push("ACL ارتباط دوربین و NVR را مسدود کرده است");
+    if(isolated)state.reasons.push("Port isolation ارتباط دوربین و NVR را مسدود کرده است");
     if(node.rtspEnabled===false)state.reasons.push("سرویس RTSP غیرفعال است");
     if(node.clockSynced===false)state.reasons.push("ساعت دوربین/NTP هماهنگ نیست");
     if(node.irHealthy===false||node.irReflection===true)state.reasons.push("کیفیت تصویر شب/بازتاب IR نیازمند بررسی است");
@@ -116,7 +119,8 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
   const totalPoeDraw=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+n.ports.filter(p=>p.poeEnabled).reduce((v,p)=>v+(p.poeDrawW||0),0),0);
   const totalPoeBudget=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+(n.poeBudgetW||0),0);
   if(totalPoeDraw>totalPoeBudget)events.push({time:now,type:"poe-overload",message:"مصرف تجمیعی PoE از بودجه کل سوئیچ بیشتر است"});
-  const uplinkCapacity=graph.links.filter(l=>l.type==="ethernet"||l.type==="fiber").reduce((m,l)=>Math.max(m,linkState[l.id]?.speedMbps||0),0);\n  for(const sw of graph.nodes.filter(n=>n.type.includes("switch"))){if(sw.multicastStreams>0)events.push({time:now,type:sw.igmpSnooping?"igmp-snooping":"multicast-flooding",message:sw.igmpSnooping?"IGMP snooping جریان multicast را به پورت‌های عضو محدود می‌کند.":"IGMP snooping خاموش است؛ multicast می‌تواند به پورت‌های بیشتری flood شود."});if(graph.trafficMbps>uplinkCapacity*ENGINEERING.design.uplinkTargetUtilization)events.push({time:now,type:sw.qosEnabled?"qos-priority":"qos-congestion",message:sw.qosEnabled?"QoS صف اولویت‌دار را در ازدحام مدل می‌کند.":"QoS خاموش است؛ در ازدحام، تأخیر جریان ویدئو تضمین نمی‌شود."});}
+  const uplinkCapacity=graph.links.filter(l=>l.type==="ethernet"||l.type==="fiber").reduce((m,l)=>Math.max(m,linkState[l.id]?.speedMbps||0),0);
+  for(const sw of graph.nodes.filter(n=>n.type.includes("switch"))){if(sw.multicastStreams>0)events.push({time:now,type:sw.igmpSnooping?"igmp-snooping":"multicast-flooding",message:sw.igmpSnooping?"IGMP snooping جریان multicast را به پورت‌های عضو محدود می‌کند.":"IGMP snooping خاموش است؛ multicast می‌تواند به پورت‌های بیشتری flood شود."});if(graph.trafficMbps>uplinkCapacity*ENGINEERING.design.uplinkTargetUtilization)events.push({time:now,type:sw.qosEnabled?"qos-priority":"qos-congestion",message:sw.qosEnabled?"QoS صف اولویت‌دار را در ازدحام مدل می‌کند.":"QoS خاموش است؛ در ازدحام، تأخیر جریان ویدئو تضمین نمی‌شود."});}
   const uplinkSaturated=graph.trafficMbps>0&&graph.trafficMbps>uplinkCapacity*ENGINEERING.design.uplinkTargetUtilization;
   if(uplinkSaturated)events.push({time:now,type:"uplink-saturation",message:"بار ترافیک از آستانه طراحی Uplink عبور کرده است"});
   return {at:now,graphValid:graphValidation.valid,graphValidation,nodes:nodeState,links:linkState,events,totalPoeDrawW:totalPoeDraw,totalPoeBudgetW:totalPoeBudget,uplinkSaturated};
