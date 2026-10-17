@@ -21,7 +21,9 @@ assert.ok(!html.includes("https://") && !html.includes("http://"),"Workshop page
 console.log("Interactive workshops checks passed: 8 workshops, 12 troubleshooting scenarios, script syntax and key interactions.");
 
 assert.equal((html.match(/class="lab-schematic"/g)||[]).length,8,"Every workshop should include a schematic panel");
-assert.equal((html.match(/data-sim-toggle/g)||[]).length,8,"Seven animation controls plus the shared selector reference should remain; PoE uses its input-driven simulator");
+assert.equal((html.match(/<button[^>]*data-sim-toggle(?:\s|>)/g)||[]).length,7,"Seven schematic animation buttons should be present; PoE uses its input-driven simulator");
+assert.equal((html.match(/<button class="sim-reset" type="button" data-sim-reset>/g)||[]).length,8,"Every schematic simulator must have a visible reset button");
+assert.ok(html.includes('document.querySelectorAll("[data-sim-reset]")'),"Schematic reset buttons must be wired to reset their workshop");
 assert.ok(html.includes('id="runPoeSimulation"'),"PoE must use an input-driven simulation control rather than animation-only flow");
 assert.ok(html.includes("prefers-reduced-motion"),"Schematic animation must respect reduced-motion preferences");
 assert.ok(html.includes('aria-pressed="false"'),"Simulator controls must expose accessible pressed state");
