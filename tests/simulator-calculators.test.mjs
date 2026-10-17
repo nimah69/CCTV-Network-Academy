@@ -102,5 +102,5 @@ test("integrated design vectors",()=>{
  assert.ok(designCCTV({environment:"outdoor"}).cable.warnings.length>0);
  assert.ok(Array.isArray(designCCTV().assumptions));
  const reliability=designCCTV().reliability;assert.equal(reliability.uplinkFailure.recordingCameras,0);assert.ok(reliability.hddFailure.recordingCameras>0);assert.ok(reliability.baseline.recordingCameras>0);
- const redundant=designCCTV({redundantUplink:true}).reliability;assert.ok(redundant.uplinkFailure.recordingCameras>0);
+ const redundant=designCCTV({redundantUplink:true}).reliability;assert.ok(redundant.uplinkFailure.recordingCameras>0);assert.ok(redundant.hddFailure.events.includes("raid-degraded"));
 });
