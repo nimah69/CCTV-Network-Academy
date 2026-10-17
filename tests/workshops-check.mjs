@@ -25,4 +25,4 @@ assert.equal((html.match(/data-sim-toggle/g)||[]).length,8,"Seven animation cont
 assert.ok(html.includes('id="runPoeSimulation"'),"PoE must use an input-driven simulation control rather than animation-only flow");
 assert.ok(html.includes("prefers-reduced-motion"),"Schematic animation must respect reduced-motion preferences");
 assert.ok(html.includes('aria-pressed="false"'),"Simulator controls must expose accessible pressed state");
-assert.ok(html.includes("شبیه‌سازی جریان"),"Simulator controls must be clearly labeled in Persian");
+assert.ok(html.includes("اجرای شبیه‌سازی تعاملی"),"Simulator controls must be clearly labeled and actionable in Persian");
