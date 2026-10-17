@@ -7,6 +7,8 @@ import { calculateUps } from "../calc/ups.js";
 import { calculateCoverage } from "../calc/optics.js";
 import { assessSecurity, SECURITY_CONTROLS } from "../calc/security.js";
 import { designCCTV } from "../calc/design.js";
+import { createGraph } from "../graph.js";
+import { evaluateNetwork, runDiagnostic } from "../engine.js";
 
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n).toLocaleString("fa-IR",{maximumFractionDigits:2});
@@ -90,11 +92,26 @@ bind("exportCommissioning",()=>{const all=[...document.querySelectorAll("[data-c
 loadCommissioning();
 bind("runSwitchFeatureSim",()=>{
  const rstp=$("swRstp").checked,igmp=$("swIgmp").checked,qos=$("swQos").checked,isolation=$("swIsolation").checked,storm=$("swStorm").checked,loop=$("swLoopInjected").checked,multicast=$("swMulticast").checked;
- const lines=[];
- lines.push(loop?(rstp?"Loop تزریق شد: RSTP باید مسیر افزونه را مسدود کند؛ پس از همگرایی توپولوژی را بازبینی کن.":"هشدار بحرانی: Loop بدون RSTP می‌تواند Broadcast storm ایجاد کند."):"Loop تزریق نشده است؛ RSTP همچنان برای افزونگی ایمن لازم است.");
- lines.push(multicast?(igmp?"IGMP snooping فعال: جریان multicast به پورت‌های عضو گروه محدود می‌شود.":"IGMP snooping خاموش: ترافیک multicast ممکن است به پورت‌های بیشتری flood شود."):"جریان multicast اضافه نشده است.");
- lines.push(qos?"QoS فعال: صف‌بندی اولویت‌دار مدل شده؛ پیکربندی واقعی باید با DSCP/صف‌های دستگاه تطبیق یابد.":"QoS خاموش: در ازدحام، تأخیر جریان ویدئو تضمین نمی‌شود.");
- lines.push(isolation?"Port isolation فعال: ارتباط مستقیم پورت‌های ایزوله‌شده محدود می‌شود؛ مسیر NVR باید مجاز بماند.":"Port isolation خاموش: سیاست دسترسی باید با ACL/VLAN بررسی شود.");
- lines.push(storm?"Storm control فعال: نرخ broadcast/multicast از آستانه تنظیمی فراتر رود، محدود یا drop می‌شود.":"Storm control خاموش: در رخداد Loop، دامنه اختلال می‌تواند گسترش یابد.");
- show("switchFeaturesResult",lines.join("\n"),loop&&!rstp?"bad":loop||multicast&&!igmp?"warn":"good");
+ const ports=[{id:"p1",vlan:10,speedMbps:1000,isolated:true},{id:"p2",vlan:10,speedMbps:1000,isolated:true},{id:"p3",vlan:10,speedMbps:1000,isolated:false},{id:"p4",vlan:10,speedMbps:1000,isolated:false},{id:"p5",vlan:10,speedMbps:1000},{id:"p6",vlan:10,speedMbps:1000}];
+ const nodes=[
+  {id:"sw",type:"switch",rstpEnabled:rstp,igmpSnooping:igmp,qosEnabled:qos,portIsolation:isolation,stormControl:storm,multicastStreams:multicast?4:0,ports},
+  {id:"cam1",type:"camera",ip:"192.168.30.11",prefix:24,vlan:10,poeRequired:false,rtspEnabled:true,ports:[{id:"eth0",vlan:10}]},
+  {id:"cam2",type:"camera",ip:"192.168.30.12",prefix:24,vlan:10,poeRequired:false,rtspEnabled:true,ports:[{id:"eth0",vlan:10}]},
+  {id:"nvr",type:"nvr",ip:"192.168.30.20",prefix:24,vlan:10,recordingEnabled:true,diskHealthy:true,freeStorageTB:2,ports:[{id:"eth0",vlan:10}]},
+  {id:"service",type:"laptop",ip:"192.168.30.50",prefix:24,vlan:10,ports:[{id:"eth0",vlan:10}]}
+ ];
+ const links=[
+  {id:"cam1-link",type:"ethernet",from:{node:"sw",port:"p1"},to:{node:"cam1",port:"eth0"},lengthM:25},
+  {id:"cam2-link",type:"ethernet",from:{node:"sw",port:"p2"},to:{node:"cam2",port:"eth0"},lengthM:25},
+  {id:"nvr-link",type:"ethernet",from:{node:"sw",port:"p3"},to:{node:"nvr",port:"eth0"},lengthM:3},
+  {id:"service-link",type:"ethernet",from:{node:"sw",port:"p4"},to:{node:"service",port:"eth0"},lengthM:3},
+  ...(loop?[{id:"loop-link",type:"ethernet",from:{node:"sw",port:"p5"},to:{node:"sw",port:"p6"},lengthM:1,loop:true}]:[])
+ ];
+ const graph=createGraph({nodes,links,vlans:[{id:10,name:"CCTV"}],trafficMbps:multicast?850:800});
+ const state=evaluateNetwork(graph),lateral=runDiagnostic(graph,"ping","cam2",{source:"cam1"});
+ const lines=["مدل گراف: "+(state.graphValid?"ساختار معتبر":"هشدار اعتبارسنجی")+"؛ بار شبکه: "+graph.trafficMbps+" Mbps"];
+ lines.push(...state.events.map(e=>e.type+": "+e.message));
+ lines.push("Ping دوربین‌به‌دوربین: "+lateral.output);
+ if(!state.events.length)lines.push("در وضعیت فعلی رویداد خطای فعال تولید نشد.");
+ show("switchFeaturesResult",lines.join("\n"),state.events.some(e=>e.type==="broadcast-storm"||e.type==="multicast-flooding"||e.type==="qos-congestion")?"warn":"good");
 });
