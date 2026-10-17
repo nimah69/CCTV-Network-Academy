@@ -90,7 +90,7 @@ export function applyScenarioRepair(graph,action,seed=1,selectedLinkId="cam-link
   case "fix-ip": if(cam)cam.ip="192.168.10."+String(230+(Number(seed)%18));for(const n of nodes)if(n.id==="rogue")n.ip="192.168.10.249";break;
   case "select-hdmi": if(monitor){monitor.input="HDMI1";monitor.hdmiConnected=true}if(nvr)nvr.hdmiConnected=true;break;
   case "free-storage": if(nvr)nvr.freeStorageTB=2;break;
-  case "increase-budget": if(sw){sw.poeBudgetW=180;for(const p of sw.ports)if(p.poeEnabled)p.poeDrawW=p.poeDrawW||12}break;
+  case "increase-budget": if(sw){sw.poeBudgetW=180;for(const p of sw.ports)if(links.some(l=>l.from.node==="sw"&&l.from.port===p.id&&l.to.node.startsWith("cam")))p.poeDrawW=p.poeDrawW||12}break;
   case "match-duplex": if(link){link.duplexMismatch=false;link.crcErrors=0}break;
   case "fix-vlan": for(const n of nodes)for(const p of n.ports)if(p.vlan!=null)p.vlan=10;break;
   case "fix-subnet": if(cam)cam.prefix=24;break;
