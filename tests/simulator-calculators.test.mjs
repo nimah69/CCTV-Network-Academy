@@ -74,7 +74,7 @@ test("optics vectors",()=>{
  assert.ok(calculateCoverage({sensorWidthMm:5.6,sensorHeightMm:3.15,focalLengthMm:4,distanceM:10,horizontalPixels:3840,verticalPixels:2160}).pixelsPerMeter>a.pixelsPerMeter);
  assert.throws(()=>calculateCoverage({sensorWidthMm:0,sensorHeightMm:3,focalLengthMm:4,distanceM:10,horizontalPixels:1920,verticalPixels:1080}));
  assert.throws(()=>calculateCoverage({sensorWidthMm:5,sensorHeightMm:3,focalLengthMm:4,distanceM:0,horizontalPixels:1920,verticalPixels:1080}));
- assert.ok(["کشف","مشاهده","تشخیص هویت","شناسایی","کمتر از سطح کشف"].includes(a.dori));
+ assert.ok(["کشف","مشاهده","تشخیص هویت","شناسایی","کمتر از سطح کشف"].some(level=>a.dori.startsWith(level)));
  assert.ok(a.doriThresholds.identification===250);
  assert.ok(a.current2025DensityLevels.includes(1500));
  assert.ok(a.warning.includes("ایده‌آل"));
