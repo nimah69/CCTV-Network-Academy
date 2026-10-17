@@ -13,7 +13,7 @@ function sameSubnet(a, b) {
   const ai=ipv4Number(a.ip), bi=ipv4Number(b.ip);
   return ai !== null && bi !== null && ((ai & maskFor(a.prefix)) >>> 0) === ((bi & maskFor(b.prefix)) >>> 0);
 }
-function hasPath(graph, linkState, from, to) {
+function pathNodes(graph, linkState, from, to) {
   if (from === to) return true;
   const queue=[from], seen=new Set(queue);
   while(queue.length) {
@@ -112,9 +112,9 @@ export function runDiagnostic(graph,tool,target,options={}) {
   const source=options.source||target,sourceNode=graph.nodes.find(n=>n.id===source),targetNode=graph.nodes.find(n=>n.id===target);
   const reachable=Boolean(sourceNode&&targetNode&&state.nodes[source]?.ipReachable&&node.ipReachable&&hasPath(graph,state.links,source,target)&&sameSubnet(sourceNode,targetNode)&&!options.acl?.some(rule=>rule.from===source&&rule.to===target&&rule.action==="deny"));
   switch(tool){
-    case "ping":return {tool,target,source,ok:reachable,output:reachable?"پاسخ ICMP دریافت شد.":"پاسخی دریافت نشد؛ لینک، IP، ماسک، VLAN و ACL را بررسی کن.",state};
+    case "ping":return {tool,target,source,ok:reachable,output:reachable?"پاسخ ICMP دریافت شد.":"پاسخی دریافت نشد؛ لینک، IP، ماسک، VLAN و ACL را بررسی کن.",state};\n    case "arp": {const ok=reachable;const mac=targetNode?Array.from(targetNode.id).reduce((acc,ch)=>(acc*31+ch.charCodeAt(0))>>>0,17).toString(16).padStart(12,"0").slice(-12).match(/../g).join(":").toUpperCase():null;return {tool,target,source,ok,mac:ok?mac:null,output:ok?"ARP: "+targetNode.ip+" → "+mac:"ARP entry دریافت نشد؛ هم‌شبکه بودن، VLAN و تداخل IP را بررسی کن.",state};}\n    case "traceroute": {const route=sourceNode&&targetNode&&sameSubnet(sourceNode,targetNode)?pathNodes(graph,state.links,source,target):null;const ok=Boolean(route&&state.nodes[source]?.ipReachable&&node.ipReachable);return {tool,target,source,ok,hops:route||[],output:ok?"مسیر مجازی: "+route.join(" → "):"مسیر کامل پیدا نشد؛ مبدأ/مقصد، IP، VLAN و لینک‌ها را بررسی کن.",state};}
     case "web-camera":{const ok=node.online&&node.streamAvailable;return {tool,target,ok,output:!node.online?"دوربین خاموش یا از نظر شبکه جداست.":ok?"رابط دوربین و جریان مدل‌شده در دسترس‌اند.":node.reasons.join("؛ ")||"سرویس تصویر در دسترس نیست.",state};}
-    case "nvr":{const def=targetNode,ok=node.online&&def?.diskHealthy!==false&&def?.freeStorageTB!==0&&def?.recordingEnabled!==false;return {tool,target,ok,output:!node.online?"NVR در دسترس نیست.":def?.diskHealthy===false?"خطای دیسک/RAID شناسایی شد.":def?.freeStorageTB===0?"فضای ذخیره‌سازی پر است.":def?.hdmiConnected===false?"خروجی HDMI یا ورودی نمایشگر را بررسی کن.":ok?"NVR در دسترس است؛ وضعیت ضبط از مدل محاسبه شد.":"ضبط در تنظیمات مجازی غیرفعال است.",state};}
+    case "nvr":{const def=targetNode,channels=graph.nodes.filter(n=>n.type==="camera").map(cam=>({id:cam.id,ip:cam.ip,stream:state.nodes[cam.id]?.streamAvailable?"online":"offline",recording:state.nodes[cam.id]?.recording?"recording":"not-recording"}));const ok=node.online&&def?.diskHealthy!==false&&def?.freeStorageTB!==0&&def?.recordingEnabled!==false;const summary=channels.map(c=>c.id+" "+c.ip+" "+c.stream+" "+c.recording).join("؛ ");return {tool,target,ok,channels,diskHealthy:def?.diskHealthy,freeStorageTB:def?.freeStorageTB,hdmiConnected:def?.hdmiConnected,output:!node.online?"NVR در دسترس نیست.":def?.diskHealthy===false?"خطای دیسک/RAID شناسایی شد. کانال‌ها: "+summary:def?.freeStorageTB===0?"فضای ذخیره‌سازی پر است. کانال‌ها: "+summary:def?.hdmiConnected===false?"خروجی HDMI یا ورودی نمایشگر را بررسی کن. کانال‌ها: "+summary:"کانال‌ها: "+summary+"؛ فضای آزاد: "+def?.freeStorageTB+" TB؛ وضعیت ضبط: "+(ok?"فعال":"غیرفعال"),state};}
     case "show-poe":{const ports=(targetNode?.ports||[]).map(p=>({port:p.id,enabled:p.poeEnabled,budgetW:p.poeBudgetW,drawW:p.poeDrawW,state:p.poeEnabled&&p.poeDrawW<=p.poeBudgetW?"delivering":"denied-or-off"}));return {tool,target,ports,output:ports.map(p=>p.port+": "+p.state+" ("+p.drawW+"/"+p.budgetW+" W)").join("\n"),state};}
     default:throw new RangeError("ابزار عیب‌یابی ناشناخته است: "+tool);
   }
