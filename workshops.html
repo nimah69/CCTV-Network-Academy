@@ -190,7 +190,7 @@ function renderTopologyDiagram(){
  const ep={"router-switch":["router","switch"],"switch-camera":["switch","camera"],"switch-nvr":["switch","nvr"],"nvr-monitor":["nvr","monitor"],"router-camera":["router","camera"],"switch-switch":["switch","switch"]};
  const labels={"router-switch":"روتر ↔ سوئیچ","switch-camera":"سوئیچ ↔ دوربین","switch-nvr":"سوئیچ ↔ NVR","nvr-monitor":"NVR ↔ مانیتور","router-camera":"روتر ↔ دوربین مستقیم","switch-switch":"اتصال سوئیچ دوم (در این مدل تعریف نشده)"};
  const valid=links.filter(id=>ep[id]&&ep[id][0]!==ep[id][1]&&ep[id].every(x=>eq.includes(x))),connected=new Set();valid.forEach(id=>ep[id].forEach(x=>connected.add(x)));
- const edges=valid.map(id=>'<div class="node topology-edge" data-edge="'+id+'">'+labels[id]+'</div>').join("");
+ const edges=valid.map(id=>'<div class="node topology-edge" data-edge="'+id+'"><span>'+names[ep[id][0]]+'</span><span aria-hidden="true">↔</span><span>'+names[ep[id][1]]+'</span></div>').join("");
  const isolated=eq.filter(id=>!connected.has(id));
  $("topologyDiagram").innerHTML='<div class="topology-nodes">'+eq.map(id=>'<span class="node topology-device" data-device="'+id+'">'+names[id]+'</span>').join("")+'</div><div class="topology-edges">'+(edges||'<p class="muted">هنوز هیچ اتصال معتبر بین تجهیزات انتخاب نشده است.</p>')+'</div>'+(isolated.length?'<div class="output warn"><b>تجهیزات بدون اتصال انتخاب‌شده</b><p>'+isolated.map(x=>names[x]).join("، ")+'</p></div>':"");
 }
