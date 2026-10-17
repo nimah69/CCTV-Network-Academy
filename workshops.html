@@ -298,7 +298,7 @@ function simSetState(panel,status,focus){
 }
 function simReadStatus(result){if(!result)return "warn";if(result.classList.contains("bad"))return "fail";if(result.classList.contains("warn"))return "warn";if(result.classList.contains("good"))return "pass";return "warn";}
 function runWorkshopSimulation(button){
- const panel=button.closest(".lab-schematic"),workshop=button.closest(".workshop"),id=workshop&&workshop.id;
+ const panel=button.closest(".lab-schematic"),workshop=button.closest("section[id]"),id=workshop&&workshop.id;
  const config={trouble:{trigger:"runFaultSimulation",result:"faultResult",title:"آزمون عیب‌یابی"},topology:{trigger:"checkTopology",result:"topologyResult",title:"تحلیل توپولوژی"},subnet:{trigger:"calcSubnet",result:"subnetResult",title:"تحلیل آدرس و زیرشبکه"},storage:{trigger:"calcStorage",result:"storageResult",title:"تحلیل جریان داده و ضبط"},cable:{trigger:"recommendCable",result:"cableResult",title:"انتخاب مسیر انتقال"},security:{trigger:"scoreSecurity",result:"securityResult",title:"ارزیابی کنترل‌های امنیتی"},capstone:{trigger:"buildReport",result:"capstoneResult",title:"تحلیل یکپارچه طراحی"}}[id];
  if(!config)return;
  const trigger=$(config.trigger);if(trigger)trigger.click();
