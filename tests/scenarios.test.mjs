@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { listScenarios,createScenario,publicScenario } from "../assets/js/sim/scenarios.js";
+import { scoreAttempt,getHint } from "../assets/js/sim/scoring.js";
+test("at least 18 scenarios in three difficulty levels",()=>{const all=listScenarios();assert.ok(all.length>=18);for(const level of ["پایه","متوسط","پیشرفته"])assert.ok(all.filter(s=>s.level===level).length>=6)});
+test("every scenario has hidden root cause and discoverability metadata",()=>{for(const item of listScenarios()){const s=createScenario(item.id,1234);assert.ok(s.answerKey.rootCause);assert.ok(s.optimalPath.length>=2);assert.equal(publicScenario(s).answerKey,undefined);assert.ok(s.hints.length===3)}});
+test("same seed reproduces same scenario parameters",()=>{assert.deepEqual(createScenario("basic-cable",987).model,createScenario("basic-cable",987).model)});
+test("different seed can vary cable length or selected port",()=>{const a=createScenario("basic-cable",1),b=createScenario("basic-cable",2);assert.ok(a.meta.length!==b.meta.length||a.model.links[0].from.port!==b.model.links[0].from.port)});
+test("attempt scoring rewards correct and penalizes unsafe action",()=>{const good=scoreAttempt({selectedCause:"x",rootCause:"x",actions:["inspect"],optimalPath:["inspect"]});const bad=scoreAttempt({selectedCause:"y",rootCause:"x",actions:["factoryReset"],optimalPath:["inspect"],unsafeActions:["factoryReset"]});assert.ok(good.score>bad.score)});
+test("hint tiers remain bounded",()=>{const s=createScenario("basic-poe",1);assert.ok(getHint(s,1));assert.ok(getHint(s,2));assert.ok(getHint(s,3));assert.equal(getHint(s,99),getHint(s,3))});
