@@ -23,7 +23,7 @@ test("headless browser exercises interactive workshops at desktop and mobile wid
  try{
   const address=server.address();
   for(const width of [360,768,1280]){
-   const result=await runChrome(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--disable-extensions","--disable-background-networking",`--window-size=${width},900`,"--virtual-time-budget=10000","--dump-dom",`http://127.0.0.1:${address.port}/tests/browser-smoke.html`]);
+   const result=await runChrome(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--disable-extensions","--disable-background-networking","--force-device-scale-factor=1",`--window-size=${width},900`,"--virtual-time-budget=10000","--dump-dom",`http://127.0.0.1:${address.port}/tests/browser-smoke.html`]);
    assert.equal(result.status,0,"Chrome exited unsuccessfully at "+width+"px:\n"+result.stderr.slice(-4000));
    assert.match(result.stdout,/data-smoke-result="pass"/,"Browser smoke failed at "+width+"px:\n"+result.stdout.slice(-5000)+"\n"+result.stderr.slice(-4000));
    assert.match(result.stdout,new RegExp('data-smoke-width="'+width+'"'),"Browser viewport was not "+width+"px");
