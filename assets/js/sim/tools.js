@@ -5,7 +5,7 @@ const prng=(seed)=>{let state=seed>>>0;return()=>{state=(Math.imul(state,1664525
 export function seededNoise(seed,amplitude=0.02){const r=prng(seed);return (1+(r()*2-1)*amplitude)}
 export function runTool(graph, request={}){
  const {tool,target,source,seed=1,linkId}=request, state=evaluateNetwork(graph,{now:request.now||0});
- if(tool==="ping"||tool==="web-camera"||tool==="nvr"||tool==="show-poe")return runDiagnostic(graph,tool,target,{source,now:request.now||0,acl:request.acl||[]});
+ if(tool==="ping"||tool==="web-camera"||tool==="nvr"||tool==="show-poe")return runDiagnostic(graph,tool,target,{source,now:request.now||0,acl:request.acl??graph.acl??[]});
  if(tool==="multimeter"||tool==="poe-tester"){
   const link=graph.links.find(l=>l.id===linkId)||graph.links.find(l=>l.from.node===target||l.to.node===target);
   if(!link)return {tool,target,ok:false,output:"پراب‌ها به یک لینک موجود متصل نشده‌اند."};
@@ -27,7 +27,7 @@ export function runTool(graph, request={}){
   const ports=node.ports.map(p=>({port:p.id,admin:p.adminUp?"up":"down",vlan:p.vlan,speedMbps:p.speedMbps,poe:p.poeEnabled?(p.poeDrawW<=p.poeBudgetW?"delivering":"denied"):"off"}));
   return {tool,target,ok:true,ports,output:ports.map(p=>p.port+" admin "+p.admin+" VLAN "+p.vlan+" "+p.speedMbps+" Mbps PoE "+p.poe).join("\n")};
  }
- if(tool==="system-log")return {tool,target,ok:true,events:[...state.events,{time:(request.now||0)-120,type:"noise",message:"ورود موفق اپراتور به رابط مدیریت"},{time:(request.now||0)-30,type:"noise",message:"همگام‌سازی ساعت NTP انجام شد"}].sort((a,b)=>a.time-b.time),output:"رویدادها از وضعیت فعلی و چند رخداد بی‌ارتباط آموزشی ساخته شدند."};
+ if(tool==="system-log"){const device=graph.nodes.find(n=>n.id===target);const deviceEvents=[];if(device?.clockSynced===false)deviceEvents.push({time:request.now||0,type:"clock-drift",message:"اختلاف ساعت/NTP در "+target+" ثبت شده است"});if(device?.type==="ups"&&((device.chargePercent||0)<50||(device.healthFactor||1)<0.6))deviceEvents.push({time:request.now||0,type:"ups-battery",message:"شارژ یا سلامت باتری UPS پایین است"});if(device?.diskHealthy===false)deviceEvents.push({time:request.now||0,type:"disk-error",message:"خطای دیسک در NVR ثبت شده است"});const events=[...state.events,...deviceEvents,{time:(request.now||0)-120,type:"noise",message:"ورود موفق اپراتور به رابط مدیریت"},{time:(request.now||0)-30,type:"noise",message:"گزارش دوره‌ای سلامت سرویس"}].sort((a,b)=>a.time-b.time);return {tool,target,ok:true,events,output:events.map(e=>e.type+": "+e.message).join("\\n")};}
  if(tool==="replace-cable"){
   const link=graph.links.find(l=>l.id===linkId);if(!link)return {tool,ok:false,output:"کابل مشخص نشده است."};
   const links=graph.links.map(l=>l.id===linkId?{...l,cableFault:"none",quality:"normal",active:true}:l);
