@@ -29,6 +29,11 @@ function pathNodes(graph,linkState,from,to){
   return null;
 }
 const hasPath=(graph,linkState,from,to)=>Boolean(pathNodes(graph,linkState,from,to));
+function isolationBlocks(graph,from,to){
+ const portFor=nodeId=>{for(const link of graph.links){if(link.from.node!==nodeId&&link.to.node!==nodeId)continue;const other=link.from.node===nodeId?link.to.node:link.from.node;const sw=graph.nodes.find(n=>n.id===other&&n.type.includes("switch"));if(sw){const ref=link.from.node===sw.id?link.from:link.to;return {sw,port:findPort(graph,sw.id,ref.port)}}}return null};
+ const a=portFor(from),b=portFor(to);
+ return Boolean(a&&b&&a.sw.id===b.sw.id&&a.sw.portIsolation&&a.port?.isolated&&b.port?.isolated);
+}
 function allocatePoePorts(node){
  let remaining=node.poeBudgetW>0?node.poeBudgetW:Infinity;
  const ordered=node.ports.filter(p=>p.poeEnabled).slice().sort((a,b)=>(a.poePriority??3)-(b.poePriority??3)||Number(String(a.id).replace(/\D/g,""))-Number(String(b.id).replace(/\\D/g,"")));
@@ -63,7 +68,7 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const loopRisk=(Boolean(link.loop)&&!a.rstpEnabled)||(link.from.node===link.to.node&&a.type.includes("switch")&&!a.rstpEnabled);
     const up=Boolean(active&&vlanCompatible&&powered&&!loopRisk);
     const speedMbps=Math.min(link.speedMbps||Infinity,pa?.speedMbps||1000,pb?.speedMbps||1000);
-    linkState[link.id]={up,active,vlanCompatible,powered,budgetOk,aggregateBudgetOk,portBudgetOk,loopRisk,duplexMismatch:Boolean(link.duplexMismatch),crcErrors:link.crcErrors||0,emi:Boolean(link.emi),speedMbps,poeDeliveredW:Number(poeDelivered.toFixed(2)),voltageDropV:Number((current*resistance).toFixed(3)),reasons:[]};
+    linkState[link.id]={up,active,vlanCompatible,powered,budgetOk,aggregateBudgetOk,portBudgetOk,loopRisk,loopPrevented,duplexMismatch:Boolean(link.duplexMismatch),crcErrors:link.crcErrors||0,emi:Boolean(link.emi),speedMbps,poeDeliveredW:Number(poeDelivered.toFixed(2)),voltageDropV:Number((current*resistance).toFixed(3)),reasons:[]};
     if(!active)linkState[link.id].reasons.push("لینک یا یکی از پورت‌ها غیرفعال/معیوب است");
     if(!vlanCompatible)linkState[link.id].reasons.push("VLAN دو سر لینک سازگار نیست");
     if(!powered)linkState[link.id].reasons.push(aggregateBudgetOk?"توان موردنیاز از سقف پورت PoE بیشتر است":"بودجه کل PoE سوئیچ تمام شده است");
@@ -72,7 +77,7 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     if(link.emi)linkState[link.id].reasons.push("نشانه‌های تداخل EMI روی مسیر مدل شده است");
     if(link.quality==="marginal"&&link.lengthM>60&&powerSource)linkState[link.id].reasons.push("حاشیه توان/کیفیت کابل پایین است و ممکن است قطعی متناوب ایجاد کند");
     if(!up)events.push({time:now,type:"link-down",link:link.id,message:"لینک "+link.id+" قطع یا ناسازگار است"});
-    if(loopRisk)events.push({time:now,type:"broadcast-storm",link:link.id,message:"الگوی Loop/Broadcast storm در شبکه شناسایی شد"});
+    if(loopRisk)events.push({time:now,type:"broadcast-storm",link:link.id,message:"الگوی Loop/Broadcast storm در شبکه شناسایی شد"});\n    if(loopPrevented)events.push({time:now,type:"rstp-blocked-loop",link:link.id,message:"RSTP مسیر افزونه حلقه‌ای را در حالت blocking قرار داد"});\n    if(loopRisk&&a.stormControl)events.push({time:now,type:"storm-control-active",link:link.id,message:"Storm control نرخ ترافیک سیلابی را محدود می‌کند اما Loop هنوز باید رفع شود"});
     if(link.duplexMismatch||link.emi||link.crcErrors>0)events.push({time:now,type:"interface-errors",link:link.id,message:"خطاهای لایه فیزیکی/پیوند داده روی لینک "+link.id});
     if(pd?.poeRequired&&!powered){nodeState[pd.id].online=false;nodeState[pd.id].reasons.push("توان PoE کافی در لینک "+link.id+" وجود ندارد");}
     if(!up){for(const endpoint of [a,b])if(endpoint.id!==(powerSource?.node.id)&&!["switch","poe-switch"].includes(endpoint.type)){nodeState[endpoint.id].online=false;nodeState[endpoint.id].reasons.push(...linkState[link.id].reasons);}}
@@ -99,7 +104,7 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const blocked=target&&acl.some(rule=>rule.from===node.id&&rule.to===target.id&&rule.action==="deny");
     state.streamAvailable=state.ipReachable&&Boolean(target)&&!blocked&&node.rtspEnabled!==false&&node.firmware!=="incompatible";
     if(!target)state.reasons.push("NVR هم‌شبکه و متصل به این دوربین پیدا نشد");
-    if(blocked)state.reasons.push("ACL ارتباط دوربین و NVR را مسدود کرده است");
+    if(blocked)state.reasons.push("ACL ارتباط دوربین و NVR را مسدود کرده است");\n    if(isolated)state.reasons.push("Port isolation ارتباط دوربین و NVR را مسدود کرده است");
     if(node.rtspEnabled===false)state.reasons.push("سرویس RTSP غیرفعال است");
     if(node.clockSynced===false)state.reasons.push("ساعت دوربین/NTP هماهنگ نیست");
     if(node.irHealthy===false||node.irReflection===true)state.reasons.push("کیفیت تصویر شب/بازتاب IR نیازمند بررسی است");
@@ -111,7 +116,7 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
   const totalPoeDraw=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+n.ports.filter(p=>p.poeEnabled).reduce((v,p)=>v+(p.poeDrawW||0),0),0);
   const totalPoeBudget=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+(n.poeBudgetW||0),0);
   if(totalPoeDraw>totalPoeBudget)events.push({time:now,type:"poe-overload",message:"مصرف تجمیعی PoE از بودجه کل سوئیچ بیشتر است"});
-  const uplinkCapacity=graph.links.filter(l=>l.type==="ethernet"||l.type==="fiber").reduce((m,l)=>Math.max(m,linkState[l.id]?.speedMbps||0),0);
+  const uplinkCapacity=graph.links.filter(l=>l.type==="ethernet"||l.type==="fiber").reduce((m,l)=>Math.max(m,linkState[l.id]?.speedMbps||0),0);\n  for(const sw of graph.nodes.filter(n=>n.type.includes("switch"))){if(sw.multicastStreams>0)events.push({time:now,type:sw.igmpSnooping?"igmp-snooping":"multicast-flooding",message:sw.igmpSnooping?"IGMP snooping جریان multicast را به پورت‌های عضو محدود می‌کند.":"IGMP snooping خاموش است؛ multicast می‌تواند به پورت‌های بیشتری flood شود."});if(graph.trafficMbps>uplinkCapacity*ENGINEERING.design.uplinkTargetUtilization)events.push({time:now,type:sw.qosEnabled?"qos-priority":"qos-congestion",message:sw.qosEnabled?"QoS صف اولویت‌دار را در ازدحام مدل می‌کند.":"QoS خاموش است؛ در ازدحام، تأخیر جریان ویدئو تضمین نمی‌شود."});}
   const uplinkSaturated=graph.trafficMbps>0&&graph.trafficMbps>uplinkCapacity*ENGINEERING.design.uplinkTargetUtilization;
   if(uplinkSaturated)events.push({time:now,type:"uplink-saturation",message:"بار ترافیک از آستانه طراحی Uplink عبور کرده است"});
   return {at:now,graphValid:graphValidation.valid,graphValidation,nodes:nodeState,links:linkState,events,totalPoeDrawW:totalPoeDraw,totalPoeBudgetW:totalPoeBudget,uplinkSaturated};
@@ -120,7 +125,7 @@ export function runDiagnostic(graph,tool,target,options={}){
   const state=evaluateNetwork(graph,options),node=state.nodes[target];
   if(!node)throw new Error("نقطه اتصال ابزار در شبکه مجازی وجود ندارد.");
   const source=options.source||target,sourceNode=graph.nodes.find(n=>n.id===source),targetNode=graph.nodes.find(n=>n.id===target);
-  const reachable=Boolean(sourceNode&&targetNode&&state.nodes[source]?.ipReachable&&node.ipReachable&&hasPath(graph,state.links,source,target)&&sameSubnet(sourceNode,targetNode)&&!((options.acl??graph.acl??[]).some(rule=>rule.from===source&&rule.to===target&&rule.action==="deny")));
+  const reachable=Boolean(sourceNode&&targetNode&&state.nodes[source]?.ipReachable&&node.ipReachable&&hasPath(graph,state.links,source,target)&&sameSubnet(sourceNode,targetNode)&&!isolationBlocks(graph,source,target)&&!((options.acl??graph.acl??[]).some(rule=>rule.from===source&&rule.to===target&&rule.action==="deny")));
   switch(tool){
     case "ping":return {tool,target,source,ok:reachable,output:reachable?"پاسخ ICMP دریافت شد.":"پاسخی دریافت نشد؛ لینک، IP، ماسک، VLAN و ACL را بررسی کن.",state};
     case "arp":{const ok=reachable;const mac=targetNode?Array.from(targetNode.id).reduce((acc,ch)=>(acc*31+ch.charCodeAt(0))>>>0,17).toString(16).padStart(12,"0").slice(-12).match(/../g).join(":").toUpperCase():null;return {tool,target,source,ok,mac:ok?mac:null,output:ok?"ARP: "+targetNode.ip+" → "+mac:"ARP entry دریافت نشد؛ هم‌شبکه بودن، VLAN و تداخل IP را بررسی کن.",state};}
