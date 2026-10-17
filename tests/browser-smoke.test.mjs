@@ -21,9 +21,11 @@ test("headless browser exercises interactive workshops and engineering calculato
  await new Promise(resolveListen=>server.listen(0,"127.0.0.1",resolveListen));
  try{
   const address=server.address();
-  const result=spawnSync(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--disable-extensions","--disable-background-networking","--virtual-time-budget=10000","--dump-dom",`http://127.0.0.1:${address.port}/tests/browser-smoke.html`],{encoding:"utf8",timeout:45000,maxBuffer:8*1024*1024});
-  assert.equal(result.status,0,"Chrome exited unsuccessfully:\n"+result.stderr.slice(-4000));
-  assert.match(result.stdout,/data-smoke-result="pass"/,"Browser smoke failed:\n"+result.stdout.slice(-5000)+"\n"+result.stderr.slice(-4000));
+  for(const width of [360,768,1280]){
+   const result=spawnSync(chrome,["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage","--disable-extensions","--disable-background-networking",`--window-size=${width},900`,"--virtual-time-budget=10000","--dump-dom",`http://127.0.0.1:${address.port}/tests/browser-smoke.html`],{encoding:"utf8",timeout:45000,maxBuffer:8*1024*1024});
+   assert.equal(result.status,0,"Chrome exited unsuccessfully at "+width+"px:\\n"+result.stderr.slice(-4000));
+   assert.match(result.stdout,/data-smoke-result="pass"/,"Browser smoke failed at "+width+"px:\\n"+result.stdout.slice(-5000)+"\\n"+result.stderr.slice(-4000));
+   assert.match(result.stdout,new RegExp('data-smoke-width="'+width+'"'),"Browser viewport was not "+width+"px");
   assert.doesNotMatch(result.stderr,/Uncaught (?:TypeError|ReferenceError|SyntaxError)|Failed to load module script|net::ERR_FAILED/,"Browser console/network errors:\n"+result.stderr.slice(-5000));
  }finally{await new Promise(resolveClose=>server.close(resolveClose))}
 });
