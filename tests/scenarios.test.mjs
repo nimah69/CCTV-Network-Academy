@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { listScenarios,createScenario,publicScenario,applyScenarioRepair } from "../assets/js/sim/scenarios.js";\nimport { runTool } from "../assets/js/sim/tools.js";\nimport { evaluateNetwork } from "../assets/js/sim/engine.js";
+import { listScenarios,createScenario,publicScenario,applyScenarioRepair } from "../assets/js/sim/scenarios.js";
+import { runTool } from "../assets/js/sim/tools.js";
+import { evaluateNetwork } from "../assets/js/sim/engine.js";
 import { scoreAttempt,getHint } from "../assets/js/sim/scoring.js";
 test("at least 18 scenarios in three difficulty levels",()=>{const all=listScenarios();assert.ok(all.length>=18);for(const level of ["پایه","متوسط","پیشرفته"])assert.ok(all.filter(s=>s.level===level).length>=6)});
 test("every scenario has hidden root cause and discoverability metadata",()=>{for(const item of listScenarios()){const s=createScenario(item.id,1234);assert.ok(s.answerKey.rootCause);assert.ok(s.optimalPath.length>=2);assert.equal(publicScenario(s).answerKey,undefined);assert.ok(s.hints.length===3)}});
