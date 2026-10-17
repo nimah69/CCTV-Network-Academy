@@ -1,4 +1,4 @@
-const COSTS=Object.freeze({ping:{minutes:1,cost:1},showPoe:{minutes:2,cost:1},cableTest:{minutes:4,cost:2},reboot:{minutes:8,cost:4},factoryReset:{minutes:30,cost:25},replaceCable:{minutes:15,cost:12},replaceDevice:{minutes:25,cost:30}});
+const COSTS=Object.freeze({"factory-reset":{minutes:30,cost:25},ping:{minutes:1,cost:1},showPoe:{minutes:2,cost:1},cableTest:{minutes:4,cost:2},reboot:{minutes:8,cost:4},factoryReset:{minutes:30,cost:25},replaceCable:{minutes:15,cost:12},replaceDevice:{minutes:25,cost:30}});
 export function scoreAttempt({selectedCause,rootCause,actions=[],optimalPath=[],downtimeMinutes=0,hintsUsed=0,unsafeActions=[]}={}){
  const correct=selectedCause===rootCause,necessary=new Set(optimalPath),unneeded=actions.filter(a=>!necessary.has(a)),order=actions.filter(a=>necessary.has(a));
  let score=correct?100:0;score-=Math.min(35,unneeded.length*5);score-=Math.min(20,Math.max(0,downtimeMinutes)*0.5);score-=Math.min(30,hintsUsed*10);score-=Math.min(50,unsafeActions.length*20);
