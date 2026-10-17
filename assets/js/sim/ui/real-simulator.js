@@ -13,7 +13,7 @@ if(root){
  const names={camera:"دوربین", "poe-switch":"سوئیچ PoE",switch:"سوئیچ",nvr:"NVR",router:"روتر",firewall:"فایروال",ups:"UPS",monitor:"نمایشگر",laptop:"لپ‌تاپ سرویس","patch-panel":"پچ‌پنل","media-converter":"مبدل رسانه","disk-array":"آرایه دیسک"};
  const tools=[["ping","Ping"],["arp","ARP"],["traceroute","Traceroute"],["multimeter","مولتی‌متر"],["poe-tester","PoE tester"],["cable-tester","تستر کابل / Wiremap"],["switch-console","کنسول سوئیچ / show PoE"],["web-camera","رابط وب دوربین"],["nvr","رابط NVR"],["system-log","لاگ سیستم"],["replace-cable","تعویض کابل"],["reboot","Reboot تجهیز"]];
  const actions=[["enable-port","فعال‌سازی پورت / PoE"],["replace-cable","تعویض کابل معیوب"],["fix-ip","رفع IP تکراری"],["select-hdmi","انتخاب ورودی HDMI درست"],["free-storage","آزادسازی فضای ضبط"],["increase-budget","افزایش/تقسیم بودجه PoE"],["match-duplex","یکسان‌سازی Duplex"],["fix-vlan","اصلاح VLAN"],["fix-subnet","اصلاح ماسک IP"],["fix-clock","همگام‌سازی ساعت/NTP"],["break-loop","رفع Loop و فعال‌سازی RSTP"],["fix-acl","اصلاح ACL"],["upgrade-uplink","افزایش ظرفیت Uplink"],["adjust-ir","اصلاح بازتاب/نور IR"],["replace-disk","تعویض دیسک معیوب"],["rollback-firmware","بازگشت به Firmware سازگار"],["replace-battery","تعویض باتری UPS"],["reroute-cable","انتقال کابل از منبع EMI"],["factory-reset","Factory reset پرخطر (بدون Backup)"]];
- let current=null,attempts=[],downtime=0,hintsUsed=0,startedAt=Date.now(),solved=false,seed=1;
+ let current=null,attempts=[],downtime=0,virtualCost=0,hintsUsed=0,startedAt=Date.now(),solved=false,seed=1;
  for(const s of listScenarios()){
   const o=document.createElement("option");o.value=s.id;o.textContent=s.level+" · "+s.customer;scenarioSelect.append(o);
   const d=createScenario(s.id,1).answerKey.rootCause;const opt=document.createElement("option");opt.value=d;opt.textContent=d;diagnosisSelect.append(opt);
@@ -58,7 +58,8 @@ if(root){
   const link=current?.model.links.find(l=>l.from.node===targetSelect.value||l.to.node===targetSelect.value);if(link)linkSelect.value=link.id;
  });
  targetSelect.addEventListener("change",()=>{const link=current?.model.links.find(l=>l.from.node===targetSelect.value||l.to.node===targetSelect.value);if(link)linkSelect.value=link.id});
- $("loadRealScenario").addEventListener("click",()=>load(scenarioSelect.value,seedInput.value));
+ scenarioSelect.addEventListener("change",()=>load(scenarioSelect.value,seedInput.value));
+ seedInput.addEventListener("change",()=>load(scenarioSelect.value,seedInput.value));
  $("nextRealScenario").addEventListener("click",()=>{const list=listScenarios(),i=list.findIndex(s=>s.id===scenarioSelect.value),next=list[(i+1)%list.length];scenarioSelect.value=next.id;load(next.id,(seed+1)>>>0)});
  $("retryRealScenario").addEventListener("click",()=>load(scenarioSelect.value,seed));
  $("runRealTool").addEventListener("click",()=>{
@@ -84,5 +85,5 @@ if(root){
   solved=true;
   report.textContent=(outcome.correct?"تشخیص درست است.":"تشخیص نادرست است.")+" امتیاز: "+outcome.score+"/100.\nعلت ریشه‌ای: "+current.answerKey.rootCause+"\nمسیر بهینه: "+current.optimalPath.join(" ← ")+"\nاقدام‌های کاربر: "+attempts.map(a=>a.action||a.tool).join("، ")+"\nآزمون‌های غیرضروری: "+outcome.unnecessaryActions.join("، ")+"\nتوقف مجازی: "+downtime+" دقیقه؛ هزینه مجازی: "+virtualCost+" واحد.\nدرس: "+current.lesson+"\nپیشگیری: یک متغیر را هر بار تغییر بده، Backup بگیر و آزمون تحویل را ثبت کن.";
  });
- load(scenarioSelect.value||listScenarios()[0].id,1);
+ load(scenarioSelect.value||listScenarios()[0].id,seedInput.value||1);
 }
