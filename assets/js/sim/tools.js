@@ -40,7 +40,7 @@ export function runTool(graph,request={}){
   const device=graph.nodes.find(n=>n.id===target),deviceEvents=[];
   if(device?.clockSynced===false)deviceEvents.push({time:request.now||0,type:"clock-drift",message:"اختلاف ساعت/NTP در "+target+" ثبت شده است"});
   if(device?.type==="ups"&&((device.chargePercent||0)<50||(device.healthFactor||1)<0.6))deviceEvents.push({time:request.now||0,type:"ups-battery",message:"شارژ یا سلامت باتری UPS پایین است"});
-  if(device?.diskHealthy===false)deviceEvents.push({time:request.now||0,type:"disk-error",message:"خطای دیسک در NVR ثبت شده است"});
+  if(device?.diskHealthy===false)deviceEvents.push({time:request.now||0,type:"disk-error",message:"خطای دیسک در NVR ثبت شده است"});\n  if(device?.raidDegraded)deviceEvents.push({time:request.now||0,type:"raid-degraded",message:"آرایه RAID در حالت degraded است؛ تعویض دیسک و پایش rebuild لازم است."});
   const events=[...state.events,...deviceEvents,{time:(request.now||0)-120,type:"noise",message:"ورود موفق اپراتور به رابط مدیریت"},{time:(request.now||0)-30,type:"noise",message:"گزارش دوره‌ای سلامت سرویس"}].sort((a,b)=>a.time-b.time);
   return {tool,target,ok:true,events,output:events.map(e=>e.type+": "+e.message).join("\n")};
  }
