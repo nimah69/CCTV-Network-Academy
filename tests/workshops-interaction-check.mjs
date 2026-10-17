@@ -23,6 +23,11 @@ assert.match(html, /const edges=valid\.map\(id=>/, "Topology edges must be rende
 assert.match(html, /names\[ep\[id\]\[0\]\]/, "Rendered links must show the selected source endpoint");
 assert.match(html, /names\[ep\[id\]\[1\]\]/, "Rendered links must show the selected destination endpoint");
 assert.match(html, /cams>ports/, "Topology validation must check camera count against available switch ports");
+assert.match(html, /function runWorkshopSimulation\(button\)/, "All workshop simulators must execute a domain-specific analysis");
+for (const workshop of ["trouble", "topology", "subnet", "storage", "cable", "security", "capstone"]) assert.match(html, new RegExp(workshop + ':\\{trigger:'), "Missing simulator dispatch for " + workshop);
+assert.match(html, /sim-feedback/, "Simulation must show a visible result panel");
+assert.match(html, /classList\.add\(target&&status===\"fail\"\?\"sim-fail\"/, "Simulation must render calculated equipment states");
+assert.match(html, /ورودی‌های همین صفحه/, "Simulation must disclose it uses current page inputs");
 assert.match(html, /if\(eq\.includes\("camera"\)&&!has\("switch-camera"\)\)/, "Topology validation must flag a missing camera-to-switch link");
 assert.match(html, /"camera-power":\{/, "Fault simulation must include a camera power/PoE failure");
 assert.match(html, /"camera-link":\{/, "Fault simulation must include a broken camera link");
