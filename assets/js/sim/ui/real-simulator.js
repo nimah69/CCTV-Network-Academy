@@ -1,3 +1,4 @@
+import { normalizeDigits } from "../units.js";
 import { listScenarios, createScenario, applyScenarioRepair } from "../scenarios.js";
 import { evaluateNetwork } from "../engine.js";
 import { runTool } from "../tools.js";
@@ -39,7 +40,7 @@ if(root){
   const links=document.createElement("p");links.textContent="لینک‌ها: "+current.model.links.map(l=>l.id+" "+(state.links[l.id]?.up?"UP":"DOWN")+" · "+(state.links[l.id]?.speedMbps||"—")+" Mbps").join(" · ");stateView.append(links);
  }
  function load(id,chosenSeed){
-  seed=Number(chosenSeed);if(!Number.isFinite(seed)||seed<0)seed=1;seed=Math.floor(seed)>>>0;seedInput.value=String(seed);
+  seed=Number(normalizeDigits(chosenSeed));if(!Number.isFinite(seed)||seed<0)seed=1;seed=Math.floor(seed)>>>0;seedInput.value=String(seed);
   current=createScenario(id,seed);attempts=[];downtime=0;virtualCost=0;hintsUsed=0;solved=false;startedAt=Date.now();
   $("realCustomer").textContent=current.customer;
   $("realMeta").textContent=current.level+" · بذر سناریو "+seed+" · زمان و هزینه در محیط مجازی محاسبه می‌شود.";
