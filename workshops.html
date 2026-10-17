@@ -470,5 +470,73 @@ renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
 </script>
 <script type="module" src="./assets/js/sim/ui/calculators.js"></script>
 <script type="module" src="./assets/js/sim/ui/real-simulator.js"></script>
+
+<script>
+/* Per-workshop reset: restore declared defaults and clear only local simulator state/results. */
+(function(){
+  const sections=[...document.querySelectorAll("section.workshop")];
+  for(const section of sections){
+    const heading=section.querySelector(":scope > .heading");
+    if(!heading) continue;
+    const row=document.createElement("div");
+    row.className="workshop-reset-row";
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="btn";
+    button.textContent="↺ بازنشانی مقادیر و نتیجه‌ها";
+    button.setAttribute("aria-label","بازنشانی مقادیر و نتیجه‌های "+(heading.querySelector("h2")?.textContent||"این کارگاه"));
+    row.append(button);
+    heading.append(row);
+    const resultNodes=[...section.querySelectorAll('[aria-live="polite"], .diagram')];
+    const initialResults=new Map(resultNodes.map(node=>[node,node.innerHTML]));
+    const notes=[...section.querySelectorAll(".sim-note")].map(node=>[node,node.textContent]);
+    const simButtons=[...section.querySelectorAll("[data-sim-toggle]")].map(node=>[node,node.textContent]);
+    button.addEventListener("click",()=>{
+      section.querySelectorAll("input,select,textarea").forEach(control=>{
+        if(control instanceof HTMLInputElement && (control.type==="checkbox"||control.type==="radio")){
+          control.checked=control.defaultChecked;
+        }else if(control instanceof HTMLSelectElement){
+          const defaults=[...control.options].filter(option=>option.defaultSelected);
+          if(defaults.length) control.value=defaults[0].value;
+          else if(control.options.length) control.selectedIndex=0;
+        }else{
+          control.value=control.defaultValue;
+        }
+        control.dispatchEvent(new Event("change",{bubbles:true}));
+      });
+      section.querySelectorAll(".schematic-node,.wire").forEach(node=>{
+        node.classList.remove("sim-pass","sim-warn","sim-fail","fault-fail","fault-warn");
+      });
+      section.querySelectorAll(".sim-running").forEach(node=>node.classList.remove("sim-running"));
+      section.querySelectorAll(".sim-feedback").forEach(node=>node.remove());
+      for(const [node,html] of initialResults) if(node.isConnected) node.innerHTML=html;
+      for(const [node,value] of notes) if(node.isConnected) node.textContent=value;
+      for(const [node,label] of simButtons){
+        node.setAttribute("aria-pressed","false");
+        node.textContent=label;
+        delete node.dataset.simRunCount;
+      }
+      if(section.id==="trouble"){
+        document.getElementById("resetFaultSimulation")?.click();
+        document.getElementById("retryScenario")?.click();
+        document.getElementById("retryRealScenario")?.click();
+      }else if(section.id==="topology"){
+        if(typeof renderTopologyDiagram==="function") renderTopologyDiagram();
+      }else if(section.id==="poe"){
+        const out=document.getElementById("poeSimulationResult");
+        if(out) out.className="output";
+      }
+      button.textContent="✓ مقادیر و نتیجه‌ها بازنشانی شد";
+      window.setTimeout(()=>{button.textContent="↺ بازنشانی مقادیر و نتیجه‌ها"},1400);
+    });
+  }
+})();
+</script>
+<style>
+.workshop-reset-row{display:flex;justify-content:flex-start;margin:10px 0 4px}
+.workshop-reset-row .btn{min-height:42px;border-color:#52748b;color:var(--text,#eaf4ff)}
+@media(max-width:520px){.workshop-reset-row .btn{width:100%}}
+</style>
+
 <script src="./js/pwa-register.js"></script>
 </body></html>
