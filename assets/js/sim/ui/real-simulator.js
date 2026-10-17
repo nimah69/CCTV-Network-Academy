@@ -66,7 +66,7 @@ if(root){
   try{
    const response=runTool(current.model,{tool,target,source,linkId,seed,now:Math.round((Date.now()-startedAt)/1000)});
    if(response.graph){current.model=createGraph(response.graph);populatePoints()}
-   const cost=actionCost(tool==="replace-cable"?"replaceCable":tool==="reboot"?"reboot":tool==="cable-tester"?"cableTest":tool==="switch-console"?"showPoe":"ping");
+   const costKey=({"replace-cable":"replaceCable","reboot":"reboot","cable-tester":"cableTest","multimeter":"multimeter","poe-tester":"poe-tester","switch-console":"switch-console","show-poe":"showPoe","system-log":"systemLog","web-camera":"webCamera","nvr":"nvrCheck","traceroute":"traceroute","arp":"arp","ping":"ping"})[tool]||"ping";const cost=actionCost(costKey);
    downtime+=response.downtimeMinutes||0;virtualCost+=response.cost||cost.cost;attempts.push({tool,target,source,linkId,ok:response.ok,output:response.output,seconds:Math.round((Date.now()-startedAt)/1000)});
    result.textContent="["+tool+"] "+(response.output||JSON.stringify(response))+(response.voltageV!==undefined?" ولتاژ: "+response.voltageV+" V":"")+(response.deliveredW!==undefined?"؛ توان: "+response.deliveredW+" W":"");
    renderState();
