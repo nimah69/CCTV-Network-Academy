@@ -24,6 +24,8 @@ assert.match(html, /names\[ep\[id\]\[0\]\]/, "Rendered links must show the selec
 assert.match(html, /names\[ep\[id\]\[1\]\]/, "Rendered links must show the selected destination endpoint");
 assert.match(html, /cams>ports/, "Topology validation must check camera count against available switch ports");
 assert.match(html, /function runWorkshopSimulation\(button\)/, "All workshop simulators must execute a domain-specific analysis");
+assert.match(html, /workshop=button\.closest\("section\[id\]"\)/, "Simulator dispatch must locate the actual section[id] workshop container");
+assert.doesNotMatch(html, /button\.closest\("\.workshop"\)/, "Simulator dispatch must not depend on a missing .workshop class");
 for (const workshop of ["trouble", "topology", "subnet", "storage", "cable", "security", "capstone"]) assert.match(html, new RegExp(workshop + ':\\{trigger:'), "Missing simulator dispatch for " + workshop);
 assert.match(html, /sim-feedback/, "Simulation must show a visible result panel");
 assert.match(html, /classList\.add\(target&&status===\"fail\"\?\"sim-fail\"/, "Simulation must render calculated equipment states");
