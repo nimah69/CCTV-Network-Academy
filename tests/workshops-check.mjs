@@ -20,8 +20,10 @@ assert.ok(html.includes("@media(max-width:399px)"),"Small-phone responsive overr
 assert.ok(!html.includes("https://") && !html.includes("http://"),"Workshop page should not require external services");
 console.log("Interactive workshops checks passed: 8 workshops, 12 troubleshooting scenarios, script syntax and key interactions.");
 
-assert.equal((html.match(/class="lab-schematic"/g)||[]).length,8,"Every workshop should include a schematic panel");
-assert.equal((html.match(/data-sim-toggle/g)||[]).length,9,"Each schematic should have a simulator control plus one shared selector reference");
+assert.equal((html.match(/class="lab-schematic"/g)||[]).length,7,"Seven legacy workshops should retain their schematic panels");
+assert.ok(html.includes('id="topologyCanvas"') && html.includes('id="addTopologyNode"') && html.includes('id="addTopologyLink"'),"Topology workshop must provide an interactive user-defined network builder");
+assert.ok(html.includes('id="exportTopology"') && html.includes('id="topologyResult"'),"Topology workshop must provide analysis and JSON export");
+assert.equal((html.match(/data-sim-toggle/g)||[]).length,8,"Each remaining schematic should have a simulator control plus one shared selector reference");
 assert.ok(html.includes("prefers-reduced-motion"),"Schematic animation must respect reduced-motion preferences");
 assert.ok(html.includes('aria-pressed="false"'),"Simulator controls must expose accessible pressed state");
 assert.ok(html.includes("شبیه‌سازی جریان"),"Simulator controls must be clearly labeled in Persian");
