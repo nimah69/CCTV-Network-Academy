@@ -110,7 +110,7 @@ export function runDiagnostic(graph,tool,target,options={}) {
   const state=evaluateNetwork(graph,options),node=state.nodes[target];
   if(!node)throw new Error("نقطه اتصال ابزار در شبکه مجازی وجود ندارد.");
   const source=options.source||target,sourceNode=graph.nodes.find(n=>n.id===source),targetNode=graph.nodes.find(n=>n.id===target);
-  const reachable=Boolean(sourceNode&&targetNode&&state.nodes[source]?.online&&node.online&&hasPath(graph,state.links,source,target)&&sameSubnet(sourceNode,targetNode)&&!options.acl?.some(rule=>rule.from===source&&rule.to===target&&rule.action==="deny"));
+  const reachable=Boolean(sourceNode&&targetNode&&state.nodes[source]?.ipReachable&&node.ipReachable&&hasPath(graph,state.links,source,target)&&sameSubnet(sourceNode,targetNode)&&!options.acl?.some(rule=>rule.from===source&&rule.to===target&&rule.action==="deny"));
   switch(tool){
     case "ping":return {tool,target,source,ok:reachable,output:reachable?"پاسخ ICMP دریافت شد.":"پاسخی دریافت نشد؛ لینک، IP، ماسک، VLAN و ACL را بررسی کن.",state};
     case "web-camera":{const ok=node.online&&node.streamAvailable;return {tool,target,ok,output:!node.online?"دوربین خاموش یا از نظر شبکه جداست.":ok?"رابط دوربین و جریان مدل‌شده در دسترس‌اند.":node.reasons.join("؛ ")||"سرویس تصویر در دسترس نیست.",state};}
