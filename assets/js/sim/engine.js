@@ -97,7 +97,8 @@ export function evaluateNetwork(graph, { acl = graph.acl || [], now = 0 } = {}) 
     if(target?.diskHealthy===false)state.reasons.push("دیسک NVR خطا دارد");
     if(target?.freeStorageTB===0)state.reasons.push("فضای ذخیره‌سازی آزاد وجود ندارد");
   }
-  for(const node of graph.nodes){if(node.type==="camera"){const target=graph.nodes.find(n=>n.type==="nvr"&&sameSubnet(n,node)&&hasPath(graph,linkState,node.id,n.id));nodeState[node.id].recording=nodeState[node.id].streamAvailable&&Boolean(target)&&nodeState[target.id].recording;}}\n  const totalPoeDraw=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+n.ports.filter(p=>p.poeEnabled).reduce((v,p)=>v+(p.poeDrawW||0),0),0);
+  for(const node of graph.nodes){if(node.type==="camera"){const target=graph.nodes.find(n=>n.type==="nvr"&&sameSubnet(n,node)&&hasPath(graph,linkState,node.id,n.id));nodeState[node.id].recording=nodeState[node.id].streamAvailable&&Boolean(target)&&nodeState[target.id].recording;}}
+  const totalPoeDraw=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+n.ports.filter(p=>p.poeEnabled).reduce((v,p)=>v+(p.poeDrawW||0),0),0);
   const totalPoeBudget=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+(n.poeBudgetW||0),0);
   if(totalPoeDraw>totalPoeBudget)events.push({time:now,type:"poe-overload",message:"مصرف تجمیعی PoE از بودجه کل سوئیچ بیشتر است"});
   const uplinkCapacity=graph.links.filter(l=>l.type==="ethernet"||l.type==="fiber").reduce((m,l)=>Math.max(m,linkState[l.id]?.speedMbps||0),0);
