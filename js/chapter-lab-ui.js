@@ -45,8 +45,7 @@ function runChapterLabScenario(){
  if(correct){var count=window.CCTVChapterLabs[chapter].filter(function(item,i){var r=state.progress.labs[chapter+":"+i];return(r&&r.checked&&r.correct)||i===idx;}).length;if(count===5&&state.progress.done.indexOf(chapter)===-1)state.progress.done.push(chapter);}
  saveProgress();state.labDraft=null;render();
 }
-function retryChapterLabScenario(index){var key=state.chapter+":"+index;delete state.progress.labs[key];saveProgress();state.labScenario=index;state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";render();}
+function retryChapterLabScenario(index){var key=state.chapter+":"+index;delete state.progress.labs[key];saveProgress();state.labScenario=index;state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();}
 function advanceLabSimulator(step){state.labSimStep=Number(step)||0;state.labSimOutcome="";state.labSimAction=null;render();}
 function runChapterLabSimulation(actionIndex){var s=window.CCTVChapterLabs[state.chapter][state.labScenario];if(!Number.isInteger(actionIndex)||actionIndex<0||actionIndex>2)return;state.labSimAction=actionIndex;state.labSimOutcome=actionIndex===s.answer?"pass":"fail";state.labSimStep=2;render();}
-function setLabSimulatorOutcome(outcome){if(outcome!=="pass"&&outcome!=="fail")return;state.labSimOutcome=outcome;state.labSimStep=2;render();}
 function resetLabSimulator(){state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();}
