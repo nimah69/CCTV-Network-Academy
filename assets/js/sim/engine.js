@@ -49,7 +49,7 @@ export function evaluateNetwork(graph, { acl = graph.acl || [], now = 0 } = {}) 
     const rawPower=powerSource?.port?.poeDrawW||powerSource?.port?.poeBudgetW||0;
     const poeDelivered=powerSource&&isPoeLink&&powerSource.port?.poeEnabled&&budgetOk&&link.lengthM<=ENGINEERING.ethernet.maxCopperChannelM?Math.max(0,rawPower-loss):0;
     const powered=!pd||!pd.poeRequired||(isPoeLink&&budgetOk&&poeDelivered>=(pd.minPoeW||0));
-    const loopRisk=Boolean(link.loop)||(link.from.node===link.to.node&&a.type.includes("switch")&&!a.rstpEnabled);
+    const loopRisk=(Boolean(link.loop)&&!a.rstpEnabled)||(link.from.node===link.to.node&&a.type.includes("switch")&&!a.rstpEnabled);
     const up=Boolean(active&&vlanCompatible&&powered&&!loopRisk);
     const speedMbps=Math.min(link.speedMbps||Infinity,pa?.speedMbps||1000,pb?.speedMbps||1000);
     linkState[link.id]={up,active,vlanCompatible,powered,budgetOk,loopRisk,duplexMismatch:Boolean(link.duplexMismatch),crcErrors:link.crcErrors||0,emi:Boolean(link.emi),speedMbps,poeDeliveredW:Number(poeDelivered.toFixed(2)),voltageDropV:Number((current*resistance).toFixed(3)),reasons:[]};
@@ -64,7 +64,7 @@ export function evaluateNetwork(graph, { acl = graph.acl || [], now = 0 } = {}) 
     if(loopRisk)events.push({time:now,type:"broadcast-storm",link:link.id,message:"الگوی Loop/Broadcast storm در شبکه شناسایی شد"});
     if(link.duplexMismatch||link.emi||link.crcErrors>0)events.push({time:now,type:"interface-errors",link:link.id,message:"خطاهای لایه فیزیکی/پیوند داده روی لینک "+link.id});
     if(pd?.poeRequired&&!powered){nodeState[pd.id].online=false;nodeState[pd.id].reasons.push("توان PoE کافی در لینک "+link.id+" وجود ندارد");}
-    if(!active||!vlanCompatible){for(const endpoint of [a,b])if(endpoint.type==="camera"){nodeState[endpoint.id].online=false;nodeState[endpoint.id].reasons.push(...linkState[link.id].reasons);}}
+    if(!up){for(const endpoint of [a,b])if(endpoint.id!==(powerSource?.node.id)&&!["switch","poe-switch"].includes(endpoint.type)){nodeState[endpoint.id].online=false;nodeState[endpoint.id].reasons.push(...linkState[link.id].reasons);}}
   }
   const ips=new Map(),conflicted=new Set();
   for(const node of graph.nodes) {
@@ -97,7 +97,7 @@ export function evaluateNetwork(graph, { acl = graph.acl || [], now = 0 } = {}) 
     if(target?.diskHealthy===false)state.reasons.push("دیسک NVR خطا دارد");
     if(target?.freeStorageTB===0)state.reasons.push("فضای ذخیره‌سازی آزاد وجود ندارد");
   }
-  const totalPoeDraw=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+n.ports.filter(p=>p.poeEnabled).reduce((v,p)=>v+(p.poeDrawW||0),0),0);
+  for(const node of graph.nodes){if(node.type==="camera"){const target=graph.nodes.find(n=>n.type==="nvr"&&sameSubnet(n,node)&&hasPath(graph,linkState,node.id,n.id));nodeState[node.id].recording=nodeState[node.id].streamAvailable&&Boolean(target)&&nodeState[target.id].recording;}}\n  const totalPoeDraw=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+n.ports.filter(p=>p.poeEnabled).reduce((v,p)=>v+(p.poeDrawW||0),0),0);
   const totalPoeBudget=graph.nodes.filter(n=>n.type==="poe-switch").reduce((sum,n)=>sum+(n.poeBudgetW||0),0);
   if(totalPoeDraw>totalPoeBudget)events.push({time:now,type:"poe-overload",message:"مصرف تجمیعی PoE از بودجه کل سوئیچ بیشتر است"});
   const uplinkCapacity=graph.links.filter(l=>l.type==="ethernet"||l.type==="fiber").reduce((m,l)=>Math.max(m,linkState[l.id]?.speedMbps||0),0);
