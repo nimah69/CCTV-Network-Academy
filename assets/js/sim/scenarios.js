@@ -15,9 +15,9 @@ const definitions=[
 ["adv-loop","پیشرفته","شبکه دوره‌ای کند می‌شود و CPU سوئیچ بالا می‌رود.","Loop لایه دوم و Broadcast storm رخ داده است.","switch-console","break-loop"],
 ["adv-acl","پیشرفته","دوربین ping می‌شود اما جریان به NVR نمی‌رسد.","ACL جریان دوربین به NVR را مسدود کرده است.","web-camera","fix-acl"],
 ["adv-uplink","پیشرفته","با افزایش تعداد جریان‌ها، مشاهده راه دور افت می‌کند.","Uplink یک گیگابیتی اشباع شده است.","system-log","upgrade-uplink"],
-["adv-ir","پیشرفته","تصویر شب سفید یا مه‌آلود می‌شود.","بازتاب IR از سطح نزدیک/شیشه رخ می‌دهد.","webCamera","adjust-ir"],
+["adv-ir","پیشرفته","تصویر شب سفید یا مه‌آلود می‌شود.","بازتاب IR از سطح نزدیک/شیشه رخ می‌دهد.","web-camera","adjust-ir"],
 ["adv-raid","پیشرفته","هشدار دیسک و افت افزونگی در NVR دیده می‌شود.","یک دیسک RAID خراب شده و بازسازی در حال انجام است.","nvr","replace-disk"],
-["adv-firmware","پیشرفته","پس از به‌روزرسانی، یک مدل دوربین stream نمی‌دهد.","ناسازگاری firmware/codec رخ داده است.","webCamera","rollback-firmware"],
+["adv-firmware","پیشرفته","پس از به‌روزرسانی، یک مدل دوربین stream نمی‌دهد.","ناسازگاری firmware/codec رخ داده است.","web-camera","rollback-firmware"],
 ["adv-ups","پیشرفته","سامانه با قطعی برق زودتر از انتظار خاموش می‌شود.","ظرفیت/سلامت باتری UPS کافی نیست.","system-log","replace-battery"],
 ["adv-emi","پیشرفته","خطاهای CRC روی مسیر کنار کابل قدرت افزایش می‌یابند.","تداخل EMI روی مسیر مسی نامناسب وجود دارد.","cable-tester","reroute-cable"]
 ].map(([id,level,customer,rootCause,firstTool,fix],index)=>({id,level,customer,rootCause,firstTool,fix,index,
