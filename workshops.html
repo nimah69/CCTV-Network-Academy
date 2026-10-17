@@ -148,6 +148,10 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 .real-state-item.is-ok{border-color:#286c59}.real-state-item.is-warn{border-color:#765b2c}.real-state-item.is-fail{border-color:#713947}
 @media(max-width:520px){.real-simulator{padding:11px}.real-simulator .grid,#realState .real-state-grid{grid-template-columns:1fr}.real-simulator .btn{width:100%}}
 
+.workshop-reset-row{display:flex;justify-content:flex-start;margin:10px 0 4px}
+.workshop-reset-row .btn{min-height:42px;border-color:#52748b;color:var(--text,#eaf4ff)}
+@media(max-width:520px){.workshop-reset-row .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -465,10 +469,61 @@ function runWorkshopSimulation(button){
  const note=panel.querySelector(".sim-note");if(note)note.textContent="نتیجه بر اساس ورودی‌های فعلی محاسبه شد؛ تجهیزات واقعی متصل نیستند.";
 }
 document.querySelectorAll("[data-sim-toggle]").forEach(button=>button.addEventListener("click",()=>runWorkshopSimulation(button)));
+
+{
+ const resetSections=[...document.querySelectorAll("section.workshop")];
+ for(const resetSection of resetSections){
+  const resetHeading=resetSection.querySelector(":scope > .heading");
+  if(!resetHeading) continue;
+  const resetRow=document.createElement("div");
+  resetRow.className="workshop-reset-row";
+  const resetButton=document.createElement("button");
+  resetButton.type="button";
+  resetButton.className="btn";
+  resetButton.textContent="↺ بازنشانی مقادیر و نتیجه‌ها";
+  resetButton.setAttribute("aria-label","بازنشانی مقادیر و نتیجه‌های "+(resetHeading.querySelector("h2")?.textContent||"این کارگاه"));
+  resetRow.append(resetButton);
+  resetHeading.append(resetRow);
+  const resetResults=[...resetSection.querySelectorAll('[aria-live="polite"], .diagram')];
+  const resetInitialResults=new Map(resetResults.map(node=>[node,node.innerHTML]));
+  const resetNotes=[...resetSection.querySelectorAll(".sim-note")].map(node=>[node,node.textContent]);
+  const resetSimButtons=[...resetSection.querySelectorAll("[data-sim-toggle]")].map(node=>[node,node.textContent]);
+  resetButton.addEventListener("click",()=>{
+   resetSection.querySelectorAll("input,select,textarea").forEach(control=>{
+    if(control instanceof HTMLInputElement && (control.type==="checkbox"||control.type==="radio")) control.checked=control.defaultChecked;
+    else if(control instanceof HTMLSelectElement){
+     const defaults=[...control.options].filter(option=>option.defaultSelected);
+     if(defaults.length) control.value=defaults[0].value;
+     else if(control.options.length) control.selectedIndex=0;
+    }else control.value=control.defaultValue;
+    control.dispatchEvent(new Event("change",{bubbles:true}));
+   });
+   resetSection.querySelectorAll(".schematic-node,.wire").forEach(node=>node.classList.remove("sim-pass","sim-warn","sim-fail","fault-fail","fault-warn"));
+   resetSection.querySelectorAll(".sim-running").forEach(node=>node.classList.remove("sim-running"));
+   resetSection.querySelectorAll(".sim-feedback").forEach(node=>node.remove());
+   for(const [node,html] of resetInitialResults) if(node.isConnected) node.innerHTML=html;
+   for(const [node,value] of resetNotes) if(node.isConnected) node.textContent=value;
+   for(const [node,label] of resetSimButtons){node.setAttribute("aria-pressed","false");node.textContent=label;delete node.dataset.simRunCount;}
+   if(resetSection.id==="trouble"){
+    $("resetFaultSimulation")?.click();
+    $("retryScenario")?.click();
+    $("retryRealScenario")?.click();
+   }else if(resetSection.id==="topology") renderTopologyDiagram();
+   else if(resetSection.id==="poe"){
+    const out=$("poeSimulationResult");if(out)out.className="output";
+   }
+   resetButton.textContent="✓ مقادیر و نتیجه‌ها بازنشانی شد";
+   window.setTimeout(()=>{resetButton.textContent="↺ بازنشانی مقادیر و نتیجه‌ها"},1400);
+  });
+ }
+}
+
 renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
 })();
 </script>
 <script type="module" src="./assets/js/sim/ui/calculators.js"></script>
 <script type="module" src="./assets/js/sim/ui/real-simulator.js"></script>
+
+
 <script src="./js/pwa-register.js"></script>
 </body></html>
