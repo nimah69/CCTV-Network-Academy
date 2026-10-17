@@ -11,7 +11,7 @@ export function runTool(graph, request={}){
   if(!link)return {tool,target,ok:false,output:"پراب‌ها به یک لینک موجود متصل نشده‌اند."};
   const ls=state.links[link.id],a=findPort(graph,link.from.node,link.from.port),b=findPort(graph,link.to.node,link.to.port);
   const sourcePort=graph.nodes.find(n=>n.id===link.from.node)?.type==="poe-switch"?a:graph.nodes.find(n=>n.id===link.to.node)?.type==="poe-switch"?b:null;
-  const voltage=sourcePort?.poeEnabled?48*seededNoise(seed,0.005):0;const pdVoltage=Math.max(0,voltage-(ls?.voltageDropV||0));
+  const voltage=sourcePort?.poeEnabled?ENGINEERING.poe.nominalVoltageV*seededNoise(seed,ENGINEERING.tools.meterNoiseFraction):0;const pdVoltage=Math.max(0,voltage-(ls?.voltageDropV||0));
   return {tool,target,linkId:link.id,ok:Boolean(ls?.up&&voltage>0),voltageV:Number(voltage.toFixed(2)),deliveredW:ls?.poeDeliveredW||0,output:!sourcePort?.poeEnabled?"PoE روی این لینک فعال نیست.":!ls?.up?"لینک یا تحویل توان ناموفق است.":"ولتاژ مدل‌شده در سمت PSE "+voltage.toFixed(1)+" V؛ توان برآوردی در سمت PD "+(ls?.poeDeliveredW||0)+" W. این ابزار آموزشی است و جایگزین اندازه‌گیری واقعی نیست."};
  }
  if(tool==="cable-tester"){
@@ -19,7 +19,7 @@ export function runTool(graph, request={}){
   if(!link)return {tool,target,ok:false,output:"تستر به لینک/کابل مشخصی وصل نشده است."};
   const fault=link.cableFault||"none",quality=link.quality||"normal";
   const ok=fault==="none"&&quality==="normal";
-  return {tool,target,linkId:link.id,wiremap:fault==="open"?"open":fault==="short"?"short":fault==="split-pair"?"split-pair":fault==="reversed"?"reversed":"pass",lengthM:Math.round(link.lengthM*seededNoise(seed,0.04)),ok,output:"Wiremap: "+(fault==="none"?"PASS":fault)+"؛ طول تقریبی "+Math.round(link.lengthM*seededNoise(seed,0.04))+" m؛ کیفیت "+quality+(quality!=="normal"?"؛ حاشیه عملکرد پایین‌تر از کابل سالم است.":".")};
+  return {tool,target,linkId:link.id,wiremap:fault==="open"?"open":fault==="short"?"short":fault==="split-pair"?"split-pair":fault==="reversed"?"reversed":"pass",lengthM:Math.round(link.lengthM*seededNoise(seed,ENGINEERING.tools.cableLengthNoiseFraction)),ok,output:"Wiremap: "+(fault==="none"?"PASS":fault)+"؛ طول تقریبی "+Math.round(link.lengthM*seededNoise(seed,0.04))+" m؛ کیفیت "+quality+(quality!=="normal"?"؛ حاشیه عملکرد پایین‌تر از کابل سالم است.":".")};
  }
  if(tool==="switch-console"){
   const node=graph.nodes.find(n=>n.id===target);
