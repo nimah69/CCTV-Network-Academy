@@ -84,6 +84,11 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     if(pd?.poeRequired&&!powered){nodeState[pd.id].online=false;nodeState[pd.id].reasons.push("توان PoE کافی در لینک "+link.id+" وجود ندارد");}
     if(!up){for(const endpoint of [a,b])if(endpoint.id!==(powerSource?.node.id)&&!["switch","poe-switch"].includes(endpoint.type)){nodeState[endpoint.id].online=false;nodeState[endpoint.id].reasons.push(...linkState[link.id].reasons);}}
   }
+  for(const node of graph.nodes){
+    if(node.type.includes("switch")||node.adminUp===false)continue;
+    const incident=graph.links.filter(link=>link.from.node===node.id||link.to.node===node.id);
+    if(incident.length)nodeState[node.id].online=incident.some(link=>linkState[link.id]?.up);
+  }
   const ips=new Map(),conflicted=new Set();
   for(const node of graph.nodes){
     if(!node.ip)continue;
