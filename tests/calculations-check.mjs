@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
-import calc from "../js/calculations.js";
+import fs from "node:fs";
+import vm from "node:vm";
+const module = { exports: {} };
+const sandbox = { module, exports: module.exports };
+vm.runInNewContext(fs.readFileSync(new URL("../js/calculations.js", import.meta.url), "utf8"), sandbox, { filename: "js/calculations.js" });
+const calc = module.exports;
 
 const poe = calc.poe(12, 9, 25);
 assert.equal(poe.base, 108);

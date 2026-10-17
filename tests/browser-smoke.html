@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><meta charset="utf-8"><title>آزمون مرورگر شبیه‌ساز</title>
+<style>html,body{margin:0;padding:0}iframe{display:block;border:0}</style><body data-smoke-result="pending"><iframe id="app" src="/workshops.html" title="برنامه کارگاه‌ها" style="width:100%;height:800px"></iframe><pre id="result">در حال آزمون…</pre>
+<script>
+const done=(state,message)=>{document.body.dataset.smokeResult=state;document.getElementById("result").textContent=message};
+const requestedWidth=Number(new URLSearchParams(location.search).get("width"));if(requestedWidth>0)document.getElementById("app").style.width=requestedWidth+"px";
+document.getElementById("app").addEventListener("load",()=>{
+ try{
+  const w=document.getElementById("app").contentWindow,d=w.document;
+  const need=(id)=>{const el=d.getElementById(id);if(!el)throw new Error("Missing element "+id);return el};
+  const click=id=>need(id).click();
+  for(const section of d.querySelectorAll(".workshop"))section.style.display="block";
+  if(d.documentElement.scrollWidth>w.innerWidth+2)throw new Error("Horizontal overflow at "+w.innerWidth+"px: "+d.documentElement.scrollWidth);
+  if(!need("realSimulator").querySelector("#realScenario"))throw new Error("real simulator markup missing");
+  click("runRealTool");
+  if(!need("realToolResult").textContent.trim())throw new Error("diagnostic tool produced no output");
+  need("realTool").value="switch-console";need("realTool").dispatchEvent(new w.Event("change",{bubbles:true}));click("runRealTool");
+  if(!need("realToolResult").textContent.includes("PoE"))throw new Error("switch port/PoE diagnostics are not computed: "+need("realToolResult").textContent);
+  need("ipAddress").value="۱۹۲.۱۶۸.۱.۱۳۰";need("cidr").value="26";click("calcSubnet");
+  if(!need("subnetResult").textContent.includes("192.168.1.128"))throw new Error("subnet calculator output mismatch");
+  click("calcPoe");if(!need("poeResult").textContent.includes("PSE"))throw new Error("PoE calculator did not run");
+  click("runPoeSimulation");if(!need("poeSimulationResult").textContent.trim())throw new Error("PoE simulator did not run");
+  click("calcStorage");if(!need("storageResult").textContent.includes("RAID"))throw new Error("storage calculator did not run");
+  click("calcUps");if(!need("upsResult").textContent.includes("دقیقه"))throw new Error("UPS calculator did not run");
+  click("calcLens");if(!need("lensResult").textContent.includes("px/m"))throw new Error("lens calculator did not run");
+  click("calcAdvancedSecurity");if(!need("advancedSecurityResult").textContent.includes("امتیاز وزنی"))throw new Error("security calculator did not run");
+  click("runSwitchFeatureSim");if(!need("switchFeaturesResult").textContent.includes("Ping دوربین‌به‌دوربین"))throw new Error("switch feature model did not run");
+  click("buildReport");if(!need("capstoneResult").textContent.includes("برآورد اولیه"))throw new Error("integrated design report did not run");
+  need("projectRedundantUplink").value="yes";click("buildReport");if(!need("capstoneResult").textContent.includes("قطع Uplink: 12 دوربین"))throw new Error("redundant uplink failure test did not preserve recording: "+need("capstoneResult").textContent);
+  for(const simButton of d.querySelectorAll("[data-sim-toggle]")){simButton.click();const panel=simButton.closest(".lab-schematic");if(!panel||!panel.querySelector(".sim-feedback")||!panel.querySelector(".sim-feedback").textContent.trim())throw new Error("workshop simulation produced no feedback: "+(simButton.closest("section[id]")?.id||"unknown"));const first=panel.querySelector(".sim-feedback").textContent;simButton.click();if(!panel.querySelector(".sim-feedback").textContent.trim()||panel.querySelector(".sim-feedback").textContent===first||!panel.querySelector(".sim-feedback").textContent.includes("نوبت اجرای شبیه‌سازی: 2")||simButton.getAttribute("aria-pressed")!=="true")throw new Error("rerun did not execute visibly: "+(simButton.closest("section[id]")?.id||"unknown"));}click("retryRealScenario");if(need("realSeed").value!=="1")throw new Error("retry did not preserve seed");
+  document.body.dataset.smokeWidth=String(w.innerWidth);done("pass","PASS at "+w.innerWidth+"px: scenario UI, computed PoE diagnostics, subnet/PoE/storage/UPS/lens/security calculators and capstone report.");
+ }catch(error){done("fail",error.stack||String(error))}
+});
+</script></body></html>

@@ -16,7 +16,25 @@ const CORE_ASSETS = [
   "./js/chapter-labs.js",
   "./js/chapter-lab-ui.js",
   "./js/spaced-review.js",
-  "./js/pwa-register.js"
+  "./js/pwa-register.js",
+  "./assets/js/sim/constants.js",
+  "./assets/js/sim/units.js",
+  "./assets/js/sim/graph.js",
+  "./assets/js/sim/devices.js",
+  "./assets/js/sim/engine.js",
+  "./assets/js/sim/tools.js",
+  "./assets/js/sim/scenarios.js",
+  "./assets/js/sim/scoring.js",
+  "./assets/js/sim/calc/poe.js",
+  "./assets/js/sim/calc/subnet.js",
+  "./assets/js/sim/calc/storage.js",
+  "./assets/js/sim/calc/cable.js",
+  "./assets/js/sim/calc/security.js",
+  "./assets/js/sim/calc/ups.js",
+  "./assets/js/sim/calc/optics.js",
+  "./assets/js/sim/calc/design.js",
+  "./assets/js/sim/ui/real-simulator.js",
+  "./assets/js/sim/ui/calculators.js"
 ];
 
 self.addEventListener("install", (event) => {
