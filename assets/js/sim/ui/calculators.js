@@ -37,7 +37,7 @@ bind("recommendCable",()=>{
 });
 bind("scoreSecurity",()=>{
  const mapping=["default-password","segmentation","segmentation","patching","patching","remote-cloud","lockout","rbac","ports"];
- const ids=[...document.querySelectorAll("#securityChecks input:checked")].map((_,i)=>mapping[[...document.querySelectorAll("#securityChecks input")].filter(x=>x.checked).indexOf([...document.querySelectorAll("#securityChecks input")].filter(x=>x.checked)[i])]);
+ const allChecks=[...document.querySelectorAll("#securityChecks input")];const ids=allChecks.map((el,i)=>el.checked?mapping[i]:null).filter(Boolean);
  const r=assessSecurity(ids);
  show("securityResult","امتیاز کنترل‌های نگاشت‌شده: "+r.score+"/100؛ "+r.rating+"\nاولویت‌های اصلاح:\n"+r.priority.slice(0,5).map(x=>x.risk+" · "+x.title).join("\n")+"\nزنجیره حمله احتمالی:\n"+r.attackChain.map(x=>x.text).join("\n"),r.score>=80?"good":"warn");
 });
