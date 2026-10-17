@@ -56,7 +56,8 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const aggregateDraw=powerSource?powerSource.node.ports.filter(p=>p.poeEnabled).reduce((sum,p)=>sum+(p.poeDrawW||0),0):0;
     const aggregateBudgetOk=!powerSource||!powerSource.node.poeBudgetW||aggregateDraw<=powerSource.node.poeBudgetW;
     const portBudgetOk=!powerSource||!powerSource.port?.poeBudgetW||(powerSource.port.poeDrawW||0)<=powerSource.port.poeBudgetW;
-    const budgetOk=aggregateBudgetOk&&portBudgetOk;
+    const allocated=!powerSource||poeAllocations.get(powerSource.node.id)?.get(powerSource.port.id)!==false;
+    const budgetOk=portBudgetOk&&allocated;
     const materialFactor=link.cableMaterial==="cca"?ENGINEERING.ethernet.ccaResistanceFactor:1;
     const parallelPaths=link.pairs===4?2:1;
     const resistance=ENGINEERING.ethernet.copperLoopResistanceOhmPerKm*(link.lengthM||0)/1000*materialFactor/parallelPaths;
