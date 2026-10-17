@@ -113,7 +113,8 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     if(node.type!=="camera")continue;
     const target=graph.nodes.find(n=>n.type==="nvr"&&sameSubnet(n,node)&&hasPath(graph,linkState,node.id,n.id));
     const blocked=target&&acl.some(rule=>rule.from===node.id&&rule.to===target.id&&rule.action==="deny");
-    state.streamAvailable=state.ipReachable&&Boolean(target)&&!blocked&&node.rtspEnabled!==false&&node.firmware!=="incompatible";
+    const isolated=Boolean(target)&&isolationBlocks(graph,node.id,target.id);
+    state.streamAvailable=state.ipReachable&&Boolean(target)&&!blocked&&!isolated&&node.rtspEnabled!==false&&node.firmware!=="incompatible";
     if(!target)state.reasons.push("NVR هم‌شبکه و متصل به این دوربین پیدا نشد");
     if(blocked)state.reasons.push("ACL ارتباط دوربین و NVR را مسدود کرده است");
     if(isolated)state.reasons.push("Port isolation ارتباط دوربین و NVR را مسدود کرده است");
