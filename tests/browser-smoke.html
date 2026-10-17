@@ -25,6 +25,7 @@ document.getElementById("app").addEventListener("load",()=>{
   click("calcAdvancedSecurity");if(!need("advancedSecurityResult").textContent.includes("امتیاز وزنی"))throw new Error("security calculator did not run");
   click("runSwitchFeatureSim");if(!need("switchFeaturesResult").textContent.includes("Ping دوربین‌به‌دوربین"))throw new Error("switch feature model did not run");
   click("buildReport");if(!need("capstoneResult").textContent.includes("برآورد اولیه"))throw new Error("integrated design report did not run");
+  need("projectRedundantUplink").value="yes";click("buildReport");if(!need("capstoneResult").textContent.includes("قطع Uplink: 8 دوربین"))throw new Error("redundant uplink failure test did not preserve recording");
   click("retryRealScenario");if(need("realSeed").value!=="1")throw new Error("retry did not preserve seed");
   document.body.dataset.smokeWidth=String(w.innerWidth);done("pass","PASS at "+w.innerWidth+"px: scenario UI, computed PoE diagnostics, subnet/PoE/storage/UPS/lens/security calculators and capstone report.");
  }catch(error){done("fail",error.stack||String(error))}
