@@ -99,7 +99,7 @@ export function applyScenarioRepair(graph,action,seed=1,selectedLinkId="cam-link
   case "fix-acl": acl=[];break;
   case "upgrade-uplink": links=links.map(l=>({...l,speedMbps:10000}));trafficMbps=700;break;
   case "adjust-ir": if(cam){cam.irHealthy=true;cam.irReflection=false}break;
-  case "replace-disk": if(nvr){nvr.diskHealthy=true;nvr.rebuilding=false}break;
+  case "replace-disk": if(nvr){nvr.diskHealthy=true;nvr.raidDegraded=false;nvr.rebuilding=false}break;
   case "rollback-firmware": if(cam){cam.firmware="stable";cam.rtspEnabled=true}break;
   case "replace-battery": if(ups){ups.healthFactor=.9;ups.chargePercent=100;ups.capacityWh=600}break;
   case "reroute-cable": if(link){link.emi=false;link.quality="normal";link.lengthM=Math.min(link.lengthM,60)}break;
