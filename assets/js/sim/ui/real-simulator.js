@@ -1,4 +1,4 @@
-import { listScenarios, createScenario } from "../scenarios.js";
+import { listScenarios, createScenario, applyScenarioRepair } from "../scenarios.js";
 import { evaluateNetwork } from "../engine.js";
 import { runTool } from "../tools.js";
 import { scoreAttempt, getHint, actionCost } from "../scoring.js";
@@ -49,31 +49,7 @@ if(root){
   populatePoints();renderState();
  }
  function replaceGraph(patch){
-  const nodes=current.model.nodes.map(n=>({...n,ports:n.ports.map(p=>({...p}))}));
-  let links=current.model.links.map(l=>({...l,from:{...l.from},to:{...l.to}}));
-  let acl=[...(current.model.acl||[])],trafficMbps=current.model.trafficMbps||0;
-  const findNode=id=>nodes.find(n=>n.id===id),sw=findNode("sw"),cam=findNode("cam"),nvr=findNode("nvr");
-  switch(patch){
-   case "enable-port": if(sw)for(const p of sw.ports){p.adminUp=true;p.poeEnabled=true}break;
-   case "replace-cable": links=links.map(l=>({...l,cableFault:"none",quality:"normal",cableMaterial:"copper",emi:false,active:true}));break;
-   case "fix-ip": if(cam)cam.ip="192.168.10."+String(230+(seed%20));for(const n of nodes)if(n.id==="rogue")n.ip="192.168.10.249";break;
-   case "select-hdmi": {const m=findNode("monitor");if(m){m.input="HDMI1";m.hdmiConnected=true}if(nvr)nvr.hdmiConnected=true;break}
-   case "free-storage": if(nvr)nvr.freeStorageTB=2;break;
-   case "increase-budget": if(sw){sw.poeBudgetW=180;for(const p of sw.ports)if(p.poeEnabled)p.poeDrawW=12}break;
-   case "match-duplex": links=links.map(l=>({...l,duplexMismatch:false,crcErrors:0}));break;
-   case "fix-vlan": for(const n of nodes)for(const p of n.ports)if(p.vlan!=null)p.vlan=10;break;
-   case "fix-subnet": if(cam)cam.prefix=24;break;
-   case "fix-clock": for(const n of nodes)if(n.type==="camera"||n.type==="nvr"){n.clockSynced=true;n.timezone="local"}break;
-   case "break-loop": links=links.filter(l=>!l.loop);if(sw)sw.rstpEnabled=true;break;
-   case "fix-acl": acl=[];break;
-   case "upgrade-uplink": links=links.map(l=>({...l,speedMbps:10000}));trafficMbps=700;break;
-   case "adjust-ir": if(cam){cam.irHealthy=true;cam.irReflection=false}break;
-   case "replace-disk": if(nvr){nvr.diskHealthy=true;nvr.rebuilding=false}break;
-   case "rollback-firmware": if(cam){cam.firmware="stable";cam.rtspEnabled=true}break;
-   case "replace-battery": {const u=findNode("ups1");if(u){u.healthFactor=.9;u.chargePercent=100;u.capacityWh=600}break}
-   case "reroute-cable": links=links.map(l=>({...l,emi:false,quality:"normal",lengthM:Math.min(l.lengthM,60)}));break;
-  }
-  current.model=createGraph({nodes,links,vlans:current.model.vlans,acl,trafficMbps});
+  current.model=applyScenarioRepair(current.model,patch,seed,linkSelect.value||"cam-link");
  }
  $("loadRealScenario").addEventListener("click",()=>load(scenarioSelect.value,seedInput.value));
  $("nextRealScenario").addEventListener("click",()=>{const list=listScenarios(),i=list.findIndex(s=>s.id===scenarioSelect.value),next=list[(i+1)%list.length];scenarioSelect.value=next.id;load(next.id,(seed+1)>>>0)});
@@ -81,7 +57,7 @@ if(root){
  $("runRealTool").addEventListener("click",()=>{
   const tool=toolSelect.value,target=targetSelect.value,source=sourceSelect.value,linkId=linkSelect.value;
   try{
-   const response=runTool(current.model,{tool,target,source,linkId,seed,now:Math.round((Date.now()-startedAt)/1000)});
+   const response=runTool(current.model,{tool,target,source,linkId,seed,now:Math.round((Date.now()-startedAt)/1000)});\n   if(response.graph){current.model=createGraph(response.graph);populatePoints()}
    const cost=actionCost(tool==="replace-cable"?"replaceCable":tool==="reboot"?"reboot":tool==="cable-tester"?"cableTest":tool==="switch-console"?"showPoe":"ping");
    downtime+=response.downtimeMinutes||0;attempts.push({tool,target,source,linkId,ok:response.ok,output:response.output,seconds:Math.round((Date.now()-startedAt)/1000)});
    result.textContent="["+tool+"] "+(response.output||JSON.stringify(response))+(response.voltageV!==undefined?" ولتاژ: "+response.voltageV+" V":"")+(response.deliveredW!==undefined?"؛ توان: "+response.deliveredW+" W":"");
