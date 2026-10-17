@@ -459,8 +459,9 @@ function runWorkshopSimulation(button){
  simSetState(panel,status,focus);panel.classList.add("sim-running");button.setAttribute("aria-pressed","true");button.textContent="↻ اجرای دوباره شبیه‌سازی";
  let feedback=panel.querySelector(".sim-feedback");if(!feedback){feedback=document.createElement("div");feedback.className="output sim-feedback";feedback.setAttribute("aria-live","polite");panel.appendChild(feedback);}
  const label=status==="pass"?"آزمون انجام شد":status==="fail"?"نیازمند اصلاح":"نیازمند بررسی";
+ const runCount=(Number(button.dataset.simRunCount)||0)+1;button.dataset.simRunCount=String(runCount);
  feedback.className="output sim-feedback "+(status==="pass"?"good":status==="fail"?"bad":"warn");
- feedback.innerHTML="<b>"+label+" — "+config.title+"</b><p>"+simEscape(extra)+"</p>"+(details?"<details><summary>جزئیات نتیجه محاسبه</summary><p>"+simEscape(details)+"</p></details>":"")+"<p class='help'>این شبیه‌سازی از ورودی‌های همین صفحه استفاده می‌کند؛ اتصال به تجهیزات واقعی ندارد.</p>";
+ feedback.innerHTML="<b>"+label+" — "+config.title+"</b><p>"+simEscape(extra)+"</p><p class='help'>نوبت اجرای شبیه‌سازی: "+runCount+"</p>"+(details?"<details><summary>جزئیات نتیجه محاسبه</summary><p>"+simEscape(details)+"</p></details>":"")+"<p class='help'>این شبیه‌سازی از ورودی‌های همین صفحه استفاده می‌کند؛ اتصال به تجهیزات واقعی ندارد.</p>";
  const note=panel.querySelector(".sim-note");if(note)note.textContent="نتیجه بر اساس ورودی‌های فعلی محاسبه شد؛ تجهیزات واقعی متصل نیستند.";
 }
 document.querySelectorAll("[data-sim-toggle]").forEach(button=>button.addEventListener("click",()=>runWorkshopSimulation(button)));
