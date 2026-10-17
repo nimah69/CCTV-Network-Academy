@@ -237,6 +237,10 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 <div class="field"><label for="projectResolution">رزولوشن معمول</label><select id="projectResolution"><option value="1080p">1080p</option><option value="4MP">4MP</option><option value="4K">4K</option></select></div>
 <div class="field"><label for="projectBuildings">تعداد ساختمان / طبقه</label><input id="projectBuildings" type="number" min="1" value="1"></div>
 <div class="field"><label for="projectUps">هدف پشتیبانی UPS (دقیقه)</label><input id="projectUps" type="number" min="1" value="30"></div>
+<div class="field"><label for="projectEnvironment">محیط نصب</label><select id="projectEnvironment"><option value="indoor">داخل ساختمان</option><option value="outdoor">فضای باز</option></select></div>
+<div class="field"><label for="projectPtz">دوربین PTZ</label><select id="projectPtz"><option value="no">خیر</option><option value="yes">بله</option></select></div>
+<div class="field"><label for="projectAudio">ضبط صدا</label><select id="projectAudio"><option value="no">خیر</option><option value="yes">بله</option></select></div>
+<div class="field"><label for="projectRemote">مشاهده از راه دور هم‌زمان</label><select id="projectRemote"><option value="no">خیر</option><option value="yes">بله</option></select></div>
 <div class="field"><label for="projectBudget">بودجه تقریبی (اختیاری)</label><input id="projectBudget" type="number" min="0" value="0"></div>
 </div><button class="btn primary" id="buildReport">ساخت گزارش پروژه</button><button class="btn" id="downloadReport">ذخیره گزارش TXT</button><button class="btn" id="downloadJsonReport" type="button">ذخیره گزارش JSON</button><button class="btn" id="printReport">چاپ / ذخیره PDF</button><div id="capstoneResult" aria-live="polite"></div></div><section class="card" id="upsWorkshop"><h3>کارگاه تخصصی UPS و برق پشتیبان</h3><div class="grid">
 <div class="field"><label for="upsLoad">بار کل (وات)</label><input id="upsLoad" type="number" min="1" value="180"></div>
