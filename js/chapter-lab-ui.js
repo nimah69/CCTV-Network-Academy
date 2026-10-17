@@ -8,16 +8,18 @@ function chapterLabGlossary(s){
  return '<details class="cl-glossary"><summary>معنی اصطلاحات این تمرین</summary><div>'+found.map(function(p){return '<p><b>'+chapterLabEsc(p[0])+' یعنی:</b> '+chapterLabEsc(p[1])+'</p>';}).join("")+'</div></details>';
 }
 function chapterLabSimulatorHTML(s){
- var step=state.labSimStep||0,outcome=state.labSimOutcome||"",sim=s.simulator||{prompt:s.check,pass:s.why,fail:s.why,next:s.clue};
+ var step=state.labSimStep||0,outcome=state.labSimOutcome||"",action=Number.isInteger(state.labSimAction)?state.labSimAction:null,sim=s.simulator||{prompt:s.check,pass:s.why,fail:s.why,next:s.clue};
  var body="";
  if(step===0){
-  body='<div class="cl-sim-card"><span class="cl-step-no">۱</span><div><b>اول چه چیزی را بررسی کنیم؟</b><p>'+chapterLabEsc(sim.prompt)+'</p><small>این کار را در ذهن تمرین کن؛ لازم نیست دستگاه واقعی داشته باشی.</small></div></div><button type="button" class="cl-btn cl-btn-primary cl-full" onclick="advanceLabSimulator(1)">متوجه شدم؛ مرحله بعد</button>';
+  body='<div class="cl-sim-card"><span class="cl-step-no">۱</span><div><b>هدف آزمون</b><p>'+chapterLabEsc(sim.prompt)+'</p><small>ابتدا مسئله را بخوان؛ سپس یک اقدام مشخص را انتخاب کن و پیامد آموزشی آن را ببین.</small></div></div><button type="button" class="cl-btn cl-btn-primary cl-full" onclick="advanceLabSimulator(1)">انتخاب اقدام برای آزمایش</button>';
  }else if(step===1){
-  body='<div class="cl-sim-card"><span class="cl-step-no">۲</span><div><b>نتیجه بررسی چه بود؟</b><p>یکی از دو نتیجه فرضی را انتخاب کن.</p></div></div><div class="cl-sim-choices"><button type="button" class="cl-btn cl-btn-success" onclick="setLabSimulatorOutcome(\'pass\')"><b>✓ مورد عادی بود</b><small>این بررسی نشانه مشکل نداشت</small></button><button type="button" class="cl-btn cl-btn-danger" onclick="setLabSimulatorOutcome(\'fail\')"><b>! مورد غیرعادی بود</b><small>نشانه مشکل پیدا شد</small></button></div>';
+  var actions=(s.options||[]).map(function(option,index){return '<button type="button" class="cl-btn '+(index===s.answer?'cl-btn-success':'')+'" onclick="runChapterLabSimulation('+index+')"><b>آزمایش گزینه '+(index+1).toLocaleString("fa-IR")+'</b><small>'+chapterLabEsc(option)+'</small></button>';}).join("");
+  body='<div class="cl-sim-card"><span class="cl-step-no">۲</span><div><b>کدام اقدام را آزمایش می‌کنی؟</b><p>یک اقدام را انتخاب کن. نتیجه از منطق سناریوی همین فصل تعیین می‌شود؛ نمی‌توانی نتیجه را به‌دلخواه عادی یا خراب اعلام کنی.</p></div></div><div class="cl-sim-choices">'+actions+'</div>';
  }else{
-  body='<div class="cl-sim-result '+(outcome==="pass"?"is-pass":"is-fail")+'" role="status"><b>'+(outcome==="pass"?"نتیجه فرضی: این بررسی عادی بود":"نتیجه فرضی: این بررسی نشانه مشکل داشت")+'</b><p>'+chapterLabEsc(outcome==="pass"?sim.pass:sim.fail)+'</p><div class="cl-next-step"><b>حالا چه کار کنیم؟</b><p>'+chapterLabEsc(sim.next||s.clue)+'</p></div><button type="button" class="cl-btn cl-full" onclick="resetLabSimulator()">شروع دوباره این شبیه‌ساز</button></div>';
+  var passed=outcome==="pass";
+  body='<div class="cl-sim-result '+(passed?"is-pass":"is-fail")+'" role="status"><b>'+(passed?"آزمون تصمیم: اقدام مناسب":"آزمون تصمیم: این اقدام مشکل را حل نمی‌کند")+'</b><p><b>اقدام انتخاب‌شده:</b> '+chapterLabEsc(action!==null?(s.options||[])[action]:"")+'</p><p>'+chapterLabEsc(passed?(sim.pass||s.why):(sim.fail||"این اقدام با شواهد سناریو سازگار نیست؛ علت را بررسی کن و آزمون هدفمندتری انتخاب کن."))+'</p><div class="cl-next-step"><b>قدم بعدی</b><p>'+chapterLabEsc(sim.next||s.clue)+'</p></div><button type="button" class="cl-btn cl-full" onclick="resetLabSimulator()">آزمایش دوباره با اقدام دیگر</button></div>';
  }
- return '<section class="cl-simulator" aria-labelledby="cl-sim-title"><div class="cl-sim-head"><div><span class="cl-kicker">شبیه‌ساز ساده برای مبتدی</span><h3 id="cl-sim-title">سه گام برای فهم مشکل</h3><p>۱. بررسی را بخوان؛ ۲. نتیجه فرضی را انتخاب کن؛ ۳. قدم بعدی را یاد بگیر.</p></div><span class="cl-sim-badge">گام '+(step+1).toLocaleString("fa-IR")+' از ۳</span></div><div class="cl-sim-body">'+body+'<p class="cl-honesty">این شبیه‌ساز آموزشی است؛ به دوربین، سوئیچ یا دستگاه ضبط واقعی متصل نیست و نتیجه واقعی را اندازه نمی‌گیرد.</p></div></section>';
+ return '<section class="cl-simulator" aria-labelledby="cl-sim-title"><div class="cl-sim-head"><div><span class="cl-kicker">شبیه‌ساز تصمیم‌گیری مبتدی</span><h3 id="cl-sim-title">آزمایش اقدام و مشاهده نتیجه</h3><p>۱. هدف را بخوان؛ ۲. یک اقدام را انتخاب کن؛ ۳. پیامد و قدم بعدی را ببین.</p></div><span class="cl-sim-badge">گام '+(step+1).toLocaleString("fa-IR")+' از ۳</span></div><div class="cl-sim-body">'+body+'<p class="cl-honesty">نتیجه بر اساس سناریو و پاسخ آموزشی محاسبه می‌شود؛ این شبیه‌ساز به دوربین، سوئیچ یا NVR واقعی وصل نیست.</p></div></section>';
 }
 function chapterLabHTML(){
  var chapter=state.chapter,bank=window.CCTVChapterLabs||[],scenarios=bank[chapter]||[],c=(typeof chapters!=="undefined"&&chapters[chapter])||{title:"فصل "+(chapter+1)};
@@ -34,7 +36,7 @@ function chapterLabHTML(){
  '<div class="cl-meta"><span class="cl-chip">گام دوم: انتخاب اقدام</span></div><fieldset class="cl-answers" '+(answered?'disabled':'')+'><legend>اول کدام کار منطقی‌تر است؟</legend>'+options+'</fieldset><div class="cl-actions">'+(answered?'<button class="primary" onclick="retryChapterLabScenario('+idx+')">تمرین دوباره</button>':'<button class="primary" onclick="runChapterLabScenario()">بررسی پاسخ من</button>')+'<button class="secondary" onclick="openChapterLabScenario('+((idx+1)%5)+')">'+(idx===4?'تمرین ۱':'تمرین بعدی')+' ←</button></div>'+feedback+
  '<div class="cl-bottom"><button class="secondary" onclick="go(\'chapterQuiz\','+chapter+')">رفتن به آزمون فصل</button><button class="secondary" onclick="go(\'lesson\','+chapter+')">بازگشت به آموزش فصل</button></div></article></div></div>';
 }
-function openChapterLabScenario(index){state.labScenario=Math.max(0,Math.min(4,Number(index)||0));state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";render();if(typeof window!=="undefined"&&window.scrollTo)window.scrollTo({top:0,behavior:"smooth"});}
+function openChapterLabScenario(index){state.labScenario=Math.max(0,Math.min(4,Number(index)||0));state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();if(typeof window!=="undefined"&&window.scrollTo)window.scrollTo({top:0,behavior:"smooth"});}
 function selectChapterLabAnswer(value){state.labDraft=Number(value);}
 function runChapterLabScenario(){
  if(!Number.isInteger(state.labDraft)||state.labDraft<0||state.labDraft>2){alert("اول یکی از سه گزینه را انتخاب کن.");return;}
@@ -43,7 +45,7 @@ function runChapterLabScenario(){
  if(correct){var count=window.CCTVChapterLabs[chapter].filter(function(item,i){var r=state.progress.labs[chapter+":"+i];return(r&&r.checked&&r.correct)||i===idx;}).length;if(count===5&&state.progress.done.indexOf(chapter)===-1)state.progress.done.push(chapter);}
  saveProgress();state.labDraft=null;render();
 }
-function retryChapterLabScenario(index){var key=state.chapter+":"+index;delete state.progress.labs[key];saveProgress();state.labScenario=index;state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";render();}
-function advanceLabSimulator(step){state.labSimStep=Number(step)||0;state.labSimOutcome="";render();}
-function setLabSimulatorOutcome(outcome){if(outcome!=="pass"&&outcome!=="fail")return;state.labSimOutcome=outcome;state.labSimStep=2;render();}
-function resetLabSimulator(){state.labSimStep=0;state.labSimOutcome="";render();}
+function retryChapterLabScenario(index){var key=state.chapter+":"+index;delete state.progress.labs[key];saveProgress();state.labScenario=index;state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();}
+function advanceLabSimulator(step){state.labSimStep=Number(step)||0;state.labSimOutcome="";state.labSimAction=null;render();}
+function runChapterLabSimulation(actionIndex){var s=window.CCTVChapterLabs[state.chapter][state.labScenario];if(!Number.isInteger(actionIndex)||actionIndex<0||actionIndex>2)return;state.labSimAction=actionIndex;state.labSimOutcome=actionIndex===s.answer?"pass":"fail";state.labSimStep=2;render();}
+function resetLabSimulator(){state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();}
