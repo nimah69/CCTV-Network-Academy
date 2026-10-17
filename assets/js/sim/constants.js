@@ -33,7 +33,11 @@ export const ENGINEERING = Object.freeze({
     loopbackStart: 0x7f000000,
     loopbackEnd: 0x7fffffff
   }),
-  video: Object.freeze({\n    // Typical starting points only; scene complexity, FPS, codec profile and vendor implementation can change bitrate substantially.\n    bitrateMbps: Object.freeze({ "1080p": Object.freeze({ "H.264": 4, "H.265": 2.5 }), "4MP": Object.freeze({ "H.264": 7, "H.265": 4.5 }), "4K": Object.freeze({ "H.264": 16, "H.265": 10 }) })\n  }),\n  design: Object.freeze({
+  video: Object.freeze({
+    // Typical starting points only; scene complexity, FPS, codec profile and vendor implementation can change bitrate substantially.
+    bitrateMbps: Object.freeze({ "1080p": Object.freeze({ "H.264": 4, "H.265": 2.5 }), "4MP": Object.freeze({ "H.264": 7, "H.265": 4.5 }), "4K": Object.freeze({ "H.264": 16, "H.265": 10 }) })
+  }),
+  design: Object.freeze({
     // Engineering heuristic, not a standard: keep planned sustained uplink use below 70% where feasible.
     uplinkTargetUtilization: 0.70,
     // Design heuristic: reserve 20–30% switch ports for growth; default to 25%.
