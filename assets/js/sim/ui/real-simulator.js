@@ -11,7 +11,7 @@ if(root){
  const result=$("realToolResult"),stateView=$("realState"),hintView=$("realHint"),report=$("realReport"),diagnosisSelect=$("realDiagnosis");
  const names={camera:"دوربین", "poe-switch":"سوئیچ PoE",switch:"سوئیچ",nvr:"NVR",router:"روتر",firewall:"فایروال",ups:"UPS",monitor:"نمایشگر",laptop:"لپ‌تاپ سرویس","patch-panel":"پچ‌پنل","media-converter":"مبدل رسانه","disk-array":"آرایه دیسک"};
  const tools=[["ping","Ping / ARP"],["multimeter","مولتی‌متر"],["poe-tester","PoE tester"],["cable-tester","تستر کابل / Wiremap"],["switch-console","کنسول سوئیچ / show PoE"],["web-camera","رابط وب دوربین"],["nvr","رابط NVR"],["system-log","لاگ سیستم"],["replace-cable","تعویض کابل"],["reboot","Reboot تجهیز"]];
- const actions=[["enable-port","فعال‌سازی پورت / PoE"],["replace-cable","تعویض کابل معیوب"],["fix-ip","رفع IP تکراری"],["select-hdmi","انتخاب ورودی HDMI درست"],["free-storage","آزادسازی فضای ضبط"],["increase-budget","افزایش/تقسیم بودجه PoE"],["match-duplex","یکسان‌سازی Duplex"],["fix-vlan","اصلاح VLAN"],["fix-subnet","اصلاح ماسک IP"],["fix-clock","همگام‌سازی ساعت/NTP"],["break-loop","رفع Loop و فعال‌سازی RSTP"],["fix-acl","اصلاح ACL"],["upgrade-uplink","افزایش ظرفیت Uplink"],["adjust-ir","اصلاح بازتاب/نور IR"],["replace-disk","تعویض دیسک معیوب"],["rollback-firmware","بازگشت به Firmware سازگار"],["replace-battery","تعویض باتری UPS"],["reroute-cable","انتقال کابل از منبع EMI"]];
+ const actions=[["enable-port","فعال‌سازی پورت / PoE"],["replace-cable","تعویض کابل معیوب"],["fix-ip","رفع IP تکراری"],["select-hdmi","انتخاب ورودی HDMI درست"],["free-storage","آزادسازی فضای ضبط"],["increase-budget","افزایش/تقسیم بودجه PoE"],["match-duplex","یکسان‌سازی Duplex"],["fix-vlan","اصلاح VLAN"],["fix-subnet","اصلاح ماسک IP"],["fix-clock","همگام‌سازی ساعت/NTP"],["break-loop","رفع Loop و فعال‌سازی RSTP"],["fix-acl","اصلاح ACL"],["upgrade-uplink","افزایش ظرفیت Uplink"],["adjust-ir","اصلاح بازتاب/نور IR"],["replace-disk","تعویض دیسک معیوب"],["rollback-firmware","بازگشت به Firmware سازگار"],["replace-battery","تعویض باتری UPS"],["reroute-cable","انتقال کابل از منبع EMI"],["factory-reset","Factory reset پرخطر (بدون Backup)"]];
  let current=null,attempts=[],downtime=0,hintsUsed=0,startedAt=Date.now(),solved=false,seed=1;
  for(const s of listScenarios()){
   const o=document.createElement("option");o.value=s.id;o.textContent=s.level+" · "+s.customer;scenarioSelect.append(o);
@@ -40,7 +40,7 @@ if(root){
  }
  function load(id,chosenSeed){
   seed=Number(chosenSeed);if(!Number.isFinite(seed)||seed<0)seed=1;seed=Math.floor(seed)>>>0;seedInput.value=String(seed);
-  current=createScenario(id,seed);attempts=[];downtime=0;hintsUsed=0;solved=false;startedAt=Date.now();
+  current=createScenario(id,seed);attempts=[];downtime=0;virtualCost=0;hintsUsed=0;solved=false;startedAt=Date.now();
   $("realCustomer").textContent=current.customer;
   $("realMeta").textContent=current.level+" · بذر سناریو "+seed+" · زمان و هزینه در محیط مجازی محاسبه می‌شود.";
   $("realHint").textContent="برای شروع، ابزار را به نقطه و لینک مناسب متصل کن؛ علت ریشه‌ای عمداً نمایش داده نمی‌شود.";
@@ -60,13 +60,13 @@ if(root){
    const response=runTool(current.model,{tool,target,source,linkId,seed,now:Math.round((Date.now()-startedAt)/1000)});
    if(response.graph){current.model=createGraph(response.graph);populatePoints()}
    const cost=actionCost(tool==="replace-cable"?"replaceCable":tool==="reboot"?"reboot":tool==="cable-tester"?"cableTest":tool==="switch-console"?"showPoe":"ping");
-   downtime+=response.downtimeMinutes||0;attempts.push({tool,target,source,linkId,ok:response.ok,output:response.output,seconds:Math.round((Date.now()-startedAt)/1000)});
+   downtime+=response.downtimeMinutes||0;virtualCost+=response.cost||cost.cost;attempts.push({tool,target,source,linkId,ok:response.ok,output:response.output,seconds:Math.round((Date.now()-startedAt)/1000)});
    result.textContent="["+tool+"] "+(response.output||JSON.stringify(response))+(response.voltageV!==undefined?" ولتاژ: "+response.voltageV+" V":"")+(response.deliveredW!==undefined?"؛ توان: "+response.deliveredW+" W":"");
    renderState();
   }catch(error){result.textContent="خطا: "+error.message}
  });
  $("applyRealAction").addEventListener("click",()=>{
-  const action=actionSelect.value,cost=actionCost(action==="replace-cable"?"replaceCable":action==="replace-disk"?"replaceDevice":action==="enable-port"?"showPoe":"reboot");
+  const action=actionSelect.value,cost=actionCost(action==="replace-cable"?"replaceCable":action==="replace-disk"?"replaceDevice":action);
   replaceGraph(action);attempts.push({tool:"action",target:targetSelect.value,action,ok:true,seconds:Math.round((Date.now()-startedAt)/1000)});downtime+=cost.minutes;
   result.textContent="اقدام مجازی «"+actionSelect.options[actionSelect.selectedIndex].text+"» اجرا شد؛ "+cost.minutes+" دقیقه توقف و "+cost.cost+" واحد هزینه مدل شد. وضعیت را دوباره تست کن.";
   populatePoints();renderState();
@@ -75,7 +75,7 @@ if(root){
  $("submitRealDiagnosis").addEventListener("click",()=>{
   const outcome=scoreAttempt({selectedCause:diagnosisSelect.value,rootCause:current.answerKey.rootCause,actions:attempts.map(a=>a.action||a.tool),optimalPath:current.optimalPath,downtimeMinutes:downtime,hintsUsed,unsafeActions:attempts.filter(a=>a.action==="factory-reset").map(a=>a.action)});
   solved=true;
-  report.textContent=(outcome.correct?"تشخیص درست است.":"تشخیص نادرست است.")+" امتیاز: "+outcome.score+"/100.\nعلت ریشه‌ای: "+current.answerKey.rootCause+"\nمسیر بهینه: "+current.optimalPath.join(" ← ")+"\nاقدام‌های کاربر: "+attempts.map(a=>a.action||a.tool).join("، ")+"\nآزمون‌های غیرضروری: "+outcome.unnecessaryActions.join("، ")+"\nتوقف مجازی: "+downtime+" دقیقه.\nدرس: "+current.lesson+"\nپیشگیری: یک متغیر را هر بار تغییر بده، Backup بگیر و آزمون تحویل را ثبت کن.";
+  report.textContent=(outcome.correct?"تشخیص درست است.":"تشخیص نادرست است.")+" امتیاز: "+outcome.score+"/100.\nعلت ریشه‌ای: "+current.answerKey.rootCause+"\nمسیر بهینه: "+current.optimalPath.join(" ← ")+"\nاقدام‌های کاربر: "+attempts.map(a=>a.action||a.tool).join("، ")+"\nآزمون‌های غیرضروری: "+outcome.unnecessaryActions.join("، ")+"\nتوقف مجازی: "+downtime+" دقیقه؛ هزینه مجازی: "+virtualCost+" واحد.\nدرس: "+current.lesson+"\nپیشگیری: یک متغیر را هر بار تغییر بده، Backup بگیر و آزمون تحویل را ثبت کن.";
  });
  load(scenarioSelect.value||listScenarios()[0].id,1);
 }
