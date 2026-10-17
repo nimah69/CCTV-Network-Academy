@@ -27,8 +27,8 @@ const definitions=[
  lesson:"عیب‌یابی را مرحله‌ای انجام بده، یک متغیر را هر بار تغییر بده و پس از اصلاح تست تحویل ثبت کن."}));
 function random(seed){let x=seed>>>0;return()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296}}
 function baseGraph(seed){
- const r=random(seed),poePort=1+Math.floor(r()*6),host=60+Math.floor(r()*100),length=15+Math.floor(r()*80);
- const cameraPorts=[poePort,...[1,2,3,4,5,6].filter(port=>port!==poePort)];
+ const r=random(seed),poePort=1+Math.floor(r()*6),host=60+Math.floor(r()*100),length=15+Math.floor(r()*80),cameraCount=5+Math.floor(r()*2);
+ const cameraPorts=[poePort,...[1,2,3,4,5,6].filter(port=>port!==poePort)].slice(0,cameraCount);
  const nodes=[
   {id:"sw",type:"poe-switch",poeBudgetW:120,ports:Array.from({length:12},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,duplex:"full",poePriority:3,poeEnabled:i<8,poeBudgetW:30,poeDrawW:cameraPorts.includes(i+1)?12:0}))},
   ...cameraPorts.map((port,i)=>({id:i===0?"cam":"cam"+(i+1),type:"camera",ip:"192.168.10."+(host+i),prefix:24,vlan:10,poeRequired:true,minPoeW:9,rtspEnabled:true,firmware:"stable",clockSynced:true,irHealthy:true,ports:[{id:"eth0",vlan:10}]})),
