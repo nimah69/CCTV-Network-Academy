@@ -1,4 +1,5 @@
-import { normalizeDigits } from "../units.js";\nimport { calculatePoe } from "../calc/poe.js";
+import { normalizeDigits } from "../units.js";
+import { calculatePoe } from "../calc/poe.js";
 import { subnet, sameSubnet, validateGateway, planVLSM } from "../calc/subnet.js";
 import { calculateStorage } from "../calc/storage.js";
 import { recommendCable } from "../calc/cable.js";
