@@ -77,7 +77,7 @@ test("optics vectors",()=>{
  assert.ok(["کشف","مشاهده","تشخیص هویت","شناسایی","کمتر از سطح کشف"].some(level=>a.dori.startsWith(level)));
  assert.ok(a.doriThresholds.identification===250);
  assert.ok(a.current2025DensityLevels.includes(1500));
- assert.ok(a.warning.includes("ایده‌آل"));
+ assert.ok(a.warning.includes("IEC 62676-4:2025"));
 });
 test("security vectors",()=>{
  assert.equal(assessSecurity(SECURITY_CONTROLS.map(c=>c.id)).score,100);
