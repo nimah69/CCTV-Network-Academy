@@ -83,7 +83,8 @@ export function applyScenarioRepair(graph,action,seed=1,selectedLinkId="cam-link
  const findNode=id=>nodes.find(n=>n.id===id),sw=findNode("sw"),cam=findNode("cam"),nvr=findNode("nvr"),monitor=findNode("monitor"),ups=findNode("ups1");
  const link=links.find(l=>l.id===selectedLinkId)||links.find(l=>l.id==="cam-link");
  switch(action){
-  case "factory-reset": if(cam){cam.ip="192.168.1.108";cam.prefix=24;cam.rtspEnabled=false;cam.clockSynced=false;for(const p of cam.ports)p.vlan=1}break;\n  case "enable-port": {const cameraLink=links.find(l=>l.to.node==="cam"||l.from.node==="cam"),end=cameraLink?.from.node==="sw"?cameraLink.from:cameraLink?.to.node==="sw"?cameraLink.to:null;const port=sw?.ports.find(p=>p.id===end?.port);if(port){port.adminUp=true;port.poeEnabled=true;port.poeDrawW=port.poeDrawW||12}break}
+  case "factory-reset": if(cam){cam.ip="192.168.1.108";cam.prefix=24;cam.rtspEnabled=false;cam.clockSynced=false;for(const p of cam.ports)p.vlan=1}break;
+  case "enable-port": {const cameraLink=links.find(l=>l.to.node==="cam"||l.from.node==="cam"),end=cameraLink?.from.node==="sw"?cameraLink.from:cameraLink?.to.node==="sw"?cameraLink.to:null;const port=sw?.ports.find(p=>p.id===end?.port);if(port){port.adminUp=true;port.poeEnabled=true;port.poeDrawW=port.poeDrawW||12}break}
   case "replace-cable": if(link){link.cableFault="none";link.quality="normal";link.cableMaterial="copper";link.emi=false;link.active=true;link.lengthM=Math.min(link.lengthM,60)}break;
   case "fix-ip": if(cam)cam.ip="192.168.10."+String(230+(Number(seed)%18));for(const n of nodes)if(n.id==="rogue")n.ip="192.168.10.249";break;
   case "select-hdmi": if(monitor){monitor.input="HDMI1";monitor.hdmiConnected=true}if(nvr)nvr.hdmiConnected=true;break;
