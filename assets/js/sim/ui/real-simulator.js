@@ -57,7 +57,8 @@ if(root){
  $("runRealTool").addEventListener("click",()=>{
   const tool=toolSelect.value,target=targetSelect.value,source=sourceSelect.value,linkId=linkSelect.value;
   try{
-   const response=runTool(current.model,{tool,target,source,linkId,seed,now:Math.round((Date.now()-startedAt)/1000)});\n   if(response.graph){current.model=createGraph(response.graph);populatePoints()}
+   const response=runTool(current.model,{tool,target,source,linkId,seed,now:Math.round((Date.now()-startedAt)/1000)});
+   if(response.graph){current.model=createGraph(response.graph);populatePoints()}
    const cost=actionCost(tool==="replace-cable"?"replaceCable":tool==="reboot"?"reboot":tool==="cable-tester"?"cableTest":tool==="switch-console"?"showPoe":"ping");
    downtime+=response.downtimeMinutes||0;attempts.push({tool,target,source,linkId,ok:response.ok,output:response.output,seconds:Math.round((Date.now()-startedAt)/1000)});
    result.textContent="["+tool+"] "+(response.output||JSON.stringify(response))+(response.voltageV!==undefined?" ولتاژ: "+response.voltageV+" V":"")+(response.deliveredW!==undefined?"؛ توان: "+response.deliveredW+" W":"");
