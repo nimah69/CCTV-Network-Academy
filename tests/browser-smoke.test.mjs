@@ -27,5 +27,6 @@ test("headless browser exercises interactive workshops and engineering calculato
    assert.match(result.stdout,/data-smoke-result="pass"/,"Browser smoke failed at "+width+"px:\\n"+result.stdout.slice(-5000)+"\\n"+result.stderr.slice(-4000));
    assert.match(result.stdout,new RegExp('data-smoke-width="'+width+'"'),"Browser viewport was not "+width+"px");
   assert.doesNotMatch(result.stderr,/Uncaught (?:TypeError|ReferenceError|SyntaxError)|Failed to load module script|net::ERR_FAILED/,"Browser console/network errors:\n"+result.stderr.slice(-5000));
+  }
  }finally{await new Promise(resolveClose=>server.close(resolveClose))}
 });
