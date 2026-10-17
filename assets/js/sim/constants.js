@@ -3,7 +3,9 @@
  * Confirm each selected device's datasheet and the locally adopted standards before field use.
  */
 export const ENGINEERING = Object.freeze({
-  poe: Object.freeze({\n    // Nominal voltage is a model input only; real PSE/PD voltage depends on class, load and cabling.\n    nominalVoltageV: 48,
+  poe: Object.freeze({
+    // Nominal voltage is a model input only; real PSE/PD voltage depends on class, load and cabling.
+    nominalVoltageV: 48,
     // IEEE 802.3af Type 1: maximum PSE output and minimum power available at PD.
     af: Object.freeze({ label: "IEEE 802.3af / Type 1", pseW: 15.4, pdW: 12.95, pairs: 2 }),
     // IEEE 802.3at Type 2.
@@ -17,7 +19,11 @@ export const ENGINEERING = Object.freeze({
     // ISO/IEC 11801 and ANSI/TIA-568 channel design guidance: 100 m total channel, commonly 90 m permanent link + 10 m patch cords.
     maxCopperChannelM: 100,
     typicalPermanentLinkM: 90,
-    typicalPatchCordsTotalM: 10,\n    // Model assumption for a 24-AWG copper loop, not a universal TIA limit; replace with cable datasheet/test values.\n    copperLoopResistanceOhmPerKm: 188,\n    // No universal CCA multiplier exists; 1.575 is a 57.5% planning assumption marked NEEDS_VERIFY.\n    ccaResistanceFactor: 1.575
+    typicalPatchCordsTotalM: 10,
+    // Model assumption for a 24-AWG copper loop, not a universal TIA limit; replace with cable datasheet/test values.
+    copperLoopResistanceOhmPerKm: 188,
+    // No universal CCA multiplier exists; 1.575 is a 57.5% planning assumption marked NEEDS_VERIFY.
+    ccaResistanceFactor: 1.575
   }),
   network: Object.freeze({
     // RFC 1918 private IPv4 blocks.
@@ -35,7 +41,15 @@ export const ENGINEERING = Object.freeze({
   }),
   video: Object.freeze({
     // Typical starting points only; scene complexity, FPS, codec profile and vendor implementation can change bitrate substantially.
-    bitrateMbps: Object.freeze({ "1080p": Object.freeze({ "H.264": 4, "H.265": 2.5 }), "4MP": Object.freeze({ "H.264": 7, "H.265": 4.5 }), "4K": Object.freeze({ "H.264": 16, "H.265": 10 }) }),\n    // Common starting points for design estimates; tune to frame rate, motion, WDR, noise and vendor encoder.\n    typicalAudioMbps: 0.128,\n    typicalRemoteStreamMbps: 0.5,\n    typicalPtzExtraW: 8,\n    typicalNvrOtherLoadW: 80,\n    // Legacy DORI thresholds from IEC 62676-4:2014/2015; IEC 62676-4:2025 revised the density scale.\n    legacyDori: Object.freeze({ detection: 25, observation: 62.5, recognition: 125, identification: 250 }),\n    currentDensityLevels2025: Object.freeze([20, 40, 80, 125, 250, 500, 1500])
+    bitrateMbps: Object.freeze({ "1080p": Object.freeze({ "H.264": 4, "H.265": 2.5 }), "4MP": Object.freeze({ "H.264": 7, "H.265": 4.5 }), "4K": Object.freeze({ "H.264": 16, "H.265": 10 }) }),
+    // Common starting points for design estimates; tune to frame rate, motion, WDR, noise and vendor encoder.
+    typicalAudioMbps: 0.128,
+    typicalRemoteStreamMbps: 0.5,
+    typicalPtzExtraW: 8,
+    typicalNvrOtherLoadW: 80,
+    // Legacy DORI thresholds from IEC 62676-4:2014/2015; IEC 62676-4:2025 revised the density scale.
+    legacyDori: Object.freeze({ detection: 25, observation: 62.5, recognition: 125, identification: 250 }),
+    currentDensityLevels2025: Object.freeze([20, 40, 80, 125, 250, 500, 1500])
   }),
   design: Object.freeze({
     // Engineering heuristic, not a standard: keep planned sustained uplink use below 70% where feasible.
@@ -45,7 +59,12 @@ export const ENGINEERING = Object.freeze({
     // Educational warning threshold; cable heating depends on bundle, ambient temperature, installation and PoE class.
     highPowerPoeWarningW: 60
   }),
-  tools: Object.freeze({\n    // Display noise makes repeated measurements deterministic for a given seed, but does not represent calibrated equipment.\n    meterNoiseFraction: 0.005,\n    cableLengthNoiseFraction: 0.04\n  }),\n  storage: Object.freeze({
+  tools: Object.freeze({
+    // Display noise makes repeated measurements deterministic for a given seed, but does not represent calibrated equipment.
+    meterNoiseFraction: 0.005,
+    cableLengthNoiseFraction: 0.04
+  }),
+  storage: Object.freeze({
     // SI decimal storage: 1 TB = 10^12 bytes; GiB/TiB use powers of 1024.
     bytesPerGB: 1e9,
     bytesPerTB: 1e12,
