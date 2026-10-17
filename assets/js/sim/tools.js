@@ -30,7 +30,7 @@ export function runTool(graph,request={}){
  if(tool==="switch-console"){
   const node=graph.nodes.find(n=>n.id===target);
   if(!node||!["switch","poe-switch"].includes(node.type))return {tool,target,ok:false,output:"کنسول به سوئیچ متصل نیست."};
-  const ports=node.ports.map(p=>({port:p.id,admin:p.adminUp?"up":"down",vlan:p.vlan,speedMbps:p.speedMbps,duplex:p.duplex||"auto",poe:p.poeEnabled?(p.poeDrawW<=p.poeBudgetW?"delivering":"denied"):"off"}));
+  const ports=node.ports.map(p=>{const link=graph.links.find(l=>(l.from.node===target&&l.from.port===p.id)||(l.to.node===target&&l.to.port===p.id));return {port:p.id,admin:p.adminUp?"up":"down",vlan:p.vlan,speedMbps:p.speedMbps,duplex:p.duplex||"auto",poe:!p.poeEnabled?"off":!p.poeDrawW?"enabled-no-load":link&&!state.links[link.id]?.powered?"denied":"delivering"}});
   const links=graph.links.filter(l=>l.from.node===target||l.to.node===target).map(l=>({id:l.id,...state.links[l.id]}));
   const events=state.events.filter(e=>e.type==="broadcast-storm"||e.type==="poe-overload"||e.type==="uplink-saturation"||e.type==="interface-errors"||e.type==="rstp-blocked-loop"||e.type==="storm-control-active"||e.type==="multicast-flooding"||e.type==="igmp-snooping"||e.type==="qos-priority"||e.type==="qos-congestion");
   const output=ports.map(p=>p.port+" admin "+p.admin+" VLAN "+p.vlan+" "+p.speedMbps+" Mbps duplex "+p.duplex+" PoE "+p.poe).join("\n")+"\nلینک‌ها: "+links.map(l=>l.id+" "+(l.up?"UP":"DOWN")+" CRC="+l.crcErrors+(l.duplexMismatch?" Duplex mismatch":"")).join(", ")+"\nرخدادهای کلیدی: "+(events.map(e=>e.message).join("؛ ")||"موردی ثبت نشد");
