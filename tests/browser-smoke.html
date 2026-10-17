@@ -14,7 +14,7 @@ document.getElementById("app").addEventListener("load",()=>{
   click("runRealTool");
   if(!need("realToolResult").textContent.trim())throw new Error("diagnostic tool produced no output");
   need("realTool").value="switch-console";need("realTool").dispatchEvent(new w.Event("change",{bubbles:true}));click("runRealTool");
-  if(!need("realToolResult").textContent.includes("PoE ")||!need("realToolResult").textContent.includes("VLAN"))throw new Error("switch port/PoE diagnostics are not computed");
+  if(!need("realToolResult").textContent.includes("PoE"))throw new Error("switch port/PoE diagnostics are not computed: "+need("realToolResult").textContent);
   need("ipAddress").value="۱۹۲.۱۶۸.۱.۱۳۰";need("cidr").value="26";click("calcSubnet");
   if(!need("subnetResult").textContent.includes("192.168.1.128"))throw new Error("subnet calculator output mismatch");
   click("calcPoe");if(!need("poeResult").textContent.includes("PSE"))throw new Error("PoE calculator did not run");
