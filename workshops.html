@@ -136,6 +136,18 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 .schematic-canvas .wire.sim-warn{stroke:#ffca72!important;opacity:1;stroke-dasharray:5 5}
 .schematic-canvas .wire.sim-fail{stroke:#ff8795!important;opacity:1;stroke-dasharray:4 7}
 .sim-feedback{margin-top:12px}.sim-feedback details{margin-top:8px}.sim-feedback summary{cursor:pointer;font-weight:bold}
+
+/* State-based virtual troubleshooting room */
+.real-simulator{margin-top:16px;border-color:#36758a;background:linear-gradient(145deg,#0d1f32,#0a1727)}
+.real-simulator h3{margin-top:0}.real-simulator h4{margin-bottom:8px}
+.real-simulator .toplinks{margin:10px 0;display:flex;gap:8px;flex-wrap:wrap}
+.real-simulator .btn{min-height:44px}
+#realState .real-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.real-state-item{display:grid;gap:5px;padding:10px;border:1px solid var(--line);border-radius:10px;min-width:0}
+.real-state-item span,.real-state-item small{font-size:12px;overflow-wrap:anywhere}
+.real-state-item.is-ok{border-color:#286c59}.real-state-item.is-warn{border-color:#765b2c}.real-state-item.is-fail{border-color:#713947}
+@media(max-width:520px){.real-simulator{padding:11px}.real-simulator .grid,#realState .real-state-grid{grid-template-columns:1fr}.real-simulator .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -158,7 +170,40 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 <section class="workshop active" id="trouble"><div class="heading"><h2>اتاق عیب‌یابی CCTV</h2><p>برای هر رخداد، بهترین آزمون بعدی را انتخاب کن. امتیاز با پاسخ درست و حل مرحله‌ای ثبت می‌شود.</p></div>
 <section class="lab-schematic" aria-label="شماتیک مسیر پایه عیب‌یابی"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 01</span><h3>مسیر پایه عیب‌یابی</h3><p>جریان تصویر را از دوربین تا نمایشگر دنبال کن؛ در هر نقطه یک آزمون مستقل انجام بده.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="دوربین IP ← سوئیچ PoE ← دستگاه ضبط ← نمایشگر" focusable="false"><defs><linearGradient id="line-trouble" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-trouble)" x1="100" y1="63" x2="209.33333333333337" y2="63"/><line class="wire" stroke="url(#line-trouble)" x1="325.33333333333337" y1="63" x2="434.6666666666667" y2="63"/><line class="wire" stroke="url(#line-trouble)" x1="550.6666666666667" y1="63" x2="660" y2="63"/><g class="schematic-node node-cam"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">CAM</text><text x="42" y="88" class="node-label">دوربین IP</text></g><g class="schematic-node node-switch"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">SW</text><text x="267.33333333333337" y="88" class="node-label">سوئیچ PoE</text></g><g class="schematic-node node-server"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">NVR</text><text x="492.6666666666667" y="88" class="node-label">دستگاه ضبط</text></g><g class="schematic-node node-screen"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">MON</text><text x="718" y="88" class="node-label">نمایشگر</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
 <div class="card" id="faultSimulator"><h3>آزمایش خرابی شبکه</h3><p class="help">یک خطا را انتخاب کن و اجرای آزمون را بزن؛ وضعیت اجزای مسیر و گام عیب‌یابی پیشنهادی تغییر می‌کند.</p><div class="field"><label for="faultType">سناریوی خرابی</label><select id="faultType"><option value="camera-power">دوربین روشن نمی‌شود (PoE)</option><option value="camera-link">قطع کابل دوربین تا سوئیچ</option><option value="switch-nvr">قطع ارتباط سوئیچ و NVR</option><option value="nvr-monitor">NVR تصویر دارد اما مانیتور سیاه است</option><option value="ip-conflict">تداخل آدرس IP دوربین</option><option value="poe-budget">کمبود بودجه توان PoE</option></select></div><div class="toplinks"><button class="btn primary" id="runFaultSimulation">اجرای آزمون</button><button class="btn" id="resetFaultSimulation">بازنشانی مسیر</button></div><div id="faultResult" aria-live="polite"></div></div>
-<div id="scenarioPicks" class="scenario-list"></div><div class="card"><div class="section-label" id="scenarioCounter">سناریو ۱</div><h3 id="scenarioTitle"></h3><p id="scenarioText" class="muted"></p><div class="choices" id="scenarioChoices"></div><div id="scenarioFeedback" aria-live="polite"></div><div class="toplinks" style="margin-top:12px"><button class="btn primary" id="nextScenario">سناریوی بعدی</button><button class="btn" id="retryScenario">تلاش دوباره</button></div></div></section>
+<div id="scenarioPicks" class="scenario-list"></div><div class="card"><div class="section-label" id="scenarioCounter">سناریو ۱</div><h3 id="scenarioTitle"></h3><p id="scenarioText" class="muted"></p><div class="choices" id="scenarioChoices"></div><div id="scenarioFeedback" aria-live="polite"></div><div class="toplinks" style="margin-top:12px"><button class="btn primary" id="nextScenario">سناریوی بعدی</button><button class="btn" id="retryScenario">تلاش دوباره</button></div></div><section class="card real-simulator" id="realSimulator" aria-labelledby="realSimulatorTitle">
+<h3 id="realSimulatorTitle">اتاق عیب‌یابی واقعی‌نما · موتور وضعیت شبکه</h3>
+<p class="help">سناریو یک شبکه مجازی با تجهیزات، پورت‌ها، کابل، VLAN و عیب تزریق‌شده است. ابزارها از وضعیت همین شبکه خروجی می‌گیرند؛ به تجهیزات واقعی متصل نمی‌شوند.</p>
+<div class="grid">
+<div class="field"><label for="realScenario">سناریوی عیب‌یابی</label><select id="realScenario"></select></div>
+<div class="field"><label for="realSeed">بذر سناریو (برای بازتولید دقیق)</label><input id="realSeed" type="number" min="0" value="1" inputmode="numeric"></div>
+</div>
+<div class="output"><b>شرح مشتری</b><p id="realCustomer"></p><small id="realMeta"></small></div>
+<div class="grid">
+<div class="field"><label for="realTool">ابزار عیب‌یابی</label><select id="realTool"></select></div>
+<div class="field"><label for="realTarget">نقطه اتصال ابزار / تجهیز هدف</label><select id="realTarget"></select></div>
+<div class="field"><label for="realSource">مبدأ آزمون شبکه (برای Ping)</label><select id="realSource"></select></div>
+<div class="field"><label for="realLink">کابل / لینک مورد آزمون</label><select id="realLink"></select></div>
+</div>
+<div class="toplinks">
+<button class="btn primary" id="runRealTool" type="button">اجرای ابزار روی وضعیت فعلی</button>
+<button class="btn" id="realHintButton" type="button">راهنمای مرحله‌ای</button>
+<button class="btn" id="retryRealScenario" type="button">تلاش دوباره با همین بذر</button>
+<button class="btn" id="nextRealScenario" type="button">سناریوی بعدی</button>
+</div>
+<div class="output" id="realToolResult" aria-live="polite">هنوز آزمونی اجرا نشده است.</div>
+<div class="output" id="realHint" aria-live="polite"></div>
+<h4>وضعیت محاسبه‌شده تجهیزات و لینک‌ها</h4><div id="realState" aria-live="polite"></div>
+<div class="grid">
+<div class="field"><label for="realAction">اقدام اصلاحی مجازی</label><select id="realAction"></select><span class="help">اقدام وضعیت شبکه را تغییر می‌دهد؛ پس از آن ابزار را دوباره اجرا کن.</span></div>
+<div class="field"><label for="realDiagnosis">تشخیص نهایی پس از بررسی</label><select id="realDiagnosis"><option value="">یک علت احتمالی انتخاب کن…</option></select></div>
+</div>
+<div class="toplinks">
+<button class="btn" id="applyRealAction" type="button">اجرای اقدام اصلاحی انتخاب‌شده</button>
+<button class="btn primary" id="submitRealDiagnosis" type="button">ثبت تشخیص و گزارش تحلیلی</button>
+</div>
+<div class="output" id="realReport" aria-live="polite"></div>
+</section>
+</section>
 <section class="workshop" id="topology"><div class="heading"><h2>طراح شبکه و توپولوژی</h2><p>تجهیزات را انتخاب و مسیرهای اتصال را مشخص کن. بررسی‌کننده، کمبود یا ریسک‌های طراحی را توضیح می‌دهد.</p></div>
 <section class="lab-schematic" aria-label="شماتیک شماتیک توپولوژی انتخاب‌شده"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 02</span><h3>شماتیک توپولوژی انتخاب‌شده</h3><p>اتصال منطقی را از مسیر فیزیکی جدا بررسی کن؛ توپولوژی تعاملی پایین صفحه با انتخاب تجهیزات به‌روزرسانی می‌شود.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="شبکه بالادست ← روتر / فایروال ← سوئیچ PoE ← NVR ← دوربین‌ها" focusable="false"><defs><linearGradient id="line-topology" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-topology)" x1="100" y1="63" x2="153" y2="63"/><line class="wire" stroke="url(#line-topology)" x1="269" y1="63" x2="322" y2="63"/><line class="wire" stroke="url(#line-topology)" x1="438" y1="63" x2="491" y2="63"/><line class="wire" stroke="url(#line-topology)" x1="607" y1="63" x2="660" y2="63"/><g class="schematic-node node-cloud"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">WAN</text><text x="42" y="88" class="node-label">شبکه بالادست</text></g><g class="schematic-node node-router"><rect x="157" y="29" width="108" height="68" rx="13"/><circle cx="211" cy="48" r="8" class="device-dot"/><text x="211" y="72" class="node-code">RTR</text><text x="211" y="88" class="node-label">روتر / فایروال</text></g><g class="schematic-node node-switch"><rect x="326" y="29" width="108" height="68" rx="13"/><circle cx="380" cy="48" r="8" class="device-dot"/><text x="380" y="72" class="node-code">SW</text><text x="380" y="88" class="node-label">سوئیچ PoE</text></g><g class="schematic-node node-server"><rect x="495" y="29" width="108" height="68" rx="13"/><circle cx="549" cy="48" r="8" class="device-dot"/><text x="549" y="72" class="node-code">NVR</text><text x="549" y="88" class="node-label">NVR</text></g><g class="schematic-node node-cam"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">CAM</text><text x="718" y="88" class="node-label">دوربین‌ها</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
 <div class="card"><h3>۱) تجهیزات پروژه</h3><div class="equipment" id="equipmentChecks"><label><input type="checkbox" value="router" checked> روتر</label><label><input type="checkbox" value="switch" checked> سوئیچ PoE</label><label><input type="checkbox" value="camera" checked> دوربین IP</label><label><input type="checkbox" value="nvr" checked> NVR</label><label><input type="checkbox" value="monitor" checked> مانیتور</label><label><input type="checkbox" value="ups"> UPS</label></div><h3>۲) اتصال‌ها</h3><div class="equipment" id="linkChecks"><label><input type="checkbox" value="router-switch" checked> روتر ↔ سوئیچ</label><label><input type="checkbox" value="switch-camera" checked> سوئیچ ↔ دوربین</label><label><input type="checkbox" value="switch-nvr" checked> سوئیچ ↔ NVR</label><label><input type="checkbox" value="nvr-monitor" checked> NVR ↔ مانیتور</label><label><input type="checkbox" value="router-camera"> روتر ↔ دوربین مستقیم</label><label><input type="checkbox" value="switch-switch"> اتصال دو سوئیچ</label></div><div class="field"><label for="camCount">تعداد دوربین‌ها</label><input id="camCount" type="number" min="1" max="256" value="8"></div><div class="field"><label for="switchPorts">تعداد پورت‌های قابل استفاده سوئیچ</label><select id="switchPorts"><option value="8">۸ پورت</option><option value="16" selected>۱۶ پورت</option><option value="24">۲۴ پورت</option><option value="48">۴۸ پورت</option></select></div><p class="help">نقشه زیر بر اساس اتصال‌هایی که انتخاب می‌کنی ساخته می‌شود؛ خطوط فرضی ثابت نیستند.</p><button class="btn primary" id="checkTopology">بررسی طراحی</button><div id="topologyResult" aria-live="polite"></div><div id="topologyDiagram" class="diagram"><span class="muted">پس از بررسی، نمای اتصال اینجا نمایش داده می‌شود.</span></div></div></section>
@@ -337,5 +382,6 @@ document.querySelectorAll("[data-sim-toggle]").forEach(button=>button.addEventLi
 renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
 })();
 </script>
+<script type="module" src="./assets/js/sim/ui/real-simulator.js"></script>
 <script src="./js/pwa-register.js"></script>
 </body></html>
