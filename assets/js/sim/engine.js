@@ -41,7 +41,7 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const pd=powerSource?(powerSource.node.id===a.id?b:a):null;
     const isPoeLink=link.type==="poe"||(link.type==="ethernet"&&powerSource?.port?.poeEnabled);
     const aggregateDraw=powerSource?powerSource.node.ports.filter(p=>p.poeEnabled).reduce((sum,p)=>sum+(p.poeDrawW||0),0):0;
-    const budgetOk=!powerSource||!powerSource.node.poeBudgetW||aggregateDraw<=powerSource.node.poeBudgetW;
+    const aggregateBudgetOk=!powerSource||!powerSource.node.poeBudgetW||aggregateDraw<=powerSource.node.poeBudgetW;\n    const portBudgetOk=!powerSource||!powerSource.port?.poeBudgetW||(powerSource.port.poeDrawW||0)<=powerSource.port.poeBudgetW;\n    const budgetOk=aggregateBudgetOk&&portBudgetOk;
     const materialFactor=link.cableMaterial==="cca"?ENGINEERING.ethernet.ccaResistanceFactor:1;
     const parallelPaths=link.pairs===4?2:1;
     const resistance=ENGINEERING.ethernet.copperLoopResistanceOhmPerKm*(link.lengthM||0)/1000*materialFactor/parallelPaths;
@@ -53,10 +53,10 @@ export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
     const loopRisk=(Boolean(link.loop)&&!a.rstpEnabled)||(link.from.node===link.to.node&&a.type.includes("switch")&&!a.rstpEnabled);
     const up=Boolean(active&&vlanCompatible&&powered&&!loopRisk);
     const speedMbps=Math.min(link.speedMbps||Infinity,pa?.speedMbps||1000,pb?.speedMbps||1000);
-    linkState[link.id]={up,active,vlanCompatible,powered,budgetOk,loopRisk,duplexMismatch:Boolean(link.duplexMismatch),crcErrors:link.crcErrors||0,emi:Boolean(link.emi),speedMbps,poeDeliveredW:Number(poeDelivered.toFixed(2)),voltageDropV:Number((current*resistance).toFixed(3)),reasons:[]};
+    linkState[link.id]={up,active,vlanCompatible,powered,budgetOk,aggregateBudgetOk,portBudgetOk,loopRisk,duplexMismatch:Boolean(link.duplexMismatch),crcErrors:link.crcErrors||0,emi:Boolean(link.emi),speedMbps,poeDeliveredW:Number(poeDelivered.toFixed(2)),voltageDropV:Number((current*resistance).toFixed(3)),reasons:[]};
     if(!active)linkState[link.id].reasons.push("لینک یا یکی از پورت‌ها غیرفعال/معیوب است");
     if(!vlanCompatible)linkState[link.id].reasons.push("VLAN دو سر لینک سازگار نیست");
-    if(!powered)linkState[link.id].reasons.push(budgetOk?"توان رسیده به دستگاه کمتر از حد مدل‌شده است":"بودجه کل PoE سوئیچ تمام شده است");
+    if(!powered)linkState[link.id].reasons.push(aggregateBudgetOk?"توان موردنیاز از سقف پورت PoE بیشتر است":"بودجه کل PoE سوئیچ تمام شده است");
     if(loopRisk)linkState[link.id].reasons.push("خطر Loop لایه دوم؛ RSTP غیرفعال یا لینک حلقه‌ای است");
     if(link.duplexMismatch)linkState[link.id].reasons.push("Duplex دو سر لینک یکسان نیست");
     if(link.emi)linkState[link.id].reasons.push("نشانه‌های تداخل EMI روی مسیر مدل شده است");
