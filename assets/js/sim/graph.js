@@ -6,7 +6,7 @@ const idOf = (value, label) => {
   if (typeof value !== "string" || !value.trim()) throw new TypeError(label + " شناسه معتبر ندارد.");
   return value.trim();
 };
-export function createGraph({ nodes = [], links = [], vlans = [] } = {}) {
+export function createGraph({ nodes = [], links = [], vlans = [], acl = [], trafficMbps = 0, metadata = {} } = {}) {
   const nodeIds = new Set(), portIds = new Set(), linkIds = new Set(), vlanIds = new Set();
   const safeNodes = nodes.map((node) => {
     const id = idOf(node.id, "تجهیز");
@@ -43,7 +43,7 @@ export function createGraph({ nodes = [], links = [], vlans = [] } = {}) {
     if (lengthM < 0) throw new RangeError("طول کابل نباید منفی باشد.");
     return Object.freeze({ ...link, id, lengthM, quality: link.quality || "normal", active: link.active !== false });
   });
-  return Object.freeze({ nodes: Object.freeze(safeNodes), links: Object.freeze(safeLinks), vlans: Object.freeze(safeVlans) });
+  return Object.freeze({ nodes: Object.freeze(safeNodes), links: Object.freeze(safeLinks), vlans: Object.freeze(safeVlans), acl: Object.freeze(acl.map(rule => Object.freeze({ ...rule }))), trafficMbps: Number(trafficMbps) || 0, metadata: Object.freeze({ ...metadata }) });
 }
 export function findPort(graph, nodeId, portId) {
   const node = graph.nodes.find(item => item.id === nodeId);
