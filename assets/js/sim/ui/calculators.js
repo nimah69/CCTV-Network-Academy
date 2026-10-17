@@ -4,7 +4,7 @@ import { calculateStorage } from "../calc/storage.js";
 import { recommendCable } from "../calc/cable.js";
 import { calculateUps } from "../calc/ups.js";
 import { calculateCoverage } from "../calc/optics.js";
-import { assessSecurity } from "../calc/security.js";
+import { assessSecurity, SECURITY_CONTROLS } from "../calc/security.js";
 import { designCCTV } from "../calc/design.js";
 
 const $=id=>document.getElementById(id);
@@ -14,7 +14,7 @@ function show(id,text,kind=""){const el=$(id);if(!el)return;el.className="output
 function bind(id,handler){const el=$(id);if(!el)return;el.addEventListener("click",event=>{event.preventDefault();event.stopImmediatePropagation();try{handler(event)}catch(error){const outputId=({"calcPoe":"poeResult","runPoeSimulation":"poeSimulationResult","calcSubnet":"subnetResult","calcStorage":"storageResult","recommendCable":"cableResult","scoreSecurity":"securityResult","buildReport":"capstoneResult","downloadReport":"capstoneResult","downloadJsonReport":"capstoneResult","printReport":"capstoneResult","planVlsm":"vlsmResult","calcUps":"upsResult","calcLens":"lensResult","exportCommissioning":"commissioningResult","runSwitchFeatureSim":"switchFeaturesResult"})[id];if(outputId)show(outputId,"خطا: "+error.message,"bad")}},true)}
 function getPoe(){
  const standard={"12.95":"af","25.5":"at","51":"bt3","71.3":"bt4"}[$("poePortClass").value]||"at";
- return calculatePoe({standard,cameraWatts:num("poeWatts","توان دوربین",.1),lengthM:num("cableLength","طول کابل",0,100),cable:$("cableType").value==="cca"?"cca":"copper",cameraCount:num("poeCams","تعداد دوربین",1,1024,true),budgetW:num("poeBudget","بودجه کل PoE",1),reservePercent:num("poeReserve","حاشیه اطمینان",0,100)});
+ return calculatePoe({standard,cameraWatts:num("poeWatts","توان دوربین",.1),lengthM:num("cableLength","طول کابل",0,100),cable:$("cableType").value==="cca"?"cca":"copper",cameraCount:num("poeCams","تعداد دوربین",1,1024,true),budgetW:num("poeBudget","بودجه کل PoE",1),reservePercent:num("poeReserve","حاشیه اطمینان",0,100),pairs:Number($("poePairs")?.value||2),allocation:$("poeAllocation")?.value||"actual"});
 }
 function poeText(r){return "وضعیت: "+r.status+"\nاستاندارد: "+r.standard+"\nتوان برآوردی موردنیاز در PSE برای هر دوربین: "+fmt(r.pseRequiredW)+" W\nتوان تخمینی رسیده به PD: "+fmt(r.pdW)+" W\nافت ولتاژ مدل‌شده: "+fmt(r.voltageDropV)+" V\nاتلاف کابل: "+fmt(r.lossW)+" W\nتوان کل با حاشیه: "+fmt(r.totalRequiredW)+" W\nبودجه پورت: "+(r.portOk?"کافی":"ناکافی")+"؛ بودجه کل: "+(r.totalOk?"کافی":"ناکافی")+"\nفرض: مقاومت حلقه ۱۸۸ Ω/km و اثر CCA تخمینی است؛ با کابل و دیتاشیت واقعی تطبیق بده.\n"+r.warning.join("\n")}
 bind("calcPoe",()=>{show("poeResult",poeText(getPoe()),"good")});
@@ -27,8 +27,9 @@ bind("calcSubnet",()=>{
 });
 bind("calcStorage",()=>{
  const cameras=num("storageCams","تعداد دوربین",1,1024,true),rate=num("bitrate","Bitrate",.01),days=num("recordDays","روز نگهداری",1,3650,true),hours=num("recordHours","ساعات ضبط",1,24),head=num("headroom","حاشیه ذخیره",0,100),networkHead=num("networkHeadroom","حاشیه شبکه",0,100);
- const r=calculateStorage({cameras,bitrateMbps:rate,days,hoursPerDay:hours,activityPercent:100,overheadPercent:7,headroomPercent:head,raid:"raid5",diskCount:4,diskTB:8,uplinkMbps:1000,playbackMbps:cameras*rate*networkHead/100});
- show("storageResult","بار ورودی: "+fmt(r.aggregateMbps)+" Mbps\nفضای خام: "+fmt(r.rawTB)+" TB اعشاری\nبا سربار ۷٪ و حاشیه: "+fmt(r.requiredTB)+" TB\nRAID5 تخمینی (۴×۸ TB، ضریب ظرفیت ۹۱٪): "+fmt(r.usableTB)+" TB قابل استفاده\nظرفیت: "+r.capacityStatus+"؛ ورودی NVR: "+r.nvrInputStatus+"؛ Uplink: "+r.uplinkStatus+"\n"+r.warnings.join("\n"),r.capacityStatus==="مناسب"?"good":"warn");
+ const mode=$("storageMode")?.value||"continuous",activity=mode==="motion"?num("storageActivity","درصد فعالیت",0,100):100;
+ const r=calculateStorage({cameras,bitrateMbps:rate,days,hoursPerDay:hours,activityPercent:activity,prePostPercent:num("storagePrePost","Pre/Post",0,100),audioMbps:num("storageAudio","صدا",0),substreamMbps:num("storageSubstream","Substream",0),overheadPercent:num("storageOverhead","سربار",0,100),headroomPercent:head,raid:$("storageRaid")?.value||"raid5",diskCount:num("storageDiskCount","تعداد دیسک",1,64,true),diskTB:num("storageDiskSize","ظرفیت دیسک",.1),nvrMaxInputMbps:num("storageNvrInput","حد ورودی NVR",1),uplinkMbps:num("storageUplink","سرعت Uplink",1),playbackMbps:num("storagePlayback","پخش هم‌زمان",0)+networkHead/100*cameras*rate});
+ show("storageResult","پروفایل: "+(mode==="motion"?"حرکتی، فعالیت "+activity+"٪":"پیوسته")+"\nبار ورودی ضبط: "+fmt(r.aggregateMbps)+" Mbps\nفضای خام: "+fmt(r.rawTB)+" TB اعشاری\nبا سربار فایل‌سیستم و حاشیه: "+fmt(r.requiredTB)+" TB\nRAID "+r.raid+" قابل استفاده (ضریب فرمت ۹۱٪): "+fmt(r.usableTB)+" TB\nتحمل خرابی: "+r.raidTolerance+"\nظرفیت: "+r.capacityStatus+"؛ ورودی NVR: "+r.nvrInputStatus+"؛ Uplink: "+r.uplinkStatus+" ("+fmt(r.uplinkUtilization*100)+"٪)\n"+r.warnings.join("\n"),r.capacityStatus==="مناسب"?"good":"warn");
 });
 bind("recommendCable",()=>{
  const env=$("environment").value,d=num("distance","فاصله",.1,100000),speed=num("bandwidthNeed","سرعت",1),poe=$("powerNeed").value==="yes";
@@ -62,6 +63,12 @@ bind("planVlsm",()=>{
  const requirements=[{name:"دوربین",hosts:num("vlsmCameras","میزبان دوربین",1,65534,true)},{name:"ضبط",hosts:num("vlsmNvr","میزبان ضبط",1,65534,true)},{name:"مدیریت",hosts:num("vlsmManagement","میزبان مدیریت",1,65534,true)},{name:"کاربران",hosts:num("vlsmUsers","میزبان کاربران",1,65534,true)}];
  const rows=planVLSM(requirements,{address:base.address,prefix:base.prefix});
  show("vlsmResult",rows.map(r=>r.name+": "+r.cidr+"؛ میزبان "+r.first+" تا "+r.last+"؛ Broadcast "+r.broadcast).join("\n"),"good");
+});
+bind("calcAdvancedSecurity",()=>{
+ const ids=[...document.querySelectorAll("[data-security-control]:checked")].map(el=>el.dataset.securityControl);
+ const r=assessSecurity(ids);
+ const details=r.controls.filter(x=>!x.enabled).map(x=>x.risk+" · "+x.title+" (وزن "+x.weight+"): چرا مهم است: "+x.why+" چطور: "+x.how+" سناریو: "+x.attack);
+ show("advancedSecurityResult","امتیاز وزنی: "+r.score+"/100؛ "+r.rating+"\nاولویت‌های اصلاح:\n"+details.join("\n\n")+"\nزنجیره حمله محتمل:\n"+(r.attackChain.map(x=>x.text).join("\n")||"کنترل‌های کلیدی انتخاب شده‌اند؛ بازبینی فنی همچنان لازم است."),"good");
 });
 bind("calcUps",()=>{
  const r=calculateUps({loadW:num("upsLoad","بار وات",.1),powerFactor:num("upsPf","ضریب توان",.1,1),batteryWh:num("upsBattery","ظرفیت باتری",.1),inverterEfficiency:num("upsEfficiency","بازده",1,100)/100,depthOfDischarge:num("upsDod","عمق تخلیه",1,100)/100,ageFactor:num("upsAge","سلامت باتری",1,100)/100});
