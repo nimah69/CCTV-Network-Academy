@@ -37,7 +37,8 @@ test("storage reference and RAID vectors",()=>{
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid10"}).usableTB,7.28);
  assert.throws(()=>calculateStorage({cameras:0,bitrateMbps:8,days:1}));
  assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,hoursPerDay:25}));
- assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,raid:"bad"}));\n assert.equal(calculateStorage({cameras:1,bitrateMbps:8,days:1,activityPercent:0,diskCount:1,diskTB:1,raid:"none"}).rawTB,0);
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,raid:"bad"}));
+ assert.equal(calculateStorage({cameras:1,bitrateMbps:8,days:1,activityPercent:0,diskCount:1,diskTB:1,raid:"none"}).rawTB,0);
  assert.ok(calculateStorage({cameras:16,bitrateMbps:8,days:30,diskCount:8,diskTB:8,raid:"raid6"}).requiredTB>41.472);
  assert.equal(calculateStorage({cameras:8,bitrateMbps:20,days:1,diskCount:4,diskTB:4,raid:"raid5",nvrMaxInputMbps:100}).nvrInputStatus,"نامناسب");
 });
@@ -74,7 +75,8 @@ test("optics vectors",()=>{
  assert.throws(()=>calculateCoverage({sensorWidthMm:0,sensorHeightMm:3,focalLengthMm:4,distanceM:10,horizontalPixels:1920,verticalPixels:1080}));
  assert.throws(()=>calculateCoverage({sensorWidthMm:5,sensorHeightMm:3,focalLengthMm:4,distanceM:0,horizontalPixels:1920,verticalPixels:1080}));
  assert.ok(["کشف","مشاهده","تشخیص هویت","شناسایی","کمتر از سطح کشف"].includes(a.dori));
- assert.ok(a.doriThresholds.identification===250);\n assert.ok(a.current2025DensityLevels.includes(1500));
+ assert.ok(a.doriThresholds.identification===250);
+ assert.ok(a.current2025DensityLevels.includes(1500));
  assert.ok(a.warning.includes("ایده‌آل"));
 });
 test("security vectors",()=>{
@@ -98,5 +100,6 @@ test("integrated design vectors",()=>{
  assert.ok(designCCTV({poeBudgetW:20}).warnings.some(w=>w.includes("بودجه")));
  assert.ok(designCCTV({raid:"raid6"}).storage.raid==="raid6");
  assert.ok(designCCTV({environment:"outdoor"}).cable.warnings.length>0);
- assert.ok(Array.isArray(designCCTV().assumptions));\n const reliability=designCCTV().reliability;assert.equal(reliability.uplinkFailure.recordingCameras,0);assert.ok(reliability.hddFailure.recordingCameras>0);assert.ok(reliability.baseline.recordingCameras>0);
+ assert.ok(Array.isArray(designCCTV().assumptions));
+ const reliability=designCCTV().reliability;assert.equal(reliability.uplinkFailure.recordingCameras,0);assert.ok(reliability.hddFailure.recordingCameras>0);assert.ok(reliability.baseline.recordingCameras>0);
 });
