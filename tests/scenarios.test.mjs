@@ -47,3 +47,12 @@ test("optimal repair action changes the modeled fault state",()=>{
   }
  }
 });
+
+test("PoE overload sheds lower-priority ports rather than shutting every camera down",()=>{
+ const s=createScenario("mid-budget",456),state=evaluateNetwork(s.model);
+ const cameras=s.model.nodes.filter(n=>n.type==="camera");
+ const online=cameras.filter(n=>state.nodes[n.id].online).length,offline=cameras.length-online;
+ assert.ok(online>=3,"expected some earlier-priority cameras to remain online");
+ assert.ok(offline>=1,"expected at least one later camera to be denied power");
+ assert.ok(state.events.some(e=>e.type==="poe-overload"));
+});
