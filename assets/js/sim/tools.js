@@ -11,7 +11,7 @@ export function runTool(graph, request={}){
   if(!link)return {tool,target,ok:false,output:"پراب‌ها به یک لینک موجود متصل نشده‌اند."};
   const ls=state.links[link.id],a=findPort(graph,link.from.node,link.from.port),b=findPort(graph,link.to.node,link.to.port);
   const sourcePort=graph.nodes.find(n=>n.id===link.from.node)?.type==="poe-switch"?a:graph.nodes.find(n=>n.id===link.to.node)?.type==="poe-switch"?b:null;
-  const voltage=sourcePort?.poeEnabled?48*seededNoise(seed,0.005):0;
+  const voltage=sourcePort?.poeEnabled?48*seededNoise(seed,0.005):0;const pdVoltage=Math.max(0,voltage-(ls?.voltageDropV||0));
   return {tool,target,linkId:link.id,ok:Boolean(ls?.up&&voltage>0),voltageV:Number(voltage.toFixed(2)),deliveredW:ls?.poeDeliveredW||0,output:!sourcePort?.poeEnabled?"PoE روی این لینک فعال نیست.":!ls?.up?"لینک یا تحویل توان ناموفق است.":"ولتاژ مدل‌شده در سمت PSE "+voltage.toFixed(1)+" V؛ توان برآوردی در سمت PD "+(ls?.poeDeliveredW||0)+" W. این ابزار آموزشی است و جایگزین اندازه‌گیری واقعی نیست."};
  }
  if(tool==="cable-tester"){
@@ -25,7 +25,8 @@ export function runTool(graph, request={}){
   const node=graph.nodes.find(n=>n.id===target);
   if(!node||!["switch","poe-switch"].includes(node.type))return {tool,target,ok:false,output:"کنسول به سوئیچ متصل نیست."};
   const ports=node.ports.map(p=>({port:p.id,admin:p.adminUp?"up":"down",vlan:p.vlan,speedMbps:p.speedMbps,poe:p.poeEnabled?(p.poeDrawW<=p.poeBudgetW?"delivering":"denied"):"off"}));
-  return {tool,target,ok:true,ports,output:ports.map(p=>p.port+" admin "+p.admin+" VLAN "+p.vlan+" "+p.speedMbps+" Mbps PoE "+p.poe).join("\n")};
+  const linked=graph.links.filter(l=>l.from.node===target||l.to.node===target).map(l=>({id:l.id,...state.links[l.id]}));
+  return {tool,target,ok:true,ports,links:linked,output:ports.map(p=>p.port+" admin "+p.admin+" VLAN "+p.vlan+" "+p.speedMbps+" Mbps PoE "+p.poe).join("\n")+"\nLinks: "+linked.map(l=>l.id+" "+(l.up?"UP":"DOWN")+" CRC="+l.crcErrors+(l.duplexMismatch?" Duplex mismatch":"")).join(", ")};
  }
  if(tool==="system-log"){const device=graph.nodes.find(n=>n.id===target);const deviceEvents=[];if(device?.clockSynced===false)deviceEvents.push({time:request.now||0,type:"clock-drift",message:"اختلاف ساعت/NTP در "+target+" ثبت شده است"});if(device?.type==="ups"&&((device.chargePercent||0)<50||(device.healthFactor||1)<0.6))deviceEvents.push({time:request.now||0,type:"ups-battery",message:"شارژ یا سلامت باتری UPS پایین است"});if(device?.diskHealthy===false)deviceEvents.push({time:request.now||0,type:"disk-error",message:"خطای دیسک در NVR ثبت شده است"});const events=[...state.events,...deviceEvents,{time:(request.now||0)-120,type:"noise",message:"ورود موفق اپراتور به رابط مدیریت"},{time:(request.now||0)-30,type:"noise",message:"گزارش دوره‌ای سلامت سرویس"}].sort((a,b)=>a.time-b.time);return {tool,target,ok:true,events,output:events.map(e=>e.type+": "+e.message).join("\\n")};}
  if(tool==="replace-cable"){
