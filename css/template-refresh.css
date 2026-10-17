@@ -1,0 +1,180 @@
+/* Template refresh — Stage 1: Technical learning workspace
+   Visual-only layer. No content, routing, quiz, or progress logic is changed. */
+:root{
+  --template-bg:#060d18;
+  --template-surface:#0c1929;
+  --template-raised:#102238;
+  --template-line:#28435d;
+  --template-glow:#38d9e8;
+}
+html{scroll-behavior:smooth;scroll-padding-top:92px}
+body{
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(24,92,126,.22),transparent 34rem),
+    radial-gradient(ellipse at 92% 24%,rgba(19,75,98,.14),transparent 32rem),
+    linear-gradient(rgba(76,145,184,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(76,145,184,.035) 1px,transparent 1px),
+    var(--template-bg);
+  background-size:auto,auto,28px 28px,28px 28px,auto;
+}
+.app{grid-template-columns:276px minmax(0,1fr)}
+.side{
+  background:linear-gradient(180deg,#081321 0%,#091725 68%,#0b1b2a 100%);
+  border-left:1px solid #1e3a51;
+  box-shadow:-16px 0 48px #0002;
+}
+.brand{padding-bottom:20px;border-bottom:1px solid #23445b}
+.brand-icon{border:1px solid #58e2ed55;box-shadow:0 0 0 5px #38d9e80b,0 8px 24px #0003;color:#041522}
+.brand strong{letter-spacing:-.25px;line-height:1.8}
+.side-label{color:#69cbd8;letter-spacing:.35px}
+.nav{gap:7px}
+.nav button,.nav .nav-link{border:1px solid transparent;border-radius:12px;padding:11px 13px;transition:background .18s,border-color .18s,transform .18s}
+.nav button:hover,.nav .nav-link:hover{background:#102b40;border-color:#234b64;transform:translateX(-2px)}
+.nav button.active{background:linear-gradient(100deg,#10354a,#102438);border-color:#2d687a;box-shadow:inset -3px 0 var(--template-glow),0 5px 16px #0002;color:#f0fdff}
+.nav button.active .num{color:#83e8ed}
+.side-note{border-color:#23445b;background:linear-gradient(145deg,#0e2133,#0a1725);line-height:1.9}
+.main{min-width:0;background:transparent}
+.top{
+  background:rgba(6,15,26,.9);
+  border-bottom:1px solid #203c53;
+  box-shadow:0 8px 28px #0002;
+}
+.search{max-width:620px}
+.search input{border-radius:14px;background:#0b1a2b;border-color:#27465f;transition:border-color .18s,box-shadow .18s}
+.search input:focus{border-color:#38d9e8;box-shadow:0 0 0 3px #38d9e81c;outline:0}
+.search span{color:#6acbd8}
+.top-right{color:#8caec6}
+.wrap{max-width:1360px;padding-top:clamp(20px,3vw,38px)}
+.welcome{
+  border:1px solid #2a657b;
+  border-radius:24px;
+  padding:clamp(24px,4vw,42px);
+  background:
+    radial-gradient(ellipse at 8% 10%,#16718a55,transparent 42%),
+    radial-gradient(ellipse at 88% 110%,#2353a044,transparent 48%),
+    linear-gradient(118deg,#0b1a2b 0%,#102b42 55%,#0c3a49 100%);
+  box-shadow:0 22px 58px #0003,inset 0 1px #ffffff0c;
+}
+.welcome:after{left:-68px;top:-130px;width:300px;height:300px;border-color:#7cecf21c;box-shadow:0 0 0 42px #38d9e808,0 0 0 84px #38d9e805}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#7cecf2;font-weight:700}
+.eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:#42e2cc;box-shadow:0 0 12px #42e2cc}
+.welcome h1{max-width:850px;font-size:clamp(25px,3.2vw,38px);letter-spacing:-.6px;line-height:1.65}
+.welcome p{max-width:760px;color:#c0d4e6;line-height:2}
+.primary,.welcome .primary{
+  border:1px solid #72e9ed66;
+  border-radius:12px;
+  padding:12px 19px;
+  background:linear-gradient(110deg,#38bdf8,#2dd4bf);
+  color:#041522;
+  box-shadow:0 8px 22px #00b9ca24;
+  transition:transform .18s,filter .18s;
+}
+.primary:hover,.welcome .primary:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.stats{gap:12px;margin:16px 0 34px}
+.stat,.card,.panel{
+  background:linear-gradient(155deg,rgba(15,31,49,.98),rgba(9,22,36,.98));
+  border:1px solid #233e56;
+  border-radius:18px;
+  box-shadow:0 12px 32px #00000020,inset 0 1px #ffffff05;
+}
+.stat{padding:18px;transition:border-color .18s,transform .18s}
+.stat:hover{border-color:#326b7d;transform:translateY(-2px)}
+.stat-icon{background:#0d2c3d;border:1px solid #2b5b70;color:#69e6ec;border-radius:14px}
+.stat small{color:#92abc3}
+.stat strong{font-size:clamp(22px,2.2vw,28px);letter-spacing:-.5px}
+.section-head{align-items:center;margin:30px 0 15px}
+.section-head h2{font-size:clamp(18px,2vw,22px);letter-spacing:-.25px}
+.section-head h2:after{content:"";display:block;width:46px;height:3px;border-radius:3px;background:linear-gradient(90deg,#38bdf8,#2dd4bf);margin-top:8px}
+.section-head p{color:#94abc2;line-height:1.9}
+.pill{background:#103647;color:#8debf0;border:1px solid #28556a;padding:4px 10px}
+.course-grid{gap:14px}
+.course{
+  position:relative;overflow:hidden;isolation:isolate;
+  background:linear-gradient(145deg,#102238,#0b192a);
+  border:1px solid #263f57;border-radius:17px;
+  box-shadow:0 9px 25px #0002;
+  padding:18px;min-height:128px;
+  transition:transform .18s,border-color .18s,box-shadow .18s;
+}
+.course:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,#38bdf8aa,#2dd4bfaa,transparent);opacity:.45;z-index:-1}
+.course:hover{transform:translateY(-3px);border-color:#3a8293;box-shadow:0 16px 32px #0003}
+.course-icon{background:linear-gradient(145deg,#103c50,#123047);border:1px solid #285d71;color:#7cecf2;border-radius:14px}
+.course h3{font-size:14px;line-height:1.9}
+.course p{color:#9cb1c8;line-height:1.9}
+.course-foot{color:#8ca7bf}
+.progress{background:#1b3146;height:6px}
+.progress i{background:linear-gradient(90deg,#38bdf8,#2dd4bf);box-shadow:0 0 10px #38bdf855}
+.panel{padding:clamp(18px,3vw,30px)}
+.crumb{color:#7bdce5}
+.lesson-title{font-size:clamp(24px,3vw,34px);letter-spacing:-.4px}
+.lesson-intro{color:#a7bdd2;line-height:2}
+.lesson-content{line-height:2}
+.lesson-content h3{padding-right:13px;border-right:3px solid #38d9e8;border-radius:2px;color:#f0f7ff;font-size:17px}
+.lesson-content p{color:#d3e0ee;line-height:2.15}
+.lesson-content ul{color:#c6d7e8;line-height:2}
+.callout{background:linear-gradient(100deg,#0d2b35,#10253a);border:1px solid #235064;border-right:3px solid #2dd4bf;border-radius:12px;color:#d9f8f5}
+.supplement{border-color:#263f57}
+.supplement h2{color:#8ceaf0}
+.supplement-item{background:#0a1929;border-color:#29435b;border-radius:13px}
+.supplement-item[open]{border-color:#347083}
+.supplement-item p{color:#b7c9da;line-height:2}
+.lesson-actions{border-color:#263f57}
+.secondary{border-color:#2b4963;background:#102238;color:#eaf2ff;border-radius:11px;min-height:44px}
+.secondary:hover{background:#143149;border-color:#3c8b9b}
+.quiz-question{background:linear-gradient(150deg,#102238,#0b192a);border-color:#29445c;border-radius:17px;box-shadow:0 8px 24px #0002}
+.quiz-question h3{font-size:15px;line-height:2}
+.option{background:#0b1929;border-color:#2a435b;color:#dce8f6;border-radius:12px;padding:12px 14px;line-height:1.9;transition:border-color .15s,background .15s}
+.option:hover{background:#10283a;border-color:#347b8d}
+.option:has(input:checked){background:#103747;border-color:#42cbd6;box-shadow:inset 0 0 0 1px #42cbd622}
+.feedback.good{background:#10352f;color:#8af0c5;border:1px solid #246b59}
+.feedback.bad{background:#3a202b;color:#ffabb5;border:1px solid #793b4b}
+.result{background:linear-gradient(135deg,#102c40,#102139);border:1px solid #2d6074;border-radius:16px}
+.empty{background:#0d1b2b;border:1px dashed #2a4a63;border-radius:14px}
+.footer{color:#7792ad;line-height:2}
+.tools-hero-v2{border-radius:22px!important;border:1px solid #2b6478!important;background:radial-gradient(ellipse at 10% 10%,#16617a55,transparent 44%),linear-gradient(120deg,#0b1a2a,#10354a)!important;box-shadow:0 20px 46px #0003}
+.tool-summary-v2 .stat{min-height:94px}
+.tool-start{background:linear-gradient(155deg,#102239,#0b1929)!important;border-color:#28445d!important}
+.preset-card{background:#0c1c2d!important;border-color:#29465f!important;color:#eaf2ff!important;border-radius:13px!important}
+.preset-card:hover{border-color:#3bc5d6!important;background:#103043!important}
+.tool-tab{background:#0b1929!important;border-color:#28445d!important;color:#a9bed3!important;border-radius:13px!important;min-height:76px}
+.tool-tab.active{background:linear-gradient(140deg,#10384a,#123047)!important;border-color:#39bcd0!important;color:#edfdff!important;box-shadow:inset 0 -3px #38d9e8}
+.calculator-card{background:linear-gradient(150deg,#102238,#0b192a)!important;border-color:#28445d!important;border-radius:18px!important}
+.tool-panel .calc-fields input,.tool-panel .calc-fields select{background:#071523!important;border-color:#2b4b64!important;color:#eaf2ff!important;border-radius:10px!important;min-height:46px}
+.tool-panel .calc-result{background:#0d2a37!important;border-color:#2a6173!important;color:#e4fbff!important;border-radius:13px!important}
+.tool-explain{border-color:#29445c!important;background:#0b1a2b!important;border-radius:12px!important}
+@media(max-width:850px){
+  .app{grid-template-columns:1fr}
+  .side{box-shadow:-24px 0 55px #0007}
+  .top{backdrop-filter:blur(18px)}
+  .wrap{padding-top:20px}
+  .welcome{border-radius:19px}
+  .stats{margin-bottom:26px}
+}
+@media(max-width:620px){
+  body{background-size:auto,auto,22px 22px,22px 22px,auto}
+  .wrap{padding:16px 12px 34px}
+  .welcome{padding:22px 18px}
+  .welcome h1{font-size:24px;line-height:1.7}
+  .welcome p{font-size:12px}
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .stat{display:block;padding:10px;border-radius:13px}
+  .stat-icon{width:34px;height:34px;margin-bottom:8px;font-size:16px}
+  .stat small{font-size:10px;line-height:1.7}
+  .stat strong{font-size:19px}
+  .course{padding:13px;gap:10px;min-height:unset}
+  .course-icon{width:37px;height:37px;flex:0 0 37px}
+  .course h3{font-size:13px}
+  .course p{font-size:11px}
+  .section-head{align-items:flex-start}
+  .section-head h2{font-size:18px}
+  .panel{padding:16px}
+  .lesson-content p{font-size:13px}
+  .tool-tab{min-height:72px}
+}
+@media(max-width:390px){
+  .stats{grid-template-columns:1fr}
+  .stat{display:flex;align-items:center;gap:10px}
+  .stat-icon{margin:0;flex:0 0 36px}
+  .course-foot{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}

@@ -3,6 +3,8 @@ import fs from "node:fs";
 
 const html = fs.readFileSync("index.html", "utf8");
 const css = fs.readFileSync("css/academy.css", "utf8");
+const templateCss = fs.readFileSync("css/template-refresh.css", "utf8");
+const workshopTemplateCss = fs.readFileSync("css/workshops-template.css", "utf8");
 const workshops = fs.readFileSync("workshops.html", "utf8");
 const manifest = JSON.parse(fs.readFileSync("manifest.webmanifest", "utf8"));
 const serviceWorker = fs.readFileSync("service-worker.js", "utf8");
@@ -10,6 +12,10 @@ const serviceWorker = fs.readFileSync("service-worker.js", "utf8");
 assert.match(html, /<html lang="fa" dir="rtl">/, "The academy must remain Persian RTL");
 assert.match(html, /<meta name="theme-color" content="#07111f">/, "Browser chrome must use the dark academy color");
 assert.match(html, /href="\.\/css\/academy\.css"/, "The page must load the local academy stylesheet");
+assert.match(html, /href="\.\/css\/template-refresh\.css"/, "The refreshed template must load locally");
+assert.match(workshops, /href="\.\/css\/workshops-template\.css"/, "Workshops must load their refreshed template locally");
+assert.ok(templateCss.includes("Template refresh — Stage 1") && templateCss.includes("@media(max-width:620px)"), "The academy template must include responsive refresh rules");
+assert.ok(workshopTemplateCss.includes("Template refresh — Stage 1") && workshopTemplateCss.includes("@media(max-width:460px)"), "The workshop template must include responsive refresh rules");
 assert.ok(html.includes('const storeKey="cctvAcademyProgressV1";'), "The existing progress-storage key must remain unchanged");
 assert.ok(html.includes("function quizHTML(comprehensive=false)"), "Existing chapter/comprehensive quiz rendering must remain available");
 
@@ -32,7 +38,7 @@ assert.ok(workshops.includes(".schematic-node .node-label{fill:#eaf2ff}"), "Sche
 
 assert.equal(manifest.background_color, "#07111f", "Installed app background must match the dark theme");
 assert.equal(manifest.theme_color, "#07111f", "Installed app theme must match the dark theme");
-for (const asset of ["./index.html", "./css/academy.css", "./workshops.html", "./fonts/Vazirmatn-Variable.woff2", "./js/academy-data.js"]) {
+for (const asset of ["./index.html", "./css/academy.css", "./css/template-refresh.css", "./css/workshops-template.css", "./workshops.html", "./fonts/Vazirmatn-Variable.woff2", "./js/academy-data.js"]) {
   assert.ok(serviceWorker.includes('"' + asset + '"'), "Offline cache must include " + asset);
 }
 assert.match(serviceWorker, /cctv-academy-static-v__BUILD_VERSION__/, "Build must version the offline cache to avoid stale styles");
