@@ -41,10 +41,10 @@ export function evaluateNetwork(graph, { acl = graph.acl || [], now = 0 } = {}) 
     const isPoeLink=link.type==="poe"||(link.type==="ethernet"&&powerSource?.port?.poeEnabled);
     const aggregateDraw=powerSource?powerSource.node.ports.filter(p=>p.poeEnabled).reduce((sum,p)=>sum+(p.poeDrawW||0),0):0;
     const budgetOk=!powerSource||!powerSource.node.poeBudgetW||aggregateDraw<=powerSource.node.poeBudgetW;
-    const materialFactor=link.cableMaterial==="cca"?1.575:1;
+    const materialFactor=link.cableMaterial==="cca"?ENGINEERING.ethernet.ccaResistanceFactor:1;
     const parallelPaths=link.pairs===4?2:1;
-    const resistance=188*(link.lengthM||0)/1000*materialFactor/parallelPaths;
-    const current=(powerSource?.port?.poeDrawW||0)/48;
+    const resistance=ENGINEERING.ethernet.copperLoopResistanceOhmPerKm*(link.lengthM||0)/1000*materialFactor/parallelPaths;
+    const current=(powerSource?.port?.poeDrawW||0)/ENGINEERING.poe.nominalVoltageV;
     const loss=current*current*resistance;
     const rawPower=powerSource?.port?.poeDrawW||powerSource?.port?.poeBudgetW||0;
     const poeDelivered=powerSource&&isPoeLink&&powerSource.port?.poeEnabled&&budgetOk&&link.lengthM<=ENGINEERING.ethernet.maxCopperChannelM?Math.max(0,rawPower-loss):0;
