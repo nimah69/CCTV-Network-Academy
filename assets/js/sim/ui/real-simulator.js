@@ -51,6 +51,12 @@ if(root){
  function replaceGraph(patch){
   current.model=applyScenarioRepair(current.model,patch,seed,linkSelect.value||"cam-link");
  }
+ toolSelect.addEventListener("change",()=>{
+  const desired=toolSelect.value==="show-poe"||toolSelect.value==="switch-console"?"poe-switch":toolSelect.value==="nvr"?"nvr":toolSelect.value==="system-log"&&current?.model.nodes.some(n=>n.type==="ups")?"ups":["web-camera","multimeter","poe-tester","cable-tester"].includes(toolSelect.value)?"camera":null;
+  if(desired){const node=current?.model.nodes.find(n=>n.type===desired);if(node)targetSelect.value=node.id}
+  const link=current?.model.links.find(l=>l.from.node===targetSelect.value||l.to.node===targetSelect.value);if(link)linkSelect.value=link.id;
+ });
+ targetSelect.addEventListener("change",()=>{const link=current?.model.links.find(l=>l.from.node===targetSelect.value||l.to.node===targetSelect.value);if(link)linkSelect.value=link.id});
  $("loadRealScenario").addEventListener("click",()=>load(scenarioSelect.value,seedInput.value));
  $("nextRealScenario").addEventListener("click",()=>{const list=listScenarios(),i=list.findIndex(s=>s.id===scenarioSelect.value),next=list[(i+1)%list.length];scenarioSelect.value=next.id;load(next.id,(seed+1)>>>0)});
  $("retryRealScenario").addEventListener("click",()=>load(scenarioSelect.value,seed));
