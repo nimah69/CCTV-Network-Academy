@@ -29,8 +29,15 @@ function pathNodes(graph,linkState,from,to){
   return null;
 }
 const hasPath=(graph,linkState,from,to)=>Boolean(pathNodes(graph,linkState,from,to));
+function allocatePoePorts(node){
+ let remaining=node.poeBudgetW>0?node.poeBudgetW:Infinity;
+ const ordered=node.ports.filter(p=>p.poeEnabled).slice().sort((a,b)=>(a.poePriority??3)-(b.poePriority??3)||Number(String(a.id).replace(/\\D/g,""))-Number(String(b.id).replace(/\\D/g,"")));
+ const allocation=new Map();
+ for(const port of ordered){const draw=port.poeDrawW||0,portOk=!port.poeBudgetW||draw<=port.poeBudgetW,accepted=portOk&&draw<=remaining;allocation.set(port.id,accepted);if(accepted)remaining-=draw}
+ return allocation;
+}
 export function evaluateNetwork(graph,{acl=graph.acl||[],now=0}={}){
-  const graphValidation=validateGraph(graph),nodeState=Object.create(null),linkState=Object.create(null),events=[];
+  const graphValidation=validateGraph(graph),nodeState=Object.create(null),linkState=Object.create(null),events=[];\n  const poeAllocations=new Map(graph.nodes.filter(n=>n.type==="poe-switch").map(n=>[n.id,allocatePoePorts(n)]));
   const nodes=new Map(graph.nodes.map(node=>[node.id,node]));
   for(const node of graph.nodes)nodeState[node.id]={online:node.adminUp!==false,ipReachable:false,streamAvailable:false,recording:false,reasons:node.adminUp===false?["تجهیز خاموش یا غیرفعال است"]:[],ip:node.ip||null,prefix:node.prefix??null,vlan:node.vlan??null};
   for(const link of graph.links){
