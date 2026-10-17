@@ -33,7 +33,7 @@ if(root){
  function renderState(){
   const state=evaluateNetwork(current.model);
   stateView.replaceChildren();
-  const summary=document.createElement("p");summary.textContent="وضعیت شبکه: "+(state.graphValid?"ساختار پایه معتبر":"خطای ساختاری")+"؛ توان PoE "+state.totalPoeDrawW.toFixed(1)+"/"+state.totalPoeBudgetW.toFixed(1)+" W"+(state.uplinkSaturated?"؛ هشدار اشباع Uplink":"");stateView.append(summary);
+  const summary=document.createElement("p");summary.textContent="وضعیت شبکه: "+(state.graphValid?"ساختار توپولوژی معتبر":"هشدار اعتبارسنجی مدل")+"؛ توان PoE "+state.totalPoeDrawW.toFixed(1)+"/"+state.totalPoeBudgetW.toFixed(1)+" W"+(state.uplinkSaturated?"؛ هشدار اشباع Uplink":"");stateView.append(summary);
   const list=document.createElement("div");list.className="real-state-grid";
   for(const node of current.model.nodes){const s=state.nodes[node.id]||{};const card=document.createElement("div");card.className="real-state-item "+(s.online===false?"is-fail":s.streamAvailable===false&&node.type==="camera"?"is-warn":"is-ok");const title=document.createElement("b");title.textContent=(names[node.type]||node.type)+" · "+node.id;const status=document.createElement("span");status.textContent=s.online===false?"خاموش/دسترسی‌ناپذیر":node.type==="camera"?(s.recording?"تصویر و ضبط فعال":s.streamAvailable?"تصویر فعال؛ ضبط مشکل دارد":"جریان تصویر مشکل دارد"):node.type==="nvr"?(s.recording?"ضبط آماده":"ضبط/دیسک نیازمند بررسی"): "فعال";card.append(title,status);list.append(card)}
   stateView.append(list);
