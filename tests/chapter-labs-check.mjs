@@ -32,7 +32,8 @@ vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter
 context.window.CCTVChapterLabs=[groups[0]];
 assert.ok(context.chapterLabHTML().includes("سه گام برای فهم مشکل"));
 context.advanceLabSimulator(1);assert.equal(context.state.labSimStep,1);
-context.setLabSimulatorOutcome("fail");assert.equal(context.state.labSimOutcome,"fail");
+context.runChapterLabSimulation(groups[0][0].answer);assert.equal(context.state.labSimOutcome,"pass");assert.equal(context.state.labSimStep,2);
+context.advanceLabSimulator(1);context.runChapterLabSimulation((groups[0][0].answer+1)%3);assert.equal(context.state.labSimOutcome,"fail");
 context.state.labDraft=groups[0][0].answer;context.runChapterLabScenario();assert.equal(context.state.progress.labs["0:0"].correct,true);
 context.retryChapterLabScenario(0);assert.equal(context.state.progress.labs["0:0"],undefined);
 const start=html.indexOf("<script>"),end=html.lastIndexOf("</script>");
