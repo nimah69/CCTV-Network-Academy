@@ -76,3 +76,31 @@ export function createScenario(id,seed=1){
  return {id:def.id,level:def.level,customer:def.customer,seed,model:createGraph(publicModel),meta:{length:model.meta?.length},hints:def.hints,redHerrings:def.redHerrings,optimalPath:def.optimalPath,commonMistakes:def.commonMistakes,lesson:def.lesson,answerKey:{rootCause:def.rootCause,fix:def.fix,firstTool:def.firstTool}};
 }
 export function publicScenario(scenario){const {answerKey,model,...safe}=scenario;return {...safe,model:{nodes:model.nodes.map(n=>({id:n.id,type:n.type,ip:n.ip||null})),links:model.links.map(l=>({id:l.id,type:l.type,lengthM:l.lengthM}))}}}
+
+export function applyScenarioRepair(graph,action,seed=1,selectedLinkId="cam-link"){
+ const nodes=graph.nodes.map(n=>({...n,ports:(n.ports||[]).map(p=>({...p}))}));
+ let links=graph.links.map(l=>({...l,from:{...l.from},to:{...l.to}})),acl=[...(graph.acl||[])],trafficMbps=graph.trafficMbps||0;
+ const findNode=id=>nodes.find(n=>n.id===id),sw=findNode("sw"),cam=findNode("cam"),nvr=findNode("nvr"),monitor=findNode("monitor"),ups=findNode("ups1");
+ const link=links.find(l=>l.id===selectedLinkId)||links.find(l=>l.id==="cam-link");
+ switch(action){
+  case "enable-port": {const cameraLink=links.find(l=>l.to.node==="cam"||l.from.node==="cam"),end=cameraLink?.from.node==="sw"?cameraLink.from:cameraLink?.to.node==="sw"?cameraLink.to:null;const port=sw?.ports.find(p=>p.id===end?.port);if(port){port.adminUp=true;port.poeEnabled=true;port.poeDrawW=port.poeDrawW||12}break}
+  case "replace-cable": if(link){link.cableFault="none";link.quality="normal";link.cableMaterial="copper";link.emi=false;link.active=true}break;
+  case "fix-ip": if(cam)cam.ip="192.168.10."+String(230+(Number(seed)%18));for(const n of nodes)if(n.id==="rogue")n.ip="192.168.10.249";break;
+  case "select-hdmi": if(monitor){monitor.input="HDMI1";monitor.hdmiConnected=true}if(nvr)nvr.hdmiConnected=true;break;
+  case "free-storage": if(nvr)nvr.freeStorageTB=2;break;
+  case "increase-budget": if(sw){sw.poeBudgetW=180;for(const p of sw.ports)if(p.poeEnabled)p.poeDrawW=p.poeDrawW||12}break;
+  case "match-duplex": if(link){link.duplexMismatch=false;link.crcErrors=0}break;
+  case "fix-vlan": for(const n of nodes)for(const p of n.ports)if(p.vlan!=null)p.vlan=10;break;
+  case "fix-subnet": if(cam)cam.prefix=24;break;
+  case "fix-clock": for(const n of nodes)if(n.type==="camera"||n.type==="nvr"){n.clockSynced=true;n.timezone="local"}break;
+  case "break-loop": links=links.filter(l=>!l.loop);if(sw)sw.rstpEnabled=true;break;
+  case "fix-acl": acl=[];break;
+  case "upgrade-uplink": links=links.map(l=>({...l,speedMbps:10000}));trafficMbps=700;break;
+  case "adjust-ir": if(cam){cam.irHealthy=true;cam.irReflection=false}break;
+  case "replace-disk": if(nvr){nvr.diskHealthy=true;nvr.rebuilding=false}break;
+  case "rollback-firmware": if(cam){cam.firmware="stable";cam.rtspEnabled=true}break;
+  case "replace-battery": if(ups){ups.healthFactor=.9;ups.chargePercent=100;ups.capacityWh=600}break;
+  case "reroute-cable": if(link){link.emi=false;link.quality="normal";link.lengthM=Math.min(link.lengthM,60)}break;
+ }
+ return createGraph({nodes,links,vlans:graph.vlans,acl,trafficMbps});
+}
