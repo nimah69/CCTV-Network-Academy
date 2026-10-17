@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><meta charset="utf-8"><title>آزمون مرورگر شبیه‌ساز</title>
+<body data-smoke-result="pending"><iframe id="app" src="/workshops.html" title="برنامه کارگاه‌ها" style="width:100%;height:800px"></iframe><pre id="result">در حال آزمون…</pre>
+<script>
+const done=(state,message)=>{document.body.dataset.smokeResult=state;document.getElementById("result").textContent=message};
+document.getElementById("app").addEventListener("load",()=>{
+ try{
+  const w=document.getElementById("app").contentWindow,d=w.document;
+  const need=(id)=>{const el=d.getElementById(id);if(!el)throw new Error("Missing element "+id);return el};
+  const click=id=>need(id).click();
+  if(!need("realSimulator").querySelector("#realScenario"))throw new Error("real simulator markup missing");
+  click("loadRealScenario");click("runRealTool");
+  if(!need("realToolResult").textContent.trim())throw new Error("diagnostic tool produced no output");
+  need("realTool").value="show-poe";need("realTool").dispatchEvent(new w.Event("change",{bubbles:true}));click("runRealTool");
+  if(!need("realToolResult").textContent.includes("مصرف تجمیعی"))throw new Error("switch PoE output is not computed");
+  need("ipAddress").value="192.168.1.130";need("cidr").value="26";click("calcSubnet");
+  if(!need("subnetResult").textContent.includes("192.168.1.128"))throw new Error("subnet calculator output mismatch");
+  click("calcPoe");if(!need("poeResult").textContent.includes("PSE"))throw new Error("PoE calculator did not run");
+  click("runPoeSimulation");if(!need("poeSimulationResult").textContent.trim())throw new Error("PoE simulator did not run");
+  click("calcStorage");if(!need("storageResult").textContent.includes("RAID"))throw new Error("storage calculator did not run");
+  click("calcUps");if(!need("upsResult").textContent.includes("دقیقه"))throw new Error("UPS calculator did not run");
+  click("calcLens");if(!need("lensResult").textContent.includes("px/m"))throw new Error("lens calculator did not run");
+  click("calcAdvancedSecurity");if(!need("advancedSecurityResult").textContent.includes("امتیاز وزنی"))throw new Error("security calculator did not run");
+  click("buildReport");if(!need("capstoneResult").textContent.includes("برآورد اولیه"))throw new Error("integrated design report did not run");
+  click("retryRealScenario");if(need("realSeed").value!=="1")throw new Error("retry did not preserve seed");
+  done("pass","PASS: scenario UI, computed PoE diagnostics, subnet/PoE/storage/UPS/lens/security calculators and capstone report.");
+ }catch(error){done("fail",error.stack||String(error))}
+});
+</script></body></html>
