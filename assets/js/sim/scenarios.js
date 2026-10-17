@@ -33,12 +33,14 @@ function baseGraph(seed){
  {id:"cam",type:"camera",ip:"192.168.10."+host,prefix:24,vlan:10,poeRequired:true,minPoeW:9,rtspEnabled:true,firmware:"stable",clockSynced:true,irHealthy:true,ports:[{id:"eth0",vlan:10}]},
  {id:"nvr",type:"nvr",ip:"192.168.10.10",prefix:24,vlan:10,recordingEnabled:true,diskHealthy:true,freeStorageTB:3,firmware:"stable",clockSynced:true,hdmiConnected:true,ports:[{id:"eth0",vlan:10}]},
  {id:"router",type:"router",ip:"192.168.10.1",prefix:24,vlan:10,ports:[{id:"lan",vlan:10}]},
- {id:"monitor",type:"monitor",input:"HDMI1",hdmiConnected:true,ports:[{id:"hdmi"}]},\n {id:"service-laptop",type:"laptop",ip:"192.168.10.50",prefix:24,vlan:10,ports:[{id:"eth0",vlan:10}]}
+ {id:"monitor",type:"monitor",input:"HDMI1",hdmiConnected:true,ports:[{id:"hdmi"}]},
+ {id:"service-laptop",type:"laptop",ip:"192.168.10.50",prefix:24,vlan:10,ports:[{id:"eth0",vlan:10}]}
  ];
  const links=[
  {id:"cam-link",type:"poe",from:{node:"sw",port:"p"+poePort},to:{node:"cam",port:"eth0"},lengthM:length,quality:"normal"},
  {id:"nvr-link",type:"ethernet",from:{node:"sw",port:"p9"},to:{node:"nvr",port:"eth0"},lengthM:3},
- {id:"router-link",type:"ethernet",from:{node:"sw",port:"p10"},to:{node:"router",port:"lan"},lengthM:2},\n {id:"service-link",type:"ethernet",from:{node:"sw",port:"p11"},to:{node:"service-laptop",port:"eth0"},lengthM:3}
+ {id:"router-link",type:"ethernet",from:{node:"sw",port:"p10"},to:{node:"router",port:"lan"},lengthM:2},
+ {id:"service-link",type:"ethernet",from:{node:"sw",port:"p11"},to:{node:"service-laptop",port:"eth0"},lengthM:3}
  ];
  return {nodes,links,vlans:[{id:10,name:"CCTV"},{id:20,name:"Management"}],meta:{poePort,length,host}};
 }
@@ -46,7 +48,7 @@ function inject(def,model,seed){
  const r=random(seed),n=model.nodes,sw=n.find(x=>x.id==="sw"),cam=n.find(x=>x.id==="cam"),nvr=n.find(x=>x.id==="nvr"),link=model.links.find(x=>x.id==="cam-link");
  switch(def.fix){
  case "enable-port": if(def.id==="basic-port")sw.ports[model.meta.poePort-1].adminUp=false;else sw.ports[model.meta.poePort-1].poeEnabled=false;break;
- case "replace-cable": link.cableFault="open";link.quality="marginal";break;
+ case "replace-cable": if(def.id==="mid-cca"){cam.minPoeW=20;sw.ports[model.meta.poePort-1].poeDrawW=24;link.cableMaterial="cca";link.quality="marginal";link.lengthM=85+Math.floor(r()*15)}else{link.cableFault="open";link.quality="marginal"}break;
  case "fix-ip": n.push({...cam,id:"rogue",ip:cam.ip,type:"camera",poeRequired:false,ports:[{id:"eth0",vlan:10}]});break;
  case "select-hdmi": n.find(x=>x.id==="monitor").input="HDMI2";nvr.hdmiConnected=false;break;
  case "free-storage": nvr.freeStorageTB=0;break;
