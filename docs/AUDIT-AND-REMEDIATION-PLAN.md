@@ -1123,11 +1123,11 @@
 - Quality checks: **موفق**؛ تست رفتاری جدید نیز در مجموعه اجرا شد.
 - PoE module tests: **موفق**.
 - Validate academy content and JavaScript: همهٔ jobها بدون شکست تکمیل شدند.
-- ساخت APK در زمان ثبت این بخش هنوز در حال اجرا بود.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] آزمون runtime برای storage مسدودشده.
 - [x] آزمون runtime برای JSON خراب و امتیاز غیرمتناهی.
 - [x] آزمون‌های کیفیت، PoE و محتوای/JavaScript موفق.
-- [ ] تأیید نهایی ساخت APK.
+- [x] تأیید نهایی ساخت APK.
 - [ ] آزمون واقعی WebView آفلاین روی گوشی.
