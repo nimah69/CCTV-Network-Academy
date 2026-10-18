@@ -50,6 +50,14 @@ assert.ok(advancedSecurityBlock,"Advanced security checklist must exist");
 const advancedSecurityIds=[...advancedSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
 assert.equal(new Set(advancedSecurityIds).size,advancedSecurityIds.length,"Advanced security control IDs must be unique");
 assert.ok(advancedSecurityIds.includes("firewall-acl"),"Advanced checklist must expose the firewall ACL control");
+const securitySource=fs.readFileSync("assets/js/sim/calc/security.js","utf8");
+const modeledSecurityIds=[...securitySource.matchAll(/\{id:"([^"]+)",title:/g)].map(match=>match[1]);
+for(const id of [...securityIds,...advancedSecurityIds]) assert.ok(modeledSecurityIds.includes(id),"Checklist control must exist in the shared scoring model: "+id);
+const advancedWeightsMatch=html.match(/const weights=(\{[^;]+\});/);
+assert.ok(advancedWeightsMatch,"Advanced security checklist must define explicit weights");
+const advancedWeights=JSON.parse(advancedWeightsMatch[1]);
+for(const id of advancedSecurityIds) assert.ok(Object.hasOwn(advancedWeights,id),"Advanced checklist control must have an explicit weight: "+id);
+
 assert.ok(html.includes('"firewall-acl":3')&&html.includes('"backup-restore":3'),"Critical firewall and recovery controls must receive explicit high weights in the advanced checklist");
 assert.ok(html.includes('if(!has("firewall-acl"))risk.push('),"Advanced attack-risk summary must separately identify missing Firewall/ACL rules");
 assert.equal(advancedSecurityIds.length,14,"Advanced security checklist must score all 14 controls");
