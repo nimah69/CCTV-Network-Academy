@@ -1146,11 +1146,11 @@
 - Quality checks: **موفق**؛ شامل تست runtime مهاجرت.
 - PoE module tests: **موفق**.
 - Validate academy content and JavaScript: **موفق**.
-- ساخت APK هنگام ثبت این بخش هنوز در حال اجرا بود.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] خطای storage قدیمی دیگر نباید اپ را روی file-origin مهاجرت‌نشده نگه دارد.
 - [x] دادهٔ pending هنگام شکست واردکردن به storage امن حفظ می‌شود.
 - [x] تست runtime مهاجرت و آزمون‌های کیفیت/PoE/محتوا موفق.
-- [ ] تأیید نهایی APK برای commit این مرحله.
+- [x] تأیید نهایی APK برای commit این مرحله.
 - [ ] نصب و اجرای واقعی روی گوشی Android، شامل مهاجرت پیشرفت و حالت آفلاین.
