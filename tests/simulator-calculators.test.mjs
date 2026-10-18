@@ -126,6 +126,10 @@ test("integrated design vectors",()=>{
  assert.ok(designCCTV({sensorWidthMm:5.6}).coverage);
  assert.ok(designCCTV({poeBudgetW:20}).warnings.some(w=>w.includes("بودجه")));
  assert.ok(designCCTV({raid:"raid6"}).storage.raid==="raid6");
+ const invalidRaid=designCCTV({cameras:4,raid:"raid5",diskCount:3,hotSpare:1}).reliability;
+ assert.equal(invalidRaid.hddFailure.recordingCameras,0,"Invalid active-disk RAID layout must not claim recording survives a disk failure");
+ assert.throws(()=>designCCTV({buildings:0}),RangeError);
+ assert.throws(()=>designCCTV({environment:"unknown"}),RangeError);
  assert.ok(designCCTV({environment:"outdoor"}).cable.warnings.length>0);
  assert.ok(Array.isArray(designCCTV().assumptions));
  assert.ok(designCCTV().reliability.notes.some(n=>n.includes("VLAN 10")&&n.includes("ACL")));
