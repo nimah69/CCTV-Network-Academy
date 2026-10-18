@@ -37,7 +37,7 @@ context.runChapterLabSimulation(groups[0][0].answer);assert.equal(context.state.
 context.advanceLabSimulator(1);context.runChapterLabSimulation((groups[0][0].answer+1)%3);assert.equal(context.state.labSimOutcome,"fail");
 context.state.labDraft=groups[0][0].answer;context.runChapterLabScenario();assert.equal(context.state.progress.labs["0:0"].correct,true);
 context.retryChapterLabScenario(0);assert.equal(context.state.progress.labs["0:0"],undefined);
-const inlineScripts=[...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];
+const inlineScripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.ok(inlineScripts.length>=2,"Expected both inline scripts in index.html");
 inlineScripts.forEach((match,index)=>new vm.Script(match[1],{filename:"index.html:inline-script-"+(index+1)}));
 console.log("Beginner labs checks passed: 14 chapters, 70 rewritten scenarios, simple three-step simulator, answer saving and retry.");
