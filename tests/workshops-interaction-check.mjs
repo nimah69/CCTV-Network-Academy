@@ -28,6 +28,13 @@ assert.match(html, /workshop=button\.closest\("section\[id\]"\)/, "Simulator dis
 assert.doesNotMatch(html, /button\.closest\("\.workshop"\)/, "Simulator dispatch must not depend on a missing .workshop class");
 for (const workshop of ["trouble", "topology", "subnet", "storage", "cable", "security", "capstone"]) assert.match(html, new RegExp(workshop + ':\\{trigger:'), "Missing simulator dispatch for " + workshop);
 assert.match(html, /sim-feedback/, "Simulation must show a visible result panel");
+assert.match(html, /data-workshop-reset="capstone"/, "The final project workshop must expose a reset control");
+assert.match(html, /querySelectorAll\("\[data-workshop-reset\]"\)/, "Every workshop reset control must receive a handler");
+assert.match(html, /querySelectorAll\("\[data-sim-reset\]"\)/, "Schematic reset buttons must route to the containing workshop reset");
+assert.match(html, /resetSection\.querySelectorAll\("input,select,textarea"\)/, "Reset must restore user-editable inputs");
+assert.match(html, /resetSection\.querySelectorAll\("\.sim-feedback"\)/, "Reset must clear simulation feedback");
+assert.match(html, /delete node\.dataset\.simRunCount/, "Reset must reset the simulation run counter");
+
 assert.match(html, /classList\.add\(target&&status===\"fail\"\?\"sim-fail\"/, "Simulation must render calculated equipment states");
 assert.match(html, /ورودی‌های همین صفحه/, "Simulation must disclose it uses current page inputs");
 assert.match(html, /if\(eq\.includes\("camera"\)&&!has\("switch-camera"\)\)/, "Topology validation must flag a missing camera-to-switch link");
