@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "cctv-academy-static-v20261018-dropdown-portal5";
+const CACHE_NAME = "cctv-academy-static-v20261018-dropdown-portal6";
 const CORE_ASSETS = [
   "./",
   "./index.html",
