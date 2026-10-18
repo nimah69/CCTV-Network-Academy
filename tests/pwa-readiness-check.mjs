@@ -34,6 +34,10 @@ for (const page of pages) {
   const html = fs.readFileSync(path.join(root, page), "utf8");
   assert.ok(html.includes('href="./manifest.webmanifest"'), page + " must link the PWA manifest");
   assert.ok(html.includes("pwa-register.js"), page + " must register the service worker");
+  const localScripts = [...html.matchAll(/<script\\b[^>]*src=["\']([^"\']+\\.js)["\'][^>]*>/gi)].map(match => match[1]).filter(src => !/^(?:https?:)?\\/\\//i.test(src));
+  for (const src of localScripts) assert.ok(assets.includes("./" + src.replace(/^\\.\\//, "")), page + " script is missing from offline precache: " + src);
+  const localStyles = [...html.matchAll(/<link\\b[^>]*href=["\']([^"\']+\\.css)["\'][^>]*>/gi)].map(match => match[1]).filter(src => !/^(?:https?:)?\\/\\//i.test(src));
+  for (const src of localStyles) assert.ok(assets.includes("./" + src.replace(/^\\.\\//, "")), page + " stylesheet is missing from offline precache: " + src);
 }
 assert.ok(register.includes('navigator.serviceWorker.register("./service-worker.js"'));
 assert.ok(register.includes('location.protocol !== "https:"'), "Service worker should only register in secure contexts or localhost");
