@@ -124,3 +124,20 @@ jobs:
           node-version: 20
       - name: Check chapter question uniqueness
         run: node tests/chapter-uniqueness-check.mjs "${{ matrix.chapter_id }}"
+
+  question-balance:
+    name: Question balance / ${{ matrix.mode }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [positions, longest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check quiz balance metric
+        run: node tests/question-balance-check.mjs "${{ matrix.mode }}"
