@@ -140,6 +140,11 @@ test("integrated design vectors",()=>{
  assert.ok(Array.isArray(designCCTV().assumptions));
  assert.ok(designCCTV().reliability.notes.some(n=>n.includes("VLAN 10")&&n.includes("ACL")));
  assert.ok(designCCTV().warnings.some(w=>w.includes("VLAN/ACL")));
+ const copperLongLink=designCCTV({cameras:1,bitrateMbps:2,retentionDays:7,poeWatts:25.5,poeStandard:"at",cableLengthM:100,cableMaterial:"cu",poeBudgetW:120,diskCount:4,diskTB:8,raid:"raid5"}).reliability.baseline;
+ const ccaLongLink=designCCTV({cameras:1,bitrateMbps:2,retentionDays:7,poeWatts:25.5,poeStandard:"at",cableLengthM:100,cableMaterial:"cca",poeBudgetW:120,diskCount:4,diskTB:8,raid:"raid5"}).reliability.baseline;
+ assert.equal(copperLongLink.streamingCameras,1,"Copper link within the selected PoE port budget should carry the camera stream");
+ assert.equal(ccaLongLink.streamingCameras,0,"CCA link requiring more than the 802.3at port budget must not be reported as streaming");
+
  const reliability=designCCTV().reliability;assert.equal(reliability.uplinkFailure.recordingCameras,0);assert.ok(reliability.hddFailure.recordingCameras>0);assert.ok(reliability.baseline.recordingCameras>0);
  const redundant=designCCTV({redundantUplink:true}).reliability;assert.ok(redundant.uplinkFailure.recordingCameras>0);assert.ok(redundant.hddFailure.events.includes("raid-degraded"));
 });
