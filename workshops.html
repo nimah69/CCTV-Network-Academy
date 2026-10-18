@@ -478,7 +478,7 @@ $("calcLens").addEventListener("click",()=>{try{
 $("calcAdvancedSecurity").addEventListener("click",()=>{try{
  const controls=[...document.querySelectorAll("#advancedSecurityChecks input[data-security-control]")];
  if(!controls.length)throw Error("کنترل‌های امنیتی در دسترس نیستند.");
- const weights={"default-password":3,"remote-cloud":2,"https":1,"rtsp-auth":2,"rbac":2,"lockout":1,"segmentation":3,"port-security":2,"physical":1,"patching":3,"ports":2};
+ const weights={"default-password":3,"remote-cloud":2,"https":1,"rtsp-auth":2,"rbac":2,"lockout":1,"segmentation":3,"firewall-acl":3,"port-security":2,"physical":1,"patching":3,"audit-logging":1,"backup-restore":3,"ports":2};
  const max=controls.reduce((sum,el)=>sum+(weights[el.dataset.securityControl]||1),0);
  const score=controls.filter(el=>el.checked).reduce((sum,el)=>sum+(weights[el.dataset.securityControl]||1),0);
  const pct=Math.round(score/max*100);
@@ -488,6 +488,7 @@ $("calcAdvancedSecurity").addEventListener("click",()=>{try{
  if(!has("default-password"))risk.push("رمز پیش‌فرض/ضعیف می‌تواند نقطه ورود اولیه باشد.");
  if(!has("remote-cloud"))risk.push("سرویس‌های راه دور غیرضروری را بررسی و در صورت عدم نیاز غیرفعال کن.");
  if(!has("segmentation"))risk.push("نبود جداسازی شبکه، حرکت جانبی مهاجم را آسان‌تر می‌کند.");
+  if(!has("firewall-acl"))risk.push("نبود قواعد محدودکننده Firewall/ACL می‌تواند ترافیک ناخواسته میان VLANها را مجاز کند.");
  if(!has("patching"))risk.push("Firmware و آسیب‌پذیری‌های شناخته‌شده نیازمند بررسی‌اند.");
  if(!has("ports"))risk.push("سطح سرویس‌ها و پورت‌های در دسترس باید محدود شود.");
  const chain=risk.length?risk.join(" → "):"در کنترل‌های انتخاب‌شده زنجیره پرریسک آشکاری باقی نمانده؛ این به معنی تضمین امنیت نیست.";
