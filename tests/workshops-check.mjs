@@ -18,7 +18,7 @@ assert.ok(html.includes("function escapeHTML(value)") && html.includes("escapeHT
 assert.ok(html.includes("escapeHTML(textReport)"),"Project report details must be escaped before HTML insertion");
 assert.ok(html.includes("escapeHTML(reportText)"),"Print report text must be escaped before document.write");
 assert.ok(html.includes("simEscape(extra)")&&html.includes("simEscape(details)"),"User-derived simulator feedback must be escaped before HTML insertion");
-assert.ok(html.includes('doc.getElementById("r").textContent=reportText')||html.includes('doc.getElementById("r").textContent = reportText'),"The module print path must use textContent for report text");
+
 const escapeMatch=html.match(/function escapeHTML\(value\)\{[^}]*\}/);
 assert.ok(escapeMatch,"HTML escaping helper must be defined");
 const escapeFn=vm.runInNewContext("("+escapeMatch[0].replace("function escapeHTML","function")+")");
@@ -50,6 +50,7 @@ const advancedSecurityIds=[...advancedSecurityBlock[1].matchAll(/data-security-c
 assert.equal(new Set(advancedSecurityIds).size,advancedSecurityIds.length,"Advanced security control IDs must be unique");
 assert.ok(advancedSecurityIds.includes("firewall-acl"),"Advanced checklist must expose the firewall ACL control");
 const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
+assert.ok(calcSource.includes('doc.getElementById("r").textContent=reportText'),"The module print path must use textContent for report text");
 assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
 assert.ok(html.includes('id="lensTargetDensity"'),"Lens calculator must expose an explicit pixel-density target");
 assert.ok(calcSource.includes("const densityOk=density>=target"),"Lens status must be evaluated against the selected pixel-density target");
