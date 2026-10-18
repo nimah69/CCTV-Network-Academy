@@ -33,3 +33,12 @@ assert.ok(html.includes('id="runPoeSimulation"'),"PoE must use an input-driven s
 assert.ok(html.includes("prefers-reduced-motion"),"Schematic animation must respect reduced-motion preferences");
 assert.ok(html.includes('aria-pressed="false"'),"Simulator controls must expose accessible pressed state");
 assert.ok(html.includes("اجرای شبیه‌سازی تعاملی"),"Simulator controls must be clearly labeled and actionable in Persian");
+
+const simpleSecurityBlock=html.match(/<div class="checklist" id="securityChecks">([\\s\\S]*?)<\\/div>/);
+assert.ok(simpleSecurityBlock,"Simple security checklist must exist");
+const securityIds=[...simpleSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
+assert.equal(securityIds.length,9,"Each simple security checkbox must have a stable control ID");
+assert.equal(new Set(securityIds).size,securityIds.length,"Simple security checklist controls must not be mapped more than once");
+assert.ok(securityIds.includes("firewall-acl"),"Firewall/ACL needs its own distinct control");
+const calcSource=fs.readFileSync(path.join(root,"assets/js/sim/ui/calculators.js"),"utf8");
+assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
