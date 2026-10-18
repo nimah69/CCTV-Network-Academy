@@ -1,8 +1,7 @@
 import { positiveNumber, nonNegativeNumber } from "../units.js";
 export function poeCapacity({budgetW,cameraWatts,reservePercent=20}){const budget=positiveNumber(budgetW,"بودجه PoE"),load=positiveNumber(cameraWatts,"مصرف هر دوربین"),reserve=nonNegativeNumber(reservePercent,"حاشیه");return Math.floor(budget/(load*(1+reserve/100)))}
 
-// IEEE-oriented reference model for the PoE workshop. Kept alongside calculatePoe()
-// to preserve existing simulator consumers while exposing the explicitly requested model.
+// IEEE-oriented reference model for the PoE workshop.
 export const R_COND_OHM_PER_M = 0.0938;
 export const CCA_FACTOR = 1.55; // [ASSUMPTION] Verify against the selected cable datasheet.
 export const CU_TEMPCO = 0.00393;
