@@ -27,6 +27,8 @@ function assertPositive(name, v, allowZero = false) {
 export function loopResistance({ lengthM, material = "cu", tempC = 20, pairs = 2 }) {
   assertPositive("lengthM", lengthM, true);
   if (pairs !== 2 && pairs !== 4) throw new RangeError("pairs باید 2 یا 4 باشد");
+  if (material !== "cu" && material !== "cca") throw new RangeError("جنس کابل باید cu یا cca باشد");
+  if (typeof tempC !== "number" || !Number.isFinite(tempC) || tempC < -40 || tempC > 90) throw new RangeError("دمای کابل باید بین ۴۰- تا ۹۰ درجه سانتی‌گراد باشد");
   const k = material === "cca" ? CCA_FACTOR : 1;
   const rCond = R_COND_OHM_PER_M * lengthM * k * (1 + CU_TEMPCO * (tempC - 20));
   return pairs === 4 ? rCond / 2 : rCond;
@@ -64,8 +66,10 @@ export function solveLink({ type, pdW, lengthM, material = "cu", tempC = 20, pai
 }
 export function budgetCheck({ switchBudgetW, marginPct = 20, allocationsW }) {
   assertPositive("switchBudgetW", switchBudgetW);
-  if (!Array.isArray(allocationsW) || allocationsW.some(a => !(a >= 0))) throw new RangeError("allocationsW نامعتبر است");
+  if (typeof marginPct !== "number" || !Number.isFinite(marginPct) || marginPct < 0 || marginPct >= 100) throw new RangeError("حاشیه بودجه باید از ۰ تا کمتر از ۱۰۰ درصد باشد");
+  if (!Array.isArray(allocationsW) || allocationsW.some(a => typeof a !== "number" || !Number.isFinite(a) || a < 0)) throw new RangeError("allocationsW نامعتبر است");
   const totalW = allocationsW.reduce((s, a) => s + a, 0);
+  if (!Number.isFinite(totalW)) throw new RangeError("مجموع تخصیص PoE خارج از محدوده عددی است");
   const usableW = switchBudgetW * (1 - marginPct / 100);
   const status = totalW <= usableW + EPS ? "ok" : totalW <= switchBudgetW + EPS ? "marginal" : "fail";
   const avg = allocationsW.length ? totalW / allocationsW.length : 0;
