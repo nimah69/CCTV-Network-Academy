@@ -10,7 +10,7 @@ import { calculateCoverage } from "../assets/js/sim/calc/optics.js";
 import { assessSecurity,SECURITY_CONTROLS } from "../assets/js/sim/calc/security.js";
 import { designCCTV } from "../assets/js/sim/calc/design.js";
 test("PoE shared resistance constants stay aligned",()=>{
- assert.equal(ENGINEERING.ethernet.copperLoopResistanceOhmPerKm,R_COND_OHM_PER_M*2000);
+ assert.equal(ENGINEERING.ethernet.copperLoopResistanceOhmPerKm,R_EFFECTIVE_LOOP_OHM_PER_M*1000);
 });
 test("subnet vectors",()=>{
  const a=subnet("192.168.1.130",26);assert.equal(a.network,"192.168.1.128");assert.equal(a.broadcast,"192.168.1.191");assert.equal(a.usableHosts,62);
