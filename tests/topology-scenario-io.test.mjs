@@ -19,6 +19,7 @@ test("rejects unknown schema versions and arbitrary device identifiers", () => {
   assert.throws(() => normalizeTopologyConfig({ ...valid, schemaVersion: 2 }), /نسخه/);
   assert.throws(() => normalizeTopologyConfig({ ...valid, equipment: ["script"] }), /ناشناخته/);
   assert.throws(() => normalizeTopologyConfig({ ...valid, links: ["unknown-link"] }), /ناشناخته/);
+  assert.deepEqual(normalizeTopologyConfig({ ...valid, links: ["switch2-camera", "switch2-nvr"] }).links, ["switch2-camera", "switch2-nvr"]);
 });
 
 test("rejects duplicate identifiers rather than silently changing the scenario", () => {
