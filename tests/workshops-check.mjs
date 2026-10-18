@@ -34,7 +34,7 @@ assert.ok(html.includes("prefers-reduced-motion"),"Schematic animation must resp
 assert.ok(html.includes('aria-pressed="false"'),"Simulator controls must expose accessible pressed state");
 assert.ok(html.includes("اجرای شبیه‌سازی تعاملی"),"Simulator controls must be clearly labeled and actionable in Persian");
 
-const simpleSecurityBlock=html.match(/<div class="checklist" id="securityChecks">([\\s\\S]*?)<\\/div>/);
+const simpleSecurityBlock=html.match(/<div class="checklist" id="securityChecks">([\s\S]*?)<\/div>/);
 assert.ok(simpleSecurityBlock,"Simple security checklist must exist");
 const securityIds=[...simpleSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
 assert.equal(securityIds.length,9,"Each simple security checkbox must have a stable control ID");
