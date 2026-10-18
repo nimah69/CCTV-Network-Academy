@@ -69,6 +69,26 @@ while (pendingModules.length) {
   assert.ok(fs.existsSync(path.join(root, modulePath)), "Missing ES module dependency: " + modulePath);
   assert.ok(assets.includes("./" + modulePath), "Offline cache omits ES module dependency: " + modulePath);
   const source = fs.readFileSync(path.join(root, modulePath), "utf8");
+  const namedImports = [...source.matchAll(/\bimport\s*\{([\s\S]*?)\}\s*from\s*["']([^"']+)["']/g)];
+  for (const match of namedImports) {
+    const specifier = match[2];
+    if (!specifier.startsWith(".")) continue;
+    const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(modulePath), specifier));
+    assert.ok(fs.existsSync(path.join(root, dependency)), "Missing imported module: " + dependency);
+    const dependencySource = fs.readFileSync(path.join(root, dependency), "utf8");
+    const dependencyExports = new Set();
+    for (const item of dependencySource.matchAll(/\bexport\s+(?:async\s+)?(?:function|class|const|let|var)\s+([A-Za-z_$][\w$]*)/g)) dependencyExports.add(item[1]);
+    for (const item of dependencySource.matchAll(/\bexport\s*\{([^}]+)\}/g)) {
+      for (const entry of item[1].split(",")) {
+        const name = entry.trim().split(/\s+as\s+/)[0].trim();
+        if (name) dependencyExports.add(name);
+      }
+    }
+    for (const imported of match[1].split(",")) {
+      const name = imported.trim().split(/\s+as\s+/)[0].trim();
+      if (name) assert.ok(dependencyExports.has(name), modulePath + " imports missing export " + name + " from " + dependency);
+    }
+  }
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']|^\s*import\s*["']([^"']+)["']/gm)]
     .map((match) => match[1] || match[2]);
   for (const specifier of imports) {
