@@ -86,6 +86,7 @@ test("UPS vectors",()=>{
  assert.ok(calculateUps({loadW:100,batteryWh:500}).usableWh>0);
  assert.equal(calculateUps({loadW:100,batteryWh:500}).status,"مناسب");
  assert.ok(calculateUps({loadW:1000,batteryWh:100}).runtimeMinutes<10);
+ assert.throws(()=>calculateUps({loadW:.1,batteryWh:1e308}),RangeError);
 });
 test("optics vectors",()=>{
  const a=calculateCoverage({sensorWidthMm:5.6,sensorHeightMm:3.15,focalLengthMm:4,distanceM:10,horizontalPixels:1920,verticalPixels:1080});assert.ok(a.horizontalFovDeg>60&&a.horizontalFovDeg<80);
@@ -95,6 +96,7 @@ test("optics vectors",()=>{
  assert.ok(calculateCoverage({sensorWidthMm:5.6,sensorHeightMm:3.15,focalLengthMm:4,distanceM:10,horizontalPixels:3840,verticalPixels:2160}).pixelsPerMeter>a.pixelsPerMeter);
  assert.throws(()=>calculateCoverage({sensorWidthMm:0,sensorHeightMm:3,focalLengthMm:4,distanceM:10,horizontalPixels:1920,verticalPixels:1080}));
  assert.throws(()=>calculateCoverage({sensorWidthMm:5,sensorHeightMm:3,focalLengthMm:4,distanceM:0,horizontalPixels:1920,verticalPixels:1080}));
+ assert.throws(()=>calculateCoverage({sensorWidthMm:1e308,sensorHeightMm:3,focalLengthMm:.1,distanceM:10,horizontalPixels:1920,verticalPixels:1080}),RangeError);
  assert.ok(["کشف","مشاهده","تشخیص هویت","شناسایی","کمتر از سطح کشف"].some(level=>a.dori.startsWith(level)));
  assert.ok(a.doriThresholds.identification===250);
  assert.ok(a.current2025DensityLevels.includes(1500));
