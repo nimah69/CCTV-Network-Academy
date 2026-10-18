@@ -3,9 +3,10 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const html = fs.readFileSync("index.html", "utf8");
-const scripts = [...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)].map(match => match[1]);
-assert.ok(scripts.length, "Progress migration script must exist");
-const migrationScript = scripts[0];
+const scriptStart = html.indexOf("<script>");
+const scriptEnd = html.indexOf("</script>", scriptStart);
+assert.ok(scriptStart >= 0 && scriptEnd > scriptStart, "Progress migration script must exist");
+const migrationScript = html.slice(scriptStart + "<script>".length, scriptEnd);
 
 function run(script, bridge, localStorage) {
   const errors = [];
