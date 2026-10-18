@@ -1031,11 +1031,11 @@
 - Quality checks: **موفق**.
 - PoE module tests: **موفق**.
 - Validate academy content and JavaScript: **موفق**.
-- ساخت APK در زمان ثبت این بخش هنوز در حال اجرا بود.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] وزن‌دهی صریح Firewall/ACL و بازیابی پشتیبان.
 - [x] نمایش مستقل ریسک ACL.
 - [x] آزمون‌های کیفیت، PoE و اعتبارسنجی محتوا موفق.
-- [ ] تأیید نهایی ساخت APK برای commit این مرحله.
+- [x] تأیید نهایی ساخت APK برای commit این مرحله.
 - [ ] آزمون میدانی Android.
