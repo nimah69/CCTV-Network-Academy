@@ -68,3 +68,28 @@ jobs:
           node-version: 20
       - name: Run targeted regression test
         run: node "tests/${{ matrix.test }}"
+
+  simulator-subtest:
+    name: Simulator subtest / ${{ matrix.test_name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test_name:
+          - "subnet vectors"
+          - "PoE vectors"
+          - "storage reference and RAID vectors"
+          - "cable recommendation vectors"
+          - "UPS vectors"
+          - "optics vectors"
+          - "security vectors"
+          - "integrated design vectors"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run focused simulator subtest
+        run: node --test --test-name-pattern="${{ matrix.test_name }}" tests/simulator-calculators.test.mjs
