@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { subnet,validateGateway,planVLSM } from "../assets/js/sim/calc/subnet.js";
+import { subnet,validateGateway,planVLSM,parseIPv4 } from "../assets/js/sim/calc/subnet.js";
 import { solveLink,POE_TYPES,poeCapacity,budgetCheck } from "../assets/js/sim/calc/poe.js";
 import { calculateStorage,referenceStorageTB } from "../assets/js/sim/calc/storage.js";
 import { recommendCable } from "../assets/js/sim/calc/cable.js";
@@ -15,9 +15,15 @@ test("subnet vectors",()=>{
  assert.throws(()=>subnet("192.168.001.1",24));assert.throws(()=>subnet("256.1.1.1",24));assert.throws(()=>subnet("1.2.3.4",33));
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.1").valid,true);assert.equal(validateGateway("192.168.1.20",24,"192.168.2.1").valid,false);
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.20").valid,false);
+ assert.equal(validateGateway("192.168.1.20",24,"192.168.1.0").valid,false);
+ assert.equal(validateGateway("192.168.1.20",24,"192.168.1.255").valid,false);
  const packed=planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24});
  assert.equal(packed[0].cidr,"192.168.10.0/26");assert.equal(packed[1].cidr,"192.168.10.64/28");
  assert.equal(planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24}).length,2);
+ const packedAll=planVLSM([{name:"a",hosts:100},{name:"b",hosts:50},{name:"c",hosts:10}],{address:"192.168.10.1",prefix:24});
+ for(let i=1;i<packedAll.length;i++)assert.ok(parseIPv4(packedAll[i-1].broadcast)<parseIPv4(packedAll[i].network),"VLSM allocations must not overlap");
+ assert.throws(()=>planVLSM([{name:"large",hosts:200},{name:"another",hosts:100}],{address:"192.168.10.1",prefix:24}),RangeError);
+ assert.throws(()=>planVLSM([{name:"single",hosts:1}],{address:"192.168.10.0",prefix:31}),RangeError);
 });
 test("PoE vectors",()=>{
  const a=solveLink({type:"af",pdW:8,lengthM:0});assert.equal(a.status,"ok");
