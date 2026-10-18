@@ -86,8 +86,7 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 migrationPreferences().edit().putBoolean(MIGRATION_COMPLETE, true).apply();
                 if (webView != null) {
-                    boolean migrationPending = !getSharedPreferences(MIGRATION_PREFS, MODE_PRIVATE).getBoolean(MIGRATION_COMPLETE, false);
-        webView.getSettings().setAllowFileAccess(migrationPending);
+                    webView.getSettings().setAllowFileAccess(false);
                     webView.loadUrl(APP_ASSET_BASE_URL + "index.html");
                 }
             });
@@ -126,7 +125,8 @@ public class MainActivity extends Activity {
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setAllowFileAccess(false);
+        boolean migrationPending = !getSharedPreferences(MIGRATION_PREFS, MODE_PRIVATE).getBoolean(MIGRATION_COMPLETE, false);
+        webView.getSettings().setAllowFileAccess(migrationPending);
         webView.getSettings().setAllowFileAccessFromFileURLs(false);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(false);
         webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
