@@ -26,6 +26,7 @@ assert.match(index,/getPendingLegacyProgress/,"Progress must be imported before 
 assert.match(activity,/APP_ASSET_BASE_URL = "https:\/\/"/,"Android must load the academy through its local HTTPS origin");
 assert.match(activity,/assetLoader\.shouldInterceptRequest\(url\)/,"WebViewAssetLoader must serve local packaged assets");
 assert.match(activity,/webView\.loadUrl\(APP_ASSET_BASE_URL \+ "index\.html"\)/,"Initial navigation must use the secure local asset URL");
+assert.match(activity,/setAllowFileAccess\(false\);\s*webView\.clearHistory\(\);\s*webView\.loadUrl\(APP_ASSET_BASE_URL \+ "index\.html"\)/,"Legacy file-origin history must be cleared before returning to the secure origin");
 assert.match(activity,/setAllowFileAccess\(false\)/,"File URL access must be disabled");
 assert.match(activity,/setAllowUniversalAccessFromFileURLs\(false\)/,"Universal access from file URLs must be disabled");
 assert.match(gradle,/androidx\.webkit:webkit:1\.12\.1/,"WebViewAssetLoader dependency must be declared");
