@@ -93,3 +93,34 @@ jobs:
           node-version: 20
       - name: Run focused simulator subtest
         run: node --test --test-name-pattern="${{ matrix.test_name }}" tests/simulator-calculators.test.mjs
+
+  chapter-content:
+    name: Chapter content / ${{ matrix.chapter_id }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chapter_id:
+          - network-basics
+          - cctv-technical-basics
+          - cctv-design-infrastructure
+          - physical-environment-security
+          - cctv-cybersecurity
+          - backup-disaster-recovery
+          - risk-management
+          - standards-frameworks
+          - cctv-troubleshooting
+          - scenarios-interview
+          - advanced-concepts
+          - final-design-checklist
+          - source-quiz
+          - technical-interview
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check chapter question uniqueness
+        run: node tests/chapter-uniqueness-check.mjs "${{ matrix.chapter_id }}"
