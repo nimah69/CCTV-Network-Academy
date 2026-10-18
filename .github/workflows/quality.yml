@@ -36,12 +36,30 @@ jobs:
       matrix:
         test:
           - android-offline-check.mjs
+          - browser-smoke.test.mjs
+          - calculations-check.mjs
+          - chapter-labs-check.mjs
+          - dark-theme-check.mjs
+          - interactive-displays-check.mjs
+          - learning-quality-check.mjs
+          - micro-lessons-check.mjs
+          - mobile-readability-check.mjs
           - offline-readiness-check.mjs
+          - poe.test.mjs
           - pwa-readiness-check.mjs
+          - quality-check.mjs
+          - quiz-page-check.mjs
+          - routing-check.mjs
+          - scenarios.test.mjs
+          - spaced-review-check.mjs
           - simulator-calculators.test.mjs
+          - simulator-engine.test.mjs
+          - simulator-scenarios.test.mjs
           - simulator-syntax.test.mjs
+          - workflow-gates-check.mjs
           - workshops-check.mjs
           - workshops-interaction-check.mjs
+          - run-all.mjs
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
