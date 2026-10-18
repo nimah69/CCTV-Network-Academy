@@ -25,7 +25,9 @@ assert.match(activity,/webView\.loadUrl\(APP_ASSET_BASE_URL \+ "index\.html"\)/,
 assert.match(activity,/setAllowFileAccess\(false\)/,"File URL access must be disabled");
 assert.match(activity,/setAllowUniversalAccessFromFileURLs\(false\)/,"Universal access from file URLs must be disabled");
 assert.match(gradle,/androidx\.webkit:webkit:1\.12\.1/,"WebViewAssetLoader dependency must be declared");
-assert.doesNotMatch(activity,/file:\/\/\/android_asset\/academy\//,"The WebView must not use file:// for the app origin");
+assert.match(activity,/webView\.loadUrl\("file:\/\/\/android_asset\/academy\/index\.html"\)/,"The legacy file origin may be used only to export existing progress once");
+assert.match(activity,/setAllowFileAccess\(migrationPending\)/,"File access must be enabled only during the one-time migration");
+assert.match(activity,/migrationPending\) \{[\s\S]*?file:\/\/\/android_asset\/academy\/index\.html/,"Normal app startup must use the secure local HTTPS origin");
 assert.match(activity,/Intent\.ACTION_VIEW/,"External HTTP/HTTPS links must open in an external browser");
 assert.match(activity,/path\.contains\("\.\."\)/,"Local asset URLs must not traverse outside the academy asset directory");
 assert.match(activity,/equalsIgnoreCase\(scheme\)/,"External routing must check the URL scheme");
