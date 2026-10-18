@@ -419,7 +419,7 @@ $("checkTopology").addEventListener("click",()=>{
  if(eq.includes("router")&&!has("router-switch"))issues.push("روتر انتخاب شده اما اتصال روتر به سوئیچ تعریف نشده است.");
  if(has("router-camera"))issues.push("اتصال مستقیم روتر به دوربین انتخاب شده؛ تناسب PoE، شبکه و سیاست دسترسی را بررسی کن.");
  if(!Number.isInteger(cams)||cams<1||cams>256)issues.push("تعداد دوربین‌ها باید عدد صحیح بین ۱ تا ۲۵۶ باشد.");
- if(eq.includes("switch")&&Number.isInteger(cams)&&cams>ports)issues.push("تعداد دوربین‌ها ("+cams+") از پورت‌های انتخاب‌شده سوئیچ ("+ports+") بیشتر است؛ uplink و تجهیزات دیگر را نیز حساب کن.");
+ const availableCameraPorts=ports*(eq.includes("switch2")&&has("switch-switch")?2:1); if(eq.includes("switch")&&Number.isInteger(cams)&&cams>availableCameraPorts)issues.push("تعداد دوربین‌ها ("+cams+") از ظرفیت پورت‌های سوئیچ‌های متصل ("+availableCameraPorts+") بیشتر است؛ ظرفیت uplink و پورت‌های رزرو را نیز حساب کن.");
  if(!eq.includes("ups"))issues.push("UPS انتخاب نشده است؛ پایداری برق پشتیبان تأیید نشده است.");
 
  renderTopologyDiagram(); const pass=issues.length===0;
