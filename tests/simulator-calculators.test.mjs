@@ -96,6 +96,8 @@ test("security vectors",()=>{
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="segmentation"&&c.risk==="Critical"));
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="rtsp-auth"));
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="patching"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="audit-logging"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="backup-restore"));
  assert.ok(assessSecurity(["default-password","segmentation","rbac"]).attackChain.length===0);
  assert.ok(["مناسب","مرزی","نامناسب"].includes(assessSecurity([]).rating));
 });
