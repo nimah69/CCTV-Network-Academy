@@ -1,9 +1,10 @@
 import { positiveNumber, nonNegativeNumber } from "../units.js";
+import { ENGINEERING } from "../constants.js";
 export function poeCapacity({budgetW,cameraWatts,reservePercent=20}){const budget=positiveNumber(budgetW,"بودجه PoE"),load=positiveNumber(cameraWatts,"مصرف هر دوربین"),reserve=nonNegativeNumber(reservePercent,"حاشیه");return Math.floor(budget/(load*(1+reserve/100)))}
 
 // IEEE-oriented reference model for the PoE workshop.
 export const R_COND_OHM_PER_M = 0.0938;
-export const CCA_FACTOR = 1.55; // [ASSUMPTION] Verify against the selected cable datasheet.
+export const CCA_FACTOR = ENGINEERING.ethernet.ccaResistanceFactor; // [ASSUMPTION] Verify against the selected cable datasheet.
 export const CU_TEMPCO = 0.00393;
 export const MAX_CHANNEL_M = 100;
 export const PERMANENT_LINK_M = 90;
@@ -30,8 +31,10 @@ export function loopResistance({ lengthM, material = "cu", tempC = 20, pairs = 2
   if (material !== "cu" && material !== "cca") throw new RangeError("جنس کابل باید cu یا cca باشد");
   if (typeof tempC !== "number" || !Number.isFinite(tempC) || tempC < -40 || tempC > 90) throw new RangeError("دمای کابل باید بین ۴۰- تا ۹۰ درجه سانتی‌گراد باشد");
   const k = material === "cca" ? CCA_FACTOR : 1;
-  const rCond = R_COND_OHM_PER_M * lengthM * k * (1 + CU_TEMPCO * (tempC - 20));
-  return pairs === 4 ? rCond / 2 : rCond;
+  // R_COND_OHM_PER_M is per conductor. A two-pair PoE feed uses an outgoing and return conductor (2R); four-pair feed uses two such loops in parallel (R).
+  const conductorOhms = R_COND_OHM_PER_M * lengthM * k * (1 + CU_TEMPCO * (tempC - 20));
+  const loopOhms = conductorOhms * 2;
+  return pairs === 4 ? loopOhms / 2 : loopOhms;
 }
 export function solveLink({ type, pdW, lengthM, material = "cu", tempC = 20, pairs }) {
   const t = POE_TYPES[type];
