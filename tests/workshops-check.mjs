@@ -44,6 +44,7 @@ const securityIds=[...simpleSecurityBlock[1].matchAll(/data-security-control="([
 assert.equal(securityIds.length,9,"Each simple security checkbox must have a stable control ID");
 assert.equal(new Set(securityIds).size,securityIds.length,"Simple security checklist controls must not be mapped more than once");
 assert.ok(securityIds.includes("firewall-acl"),"Firewall/ACL needs its own distinct control");
+assert.ok(securityIds.includes("management-access")&&!securityIds.includes("rbac"),"Management network restrictions must not be mislabeled as role-based access control");
 const advancedSecurityBlock=html.match(/<div class="checklist" id="advancedSecurityChecks">([\s\S]*?)<\/div>/);
 assert.ok(advancedSecurityBlock,"Advanced security checklist must exist");
 const advancedSecurityIds=[...advancedSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
