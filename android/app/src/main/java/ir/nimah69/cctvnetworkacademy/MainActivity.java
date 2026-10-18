@@ -3,6 +3,7 @@ package ir.nimah69.cctvnetworkacademy;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
@@ -13,6 +14,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
 import androidx.webkit.WebViewAssetLoader;
+import org.json.JSONArray;
+import org.json.JSONException;
 import android.webkit.WebBackForwardList;
 import android.widget.Toast;
 
@@ -25,6 +28,10 @@ public class MainActivity extends Activity {
     private static final int REQUEST_FILE_CHOOSER = 502;
     private static final String APP_ASSET_HOST = "appassets.androidplatform.net";
     private static final String APP_ASSET_BASE_URL = "https://" + APP_ASSET_HOST + "/assets/academy/";
+    private static final String MIGRATION_PREFS = "academy_progress_migration";
+    private static final String MIGRATION_COMPLETE = "legacy_progress_migration_complete";
+    private static final String MIGRATION_DATA = "legacy_progress_migration_data";
+    private static final String PROGRESS_KEY_PREFIX = "cctvAcademyProgress";
 
     private WebView webView;
     private WebViewAssetLoader assetLoader;
@@ -32,6 +39,60 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileChooserCallback;
 
     public final class AndroidBridge {
+        private SharedPreferences migrationPreferences() {
+            return getSharedPreferences(MIGRATION_PREFS, MODE_PRIVATE);
+        }
+
+        @JavascriptInterface
+        public boolean isLegacyProgressMigrationNeeded() {
+            return !migrationPreferences().getBoolean(MIGRATION_COMPLETE, false);
+        }
+
+        @JavascriptInterface
+        public String getPendingLegacyProgress() {
+            return migrationPreferences().getString(MIGRATION_DATA, null);
+        }
+
+        @JavascriptInterface
+        public void storeLegacyProgress(final String rawJson) {
+            JSONArray safeEntries = new JSONArray();
+            try {
+                JSONArray entries = new JSONArray(rawJson == null ? "[]" : rawJson);
+                for (int i = 0; i < entries.length(); i++) {
+                    JSONArray entry = entries.optJSONArray(i);
+                    if (entry == null || entry.length() < 2) continue;
+                    String key = entry.optString(0, "");
+                    Object value = entry.opt(1);
+                    if (key.startsWith(PROGRESS_KEY_PREFIX) && value instanceof String) {
+                        JSONArray safeEntry = new JSONArray();
+                        safeEntry.put(key);
+                        safeEntry.put(value);
+                        safeEntries.put(safeEntry);
+                    }
+                }
+            } catch (JSONException ignored) {
+                safeEntries = new JSONArray();
+            }
+            migrationPreferences().edit().putString(MIGRATION_DATA, safeEntries.toString()).apply();
+        }
+
+        @JavascriptInterface
+        public void clearPendingLegacyProgress() {
+            migrationPreferences().edit().remove(MIGRATION_DATA).apply();
+        }
+
+        @JavascriptInterface
+        public void finishLegacyProgressMigration() {
+            runOnUiThread(() -> {
+                migrationPreferences().edit().putBoolean(MIGRATION_COMPLETE, true).apply();
+                if (webView != null) {
+                    boolean migrationPending = !getSharedPreferences(MIGRATION_PREFS, MODE_PRIVATE).getBoolean(MIGRATION_COMPLETE, false);
+        webView.getSettings().setAllowFileAccess(migrationPending);
+                    webView.loadUrl(APP_ASSET_BASE_URL + "index.html");
+                }
+            });
+        }
+
         @JavascriptInterface
         public void saveTextFile(final String fileName, final String mimeType, final String content) {
             runOnUiThread(() -> {
@@ -126,13 +187,18 @@ public class MainActivity extends Activity {
             }
         });
 
-        if (savedInstanceState != null) {
+        if (migrationPending) {
+            // Use the exact legacy URL once so its localStorage can be copied before switching origins.
+            webView.loadUrl("file:///android_asset/academy/index.html");
+        } else if (savedInstanceState != null) {
             WebBackForwardList restored = webView.restoreState(savedInstanceState);
-            if (restored == null || restored.getSize() == 0) {
+            String restoredUrl = webView.getUrl();
+            if (restored == null || restored.getSize() == 0
+                    || restoredUrl == null || !restoredUrl.startsWith(APP_ASSET_BASE_URL)) {
                 webView.loadUrl(APP_ASSET_BASE_URL + "index.html");
             }
         } else {
-            webView.loadUrl("file:///android_asset/academy/index.html");
+            webView.loadUrl(APP_ASSET_BASE_URL + "index.html");
         }
     }
 
