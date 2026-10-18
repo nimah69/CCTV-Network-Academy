@@ -76,13 +76,39 @@ bind("calcAdvancedSecurity",()=>{
  show("advancedSecurityResult","امتیاز وزنی: "+r.score+"/100؛ "+r.rating+"\nاولویت‌های اصلاح:\n"+details.join("\n\n")+"\nزنجیره حمله محتمل:\n"+(r.attackChain.map(x=>x.text).join("\n")||"کنترل‌های کلیدی انتخاب شده‌اند؛ بازبینی فنی همچنان لازم است."),"good");
 });
 bind("calcUps",()=>{
- const r=calculateUps({loadW:num("upsLoad","بار وات",.1),powerFactor:num("upsPf","ضریب توان",.1,1),batteryWh:num("upsBattery","ظرفیت باتری",.1),inverterEfficiency:num("upsEfficiency","بازده",1,100)/100,depthOfDischarge:num("upsDod","عمق تخلیه",1,100)/100,ageFactor:num("upsAge","سلامت باتری",1,100)/100});
- show("upsResult","توان ظاهری لازم: "+fmt(r.requiredVA)+" VA\nانرژی قابل استفاده تخمینی: "+fmt(r.usableWh)+" Wh\nزمان پشتیبانی: "+fmt(r.runtimeMinutes)+" دقیقه\nوضعیت: "+r.status+"\nفرض‌ها: "+r.assumptions.join("؛ "),"good");
+ const loadW=num("upsLoad","بار وات",.1);
+ const pf=num("upsPf","ضریب توان",.1,1);
+ const batteryWh=num("upsBattery","ظرفیت باتری Wh",.1);
+ const efficiency=num("upsEfficiency","بازده اینورتر",1,100)/100;
+ const dod=num("upsDod","عمق تخلیه مجاز",1,100)/100;
+ const health=num("upsAge","سلامت باتری",1,100)/100;
+ const r=calculateUps({loadW,powerFactor:pf,batteryWh,inverterEfficiency:efficiency,depthOfDischarge:dod,ageFactor:health});
+ const minutes=r.runtimeMinutes;
+ const status=minutes<5?"bad":minutes<15?"warn":"good";
+ show("upsResult","زمان پشتیبانی تخمینی: "+fmt(minutes)+" دقیقه\nبار اکتیو: "+fmt(loadW)+" W؛ بار ظاهری لازم: "+fmt(r.requiredVA)+" VA\nانرژی اسمی باتری: "+fmt(batteryWh)+" Wh؛ انرژی قابل استفاده پس از اعمال راندمان، عمق تخلیه و سلامت: "+fmt(r.usableWh)+" Wh\nفرض‌ها: PF="+fmt(pf)+"؛ راندمان="+fmt(efficiency*100)+"٪؛ عمق تخلیه="+fmt(dod*100)+"٪؛ سلامت="+fmt(health*100)+"٪\n"+(minutes<5?"هشدار: زمان پشتیبانی بسیار کوتاه است.":minutes<15?"توجه: زمان پشتیبانی محدود است؛ نیاز پروژه را بررسی کن.":"برآورد انرژی با ورودی‌های فعلی محاسبه شد.")+"\nقبل از انتخاب دستگاه، توان پیوسته W و ظرفیت VA خروجی UPS، جریان راه‌اندازی، ضریب توان، ولتاژ/آرایش باتری و منحنی تخلیه سازنده را جداگانه کنترل کن. این فرمول تخمین خطی است و افت ظرفیت در بار بالا را مدل نمی‌کند.",""+status);
 });
 bind("calcLens",()=>{
- const r=calculateCoverage({sensorWidthMm:num("lensSensorW","عرض سنسور",.1),sensorHeightMm:num("lensSensorH","ارتفاع سنسور",.1),focalLengthMm:num("lensFocal","فاصله کانونی",.1),distanceM:num("lensDistance","فاصله",.1),horizontalPixels:num("lensPixelsX","پیکسل افقی",1),verticalPixels:num("lensPixelsY","پیکسل عمودی",1),sceneWidthM:num("lensSceneW","عرض فضا",.1),sceneHeightM:num("lensSceneH","عمق فضا",.1)});
- show("lensResult","زاویه افقی: "+fmt(r.horizontalFovDeg)+"°؛ عمودی: "+fmt(r.verticalFovDeg)+"°\nپوشش تخمینی: "+fmt(r.coveredWidthM)+" × "+fmt(r.coveredHeightM)+" m\nتراکم پیکسل: "+fmt(r.pixelsPerMeter)+" px/m؛ سطح تقریبی DORI: "+r.dori+"\nتعداد دوربین هندسی برای فضا: "+r.sceneCoverage.horizontalCameras+" ستون × "+r.sceneCoverage.verticalRows+" ردیف\n"+r.warning,"good");
- const svg=$("lensCoverageSvg");const half=Math.min(140,Math.max(35,r.horizontalFovDeg*1.5));const left=160-half,right=160+half;svg.innerHTML="<rect x='1' y='1' width='318' height='138' rx='10' fill='#091726' stroke='#294760'/><circle cx='160' cy='22' r='8' fill='#67e8f9'/><path d='M160 22 L"+left+" 124 L"+right+" 124 Z' fill='rgba(56,189,248,.22)' stroke='#38bdf8' stroke-width='2'/><line x1='160' y1='22' x2='160' y2='124' stroke='#67e8f9' stroke-dasharray='4 4'/><text x='160' y='135' fill='#eaf2ff' font-size='10' text-anchor='middle'>نمای شماتیک، نه نقشه مقیاس‌دار</text>";
+ const r=calculateCoverage({
+  sensorWidthMm:num("lensSensorW","عرض سنسور",.1),
+  sensorHeightMm:num("lensSensorH","ارتفاع سنسور",.1),
+  focalLengthMm:num("lensFocal","فاصله کانونی",.1),
+  distanceM:num("lensDistance","فاصله",.1),
+  horizontalPixels:num("lensPixelsX","پیکسل افقی",1,200000,true),
+  verticalPixels:num("lensPixelsY","پیکسل عمودی",1,200000,true),
+  sceneWidthM:num("lensSceneW","عرض فضای هدف",.1),
+  sceneHeightM:num("lensSceneH","عمق فضای هدف",.1),
+  overlapPercent:20
+ });
+ const coverage=r.sceneCoverage;
+ const fit=coverage.fitsSingleCamera;
+ const density=r.pixelsPerMeter;
+ const status=fit&&density>=25?"good":"warn";
+ show("lensResult","زاویه دید افقی/عمودی: "+fmt(r.horizontalFovDeg)+"° / "+fmt(r.verticalFovDeg)+"°\nمیدان دید تخمینی در فاصله انتخابی: "+fmt(r.coveredWidthM)+" × "+fmt(r.coveredHeightM)+" متر\nتراکم پیکسل افقی/عمودی: "+fmt(r.horizontalPixelsPerMeter)+" / "+fmt(r.verticalPixelsPerMeter)+" px/m؛ مبنای ارزیابی محافظه‌کارانه: "+fmt(density)+" px/m\nسطح مرجع: "+r.dori+"\nپوشش فضای هدف "+fmt(coverage.sceneWidthM)+" × "+fmt(coverage.sceneHeightM)+" متر: "+(fit?"از نظر هندسی در میدان دید یک دوربین جا می‌گیرد.":"در یک قاب جا نمی‌گیرد؛ برآورد هندسی با هم‌پوشانی ۲۰٪ حدود "+coverage.horizontalCameras+" ستون × "+coverage.verticalRows+" ردیف دوربین می‌خواهد.")+"\n"+r.warning,""+status);
+ const svg=$("lensCoverageSvg");
+ const sw=Math.max(20,Math.min(260,260*coverage.horizontalCoverageRatio));
+ const sh=Math.max(12,Math.min(82,82*coverage.verticalCoverageRatio));
+ const x=160-sw/2,y=112-sh;
+ svg.innerHTML="<rect x='1' y='1' width='318' height='138' rx='10' fill='#091726' stroke='#294760'/><circle cx='160' cy='22' r='8' fill='#67e8f9'/><path d='M160 22 L"+(160-sw/2)+" 112 L"+(160+sw/2)+" 112 Z' fill='rgba(56,189,248,.22)' stroke='#38bdf8' stroke-width='2'/><rect x='"+x+"' y='"+y+"' width='"+sw+"' height='"+sh+"' fill='none' stroke='"+(fit?"#53dfae":"#ffca72")+"' stroke-dasharray='4 3'/><line x1='160' y1='22' x2='160' y2='112' stroke='#67e8f9' stroke-dasharray='4 4'/><text x='160' y='132' fill='#eaf2ff' font-size='10' text-anchor='middle'>میدان دید و فضای هدف — شماتیک، نه مقیاس دقیق</text>";
 });
 const commissioningKey="cctvCommissioningV1";
 function loadCommissioning(){let saved={};try{saved=JSON.parse(localStorage.getItem(commissioningKey)||"{}")}catch{}document.querySelectorAll("[data-commission]").forEach(el=>el.checked=Boolean(saved[el.dataset.commission]));updateCommissioning()}
