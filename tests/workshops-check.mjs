@@ -49,6 +49,10 @@ assert.ok(advancedSecurityBlock,"Advanced security checklist must exist");
 const advancedSecurityIds=[...advancedSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
 assert.equal(new Set(advancedSecurityIds).size,advancedSecurityIds.length,"Advanced security control IDs must be unique");
 assert.ok(advancedSecurityIds.includes("firewall-acl"),"Advanced checklist must expose the firewall ACL control");
+assert.ok(html.includes('"firewall-acl":3')&&html.includes('"backup-restore":3'),"Critical firewall and recovery controls must receive explicit high weights in the advanced checklist");
+assert.ok(html.includes('if(!has("firewall-acl"))risk.push('),"Advanced attack-risk summary must separately identify missing Firewall/ACL rules");
+assert.equal(advancedSecurityIds.length,14,"Advanced security checklist must score all 14 controls");
+
 const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
 assert.ok(calcSource.includes('doc.getElementById("r").textContent=reportText'),"The module print path must use textContent for report text");
 assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
