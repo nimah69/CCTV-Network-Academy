@@ -22,6 +22,7 @@ assert.ok(assetsBlock, "Service worker must define a deterministic local precach
 const assets = [...assetsBlock[1].matchAll(/["']([^"']+)["']/g)].map((match) => match[1]);
 assert.ok(assets.includes("./index.html") && assets.includes("./workshops.html"));
 assert.ok(assets.includes("./js/spaced-review.js"), "Offline cache must include spaced-review logic");
+assert.ok(assets.includes("./assets/js/sim/poe-reference-ui.js"), "Offline cache must include the PoE reference UI module");
 assert.ok(assets.length >= 10, "Core offline cache should cover the app and its local modules");
 for (const asset of assets) {
   assert.ok(!/^(?:https?:)?\/\//i.test(asset), "Precache must not depend on an external host: " + asset);
@@ -48,4 +49,7 @@ assert.ok(worker.includes('request.mode === "navigate"') || worker.includes("con
 assert.ok(worker.includes('caches.match("./index.html")'), "Offline fallback must provide the cached app shell");
 assert.ok(worker.includes('key !== CACHE_NAME') && worker.includes('caches.delete(key)'), "Activation must delete obsolete academy caches");
 
-console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true }, null, 2));
+const calculatorModule = fs.readFileSync(path.join(root, "assets/js/sim/ui/calculators.js"), "utf8");
+assert.ok(!calculatorModule.includes('import { calculatePoe }'), "Calculator UI must not import the nonexistent calculatePoe export");
+assert.ok(calculatorModule.includes('import { solveLink, budgetCheck, POE_TYPES } from "../calc/poe.js";'), "Calculator UI must use the supported PoE API");
+console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true, poeCalculatorApi: true }, null, 2));
