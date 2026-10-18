@@ -84,6 +84,8 @@ bind("calcAdvancedSecurity",()=>{
 });
 bind("calcUps",()=>{
  const loadW=num("upsLoad","بار وات",.1);
+ const ratedW=num("upsCapacityW","توان پیوسته UPS",.1);
+ const ratedVA=num("upsCapacityVA","ظرفیت VA خروجی UPS",.1);
  const pf=num("upsPf","ضریب توان",.1,1);
  const batteryWh=num("upsBattery","ظرفیت باتری Wh",.1);
  const efficiency=num("upsEfficiency","بازده اینورتر",1,100)/100;
@@ -91,8 +93,9 @@ bind("calcUps",()=>{
  const health=num("upsAge","سلامت باتری",1,100)/100;
  const r=calculateUps({loadW,powerFactor:pf,batteryWh,inverterEfficiency:efficiency,depthOfDischarge:dod,ageFactor:health});
  const minutes=r.runtimeMinutes;
- const status=minutes<5?"bad":minutes<15?"warn":"good";
- show("upsResult","زمان پشتیبانی تخمینی: "+fmt(minutes)+" دقیقه\nبار اکتیو: "+fmt(loadW)+" W؛ بار ظاهری لازم: "+fmt(r.requiredVA)+" VA\nانرژی اسمی باتری: "+fmt(batteryWh)+" Wh؛ انرژی قابل استفاده پس از اعمال راندمان، عمق تخلیه و سلامت: "+fmt(r.usableWh)+" Wh\nفرض‌ها: PF="+fmt(pf)+"؛ راندمان="+fmt(efficiency*100)+"٪؛ عمق تخلیه="+fmt(dod*100)+"٪؛ سلامت="+fmt(health*100)+"٪\n"+(minutes<5?"هشدار: زمان پشتیبانی بسیار کوتاه است.":minutes<15?"توجه: زمان پشتیبانی محدود است؛ نیاز پروژه را بررسی کن.":"برآورد انرژی با ورودی‌های فعلی محاسبه شد.")+"\nقبل از انتخاب دستگاه، توان پیوسته W و ظرفیت VA خروجی UPS، جریان راه‌اندازی، ضریب توان، ولتاژ/آرایش باتری و منحنی تخلیه سازنده را جداگانه کنترل کن. این فرمول تخمین خطی است و افت ظرفیت در بار بالا را مدل نمی‌کند.",""+status);
+ const powerOk=loadW<=ratedW,vaOk=r.requiredVA<=ratedVA;
+ const status=!powerOk||!vaOk?"bad":minutes<5?"bad":minutes<15?"warn":"good";
+ show("upsResult","زمان پشتیبانی تخمینی: "+fmt(minutes)+" دقیقه\nبار اکتیو: "+fmt(loadW)+" W؛ ظرفیت پیوسته UPS: "+fmt(ratedW)+" W — "+(powerOk?"کافی":"ناکافی")+"\nبار ظاهری لازم: "+fmt(r.requiredVA)+" VA؛ ظرفیت خروجی UPS: "+fmt(ratedVA)+" VA — "+(vaOk?"کافی":"ناکافی")+"\nانرژی اسمی باتری: "+fmt(batteryWh)+" Wh؛ انرژی قابل استفاده پس از اعمال راندمان، عمق تخلیه و سلامت: "+fmt(r.usableWh)+" Wh\nفرض‌ها: PF="+fmt(pf)+"؛ راندمان="+fmt(efficiency*100)+"٪؛ عمق تخلیه="+fmt(dod*100)+"٪؛ سلامت="+fmt(health*100)+"٪\n"+(!powerOk||!vaOk?"هشدار: ظرفیت نامی UPS از بار W یا VA کمتر است؛ مدل مناسب‌تری انتخاب کن.":minutes<5?"هشدار: زمان پشتیبانی بسیار کوتاه است.":minutes<15?"توجه: زمان پشتیبانی محدود است؛ نیاز پروژه را بررسی کن.":"ظرفیت W و VA و زمان تخمینی با ورودی‌های فعلی بررسی شدند.")+"\nقبل از انتخاب دستگاه، جریان راه‌اندازی، ضریب توان، ولتاژ/آرایش باتری و منحنی تخلیه سازنده را جداگانه کنترل کن. این فرمول تخمین خطی است و افت ظرفیت در بار بالا را مدل نمی‌کند.",""+status);
 });
 bind("calcLens",()=>{
  const r=calculateCoverage({
