@@ -17,7 +17,6 @@ test("subnet vectors",()=>{
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.20").valid,false);
  const packed=planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24});
  assert.equal(packed[0].cidr,"192.168.10.0/26");assert.equal(packed[1].cidr,"192.168.10.64/28");
- assert.ok(packed[0].broadcast<packed[1].network.replace(/\\./g,"").length || packed[0].broadcast!=="192.168.10.127");
  assert.equal(planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24}).length,2);
 });
 test("PoE vectors",()=>{
