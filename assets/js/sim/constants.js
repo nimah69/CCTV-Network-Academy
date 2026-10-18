@@ -21,7 +21,7 @@ export const ENGINEERING = Object.freeze({
     typicalPermanentLinkM: 90,
     typicalPatchCordsTotalM: 10,
     // Model assumption for a 24-AWG copper loop, not a universal TIA limit; replace with cable datasheet/test values.
-    copperLoopResistanceOhmPerKm: 188,
+    copperLoopResistanceOhmPerKm: 93.8,
     // No universal CCA multiplier exists; 1.575 is a 57.5% planning assumption marked NEEDS_VERIFY.
     ccaResistanceFactor: 1.575
   }),
