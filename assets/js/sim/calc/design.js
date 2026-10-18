@@ -9,11 +9,11 @@ import { ENGINEERING } from "../constants.js";
 import { createGraph } from "../graph.js";
 import { evaluateNetwork } from "../engine.js";
 
-function buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM,poeBudgetW,storage,raid,diskCount,trafficMbps,redundantUplink=false}){
+function buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM,cableMaterial="cu",poePortDrawW,poeBudgetW,storage,raid,diskCount,trafficMbps,redundantUplink=false}){
  const profile=ENGINEERING.poe[poeStandard]||ENGINEERING.poe.at;
  const poePortCount=Math.ceil(cameras*(1+ENGINEERING.design.defaultPortSpareFraction));
  const networkPorts=redundantUplink?4:3;
- const ports=Array.from({length:poePortCount+networkPorts},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,poeEnabled:i<poePortCount,poePriority:3,poeBudgetW:profile.pseW,poeDrawW:i<cameras?poeWatts+((poeWatts/ENGINEERING.poe.nominalVoltageV)**2*ENGINEERING.ethernet.copperLoopResistanceOhmPerKm*cableLengthM/1000/(profile.pairs===4?2:1)):0}));
+ const ports=Array.from({length:poePortCount+networkPorts},(_,i)=>({id:"p"+(i+1),vlan:10,adminUp:true,speedMbps:1000,poeEnabled:i<poePortCount,poePriority:3,poeBudgetW:profile.pseW,poeDrawW:i<cameras?poePortDrawW:0}));
  const nodes=[{id:"sw",type:"poe-switch",poeBudgetW,ports}];
  for(let i=0;i<cameras;i++){
   const host=20+(i%230),third=Math.floor(i/230);
@@ -23,7 +23,7 @@ function buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM,poeBud
  nodes.push({id:"router",type:"router",ip:"10.10.255.1",prefix:16,vlan:10,ports:[{id:"lan",vlan:10}]});
  nodes.push({id:"service",type:"laptop",ip:"10.10.255.50",prefix:16,vlan:10,ports:[{id:"eth0",vlan:10}]});
  const links=[];
- for(let i=0;i<cameras;i++)links.push({id:"cam-link-"+(i+1),type:"poe",from:{node:"sw",port:"p"+(i+1)},to:{node:"cam"+(i+1),port:"eth0"},lengthM:cableLengthM,pairs:profile.pairs});
+ for(let i=0;i<cameras;i++)links.push({id:"cam-link-"+(i+1),type:"poe",cableMaterial,from:{node:"sw",port:"p"+(i+1)},to:{node:"cam"+(i+1),port:"eth0"},lengthM:cableLengthM,pairs:profile.pairs});
  links.push({id:"nvr-link",type:"ethernet",from:{node:"sw",port:"p"+(poePortCount+1)},to:{node:"nvr",port:"eth0"},lengthM:3});
  if(redundantUplink)links.push({id:"nvr-link-backup",type:"ethernet",from:{node:"sw",port:"p"+(poePortCount+2)},to:{node:"nvr",port:"eth1"},lengthM:3});
  const networkStart=poePortCount+(redundantUplink?3:2);
@@ -70,7 +70,8 @@ export function designCCTV(input={}){
  let vlanPlan=null;
  try{vlanPlan=planVLSM([{name:"دوربین‌ها",hosts:cameras},{name:"NVR/ضبط",hosts:Math.max(2,Math.ceil(cameras/32))},{name:"مدیریت",hosts:Math.max(2,buildings*3)},{name:"کاربران",hosts:Number(input.userHosts??20)}],{address:input.vlanBaseIp??"192.168.20.1",prefix:Number(input.vlanBasePrefix??24)});}
  catch(error){warnings.push("VLSM خودکار تولید نشد: "+error.message+"؛ بلوک آدرس بزرگ‌تر انتخاب کن.");}
- const model=buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM:Number(input.cableLengthM??50),poeBudgetW:Number(input.poeBudgetW??120),storage,raid:input.raid??"raid5",diskCount:Number(input.diskCount??4),trafficMbps:storage.aggregateMbps,redundantUplink});
+ const poePortDrawW=Number.isFinite(poeLink.pseW)?poeLink.pseW:POE_TYPES[poeStandard].pseW+1;
+ const model=buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM:poeLengthM,cableMaterial:poeMaterial,poePortDrawW,poeBudgetW,storage,raid:input.raid??"raid5",diskCount:Number(input.diskCount??4),trafficMbps:storage.aggregateMbps,redundantUplink});
  const baseline=reliabilitySummary(model);
  const noUplink=createGraph({nodes:model.nodes,links:model.links.map(l=>l.id==="nvr-link"?{...l,active:false}:l),vlans:model.vlans,acl:model.acl,trafficMbps:model.trafficMbps});
  const raid=storage.raid,diskCount=Number(input.diskCount??4),activeDiskCount=storage.activeDisks,raidTolerance=storage.raidValid&&["raid1","raid5","raid6","raid10"].includes(raid);
