@@ -6,8 +6,8 @@ export function calculateStorage({cameras,bitrateMbps,days,hoursPerDay=24,activi
  if(hours>24||activity>100||over>100||head>100||pre>100||factor>1)throw new RangeError("ساعات، درصدها یا ضریب ظرفیت خارج از محدوده‌اند.");
  const perCamera=rate*(activity/100)+audio+sub,aggregateMbps=n*perCamera*(1+pre/100),dailyTB=aggregateMbps*1e6/8*3600*hours/1e12;
  const rawTB=dailyTB*duration,withOverheadTB=rawTB*(1+over/100),requiredTB=withOverheadTB*(1+head/100);
- const playback=nonNegativeNumber(playbackMbps,"پخش هم‌زمان"),active=count-spare;let usable;
- switch(raid){case "none":case "raid0":usable=active*size;break;case "raid1":usable=active>=2?size:0;break;case "raid5":usable=active>=3?(active-1)*size:0;break;case "raid6":usable=active>=4?(active-2)*size:0;break;case "raid10":usable=active>=4&&active%2===0?active/2*size:0;break;default:throw new RangeError("نوع RAID پشتیبانی نمی‌شود.")}
+ const playback=nonNegativeNumber(playbackMbps,"پخش هم‌زمان"),active=count-spare;let usable,raidValid;
+ switch(raid){case "none":raidValid=active>=1;usable=raidValid?active*size:0;break;case "raid0":raidValid=active>=2;usable=raidValid?active*size:0;break;case "raid1":raidValid=active>=2;usable=raidValid?size:0;break;case "raid5":raidValid=active>=3;usable=raidValid?(active-1)*size:0;break;case "raid6":raidValid=active>=4;usable=raidValid?(active-2)*size:0;break;case "raid10":raidValid=active>=4&&active%2===0;usable=raidValid?active/2*size:0;break;default:throw new RangeError("نوع RAID پشتیبانی نمی‌شود.")}
  usable*=factor;
  const maxInput=nvrMaxInputMbps===Infinity?Infinity:positiveNumber(nvrMaxInputMbps,"حد ورودی NVR"),up=positiveNumber(uplinkMbps,"سرعت Uplink"),totalLoad=aggregateMbps+playback,utilization=totalLoad/up;
  if(!Number.isFinite(totalLoad)||!Number.isFinite(utilization))throw new RangeError("بار شبکه خارج از محدوده عددی است.");
