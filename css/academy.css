@@ -932,3 +932,63 @@ hr,.divider{border-color:var(--line)}
 .secondary{background:#10243a;color:var(--ink)}
 .chapter-visual .cv-concept{background:#0e2033!important;border-color:#2a435d;color:var(--ink)}
 .chapter-visual .cv-concept p,.chapter-visual .cv-concept li{color:#b7c9de}
+
+/* Native single-choice lists and dropdown menus — unified dark Cyber Academy theme */
+:root,
+html,
+body {
+  color-scheme: dark;
+}
+select,
+select:focus,
+select:active {
+  color-scheme: dark;
+  color: var(--ink, #eaf2ff);
+  background-color: #091726;
+  border-color: #2a415c;
+}
+select option,
+select optgroup {
+  color: #eaf2ff;
+  background-color: #0e2033;
+}
+select option:checked,
+select option:hover,
+select option:focus {
+  color: #effcff;
+  background-color: #123b4b;
+}
+select:disabled {
+  color: #8198b4;
+  background-color: #101d2c;
+  border-color: #26384d;
+  opacity: 1;
+}
+/* Keep app-built single-choice lists consistent too. */
+[role="listbox"],
+[role="option"],
+[role="radiogroup"],
+.option,
+.quiz-option,
+.tool-option,
+.filter-btn,
+.cv-step-nav button,
+.cv-answer-grid button {
+  color: var(--ink, #eaf2ff);
+}
+[role="listbox"],
+[role="option"],
+.option,
+.quiz-option,
+.tool-option {
+  background-color: #10243a;
+  border-color: #2a455f;
+}
+[role="option"][aria-selected="true"],
+.option:has(input:checked),
+.quiz-option[aria-checked="true"],
+.tool-option[aria-checked="true"] {
+  color: #effcff;
+  background-color: #123b4b;
+  border-color: #38bdf8;
+}
