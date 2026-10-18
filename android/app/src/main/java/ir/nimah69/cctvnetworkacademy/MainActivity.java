@@ -35,6 +35,8 @@ public class MainActivity extends Activity {
 
     private WebView webView;
     private WebViewAssetLoader assetLoader;
+    private volatile boolean migrationMode;
+    private volatile boolean trustedAppPage;
     private String pendingFileContent;
     private ValueCallback<Uri[]> fileChooserCallback;
 
@@ -45,16 +47,17 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public boolean isLegacyProgressMigrationNeeded() {
-            return !migrationPreferences().getBoolean(MIGRATION_COMPLETE, false);
+            return trustedAppPage && !migrationPreferences().getBoolean(MIGRATION_COMPLETE, false);
         }
 
         @JavascriptInterface
         public String getPendingLegacyProgress() {
-            return migrationPreferences().getString(MIGRATION_DATA, null);
+            return trustedAppPage ? migrationPreferences().getString(MIGRATION_DATA, null) : null;
         }
 
         @JavascriptInterface
         public void storeLegacyProgress(final String rawJson) {
+            if (!trustedAppPage) return;
             JSONArray safeEntries = new JSONArray();
             try {
                 JSONArray entries = new JSONArray(rawJson == null ? "[]" : rawJson);
@@ -78,13 +81,17 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void clearPendingLegacyProgress() {
+            if (!trustedAppPage) return;
             migrationPreferences().edit().remove(MIGRATION_DATA).apply();
         }
 
         @JavascriptInterface
         public void finishLegacyProgressMigration() {
+            if (!trustedAppPage) return;
             runOnUiThread(() -> {
                 migrationPreferences().edit().putBoolean(MIGRATION_COMPLETE, true).apply();
+                migrationMode = false;
+                trustedAppPage = true;
                 if (webView != null) {
                     webView.getSettings().setAllowFileAccess(false);
                     webView.loadUrl(APP_ASSET_BASE_URL + "index.html");
@@ -94,6 +101,7 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void saveTextFile(final String fileName, final String mimeType, final String content) {
+            if (!trustedAppPage) return;
             runOnUiThread(() -> {
                 String safeName = (fileName == null || fileName.trim().isEmpty())
                         ? "download.txt" : fileName.replace("/", "_").replace("\\", "_");
@@ -126,6 +134,7 @@ public class MainActivity extends Activity {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         boolean migrationPending = !getSharedPreferences(MIGRATION_PREFS, MODE_PRIVATE).getBoolean(MIGRATION_COMPLETE, false);
+        migrationMode = migrationPending;
         webView.getSettings().setAllowFileAccess(migrationPending);
         webView.getSettings().setAllowFileAccessFromFileURLs(false);
         webView.getSettings().setAllowUniversalAccessFromFileURLs(false);
@@ -154,6 +163,14 @@ public class MainActivity extends Activity {
             }
         });
         webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                boolean secureAssetPage = url != null && url.startsWith(APP_ASSET_BASE_URL);
+                boolean allowedLegacyMigrationPage = migrationMode && url != null && url.startsWith("file:///android_asset/academy/");
+                trustedAppPage = secureAssetPage || allowedLegacyMigrationPage;
+            }
+
             @Override
             public android.webkit.WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 Uri url = request.getUrl();
