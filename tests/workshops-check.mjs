@@ -15,6 +15,10 @@ assert.ok(html.includes("localStorage"),"Workshop progress should persist locall
 assert.ok(html.includes('src="./js/calculations.js"'),"Shared tested calculation module must load before workshop code");
 assert.ok(html.includes("function requiredNumber"),"Numeric fields must reject empty and invalid values");
 assert.ok(html.includes("function escapeHTML(value)") && html.includes("escapeHTML(name)"),"User-provided project names must be escaped before report HTML rendering");
+const escapeMatch=html.match(/function escapeHTML\\(value\\)\\{[^}]*\\}/);
+assert.ok(escapeMatch,"HTML escaping helper must be defined");
+const escapeFn=vm.runInNewContext("("+escapeMatch[0]+")".replace("function escapeHTML","function"));
+assert.equal(escapeFn("<img src=x onerror='alert(1)'>&\""),"&lt;img src=x onerror=&#39;alert(1)&#39;&gt;&amp;&quot;","HTML escaping must neutralize markup, event handlers and attribute quotes");
 assert.ok(html.includes('id="poeResult" aria-live="polite"'),"PoE validation messages must be announced politely");
 assert.ok(html.includes('id="subnetResult" aria-live="polite"'),"Subnet validation messages must be announced politely");
 assert.ok(html.includes("@media(max-width:399px)"),"Small-phone responsive overrides must exist");
