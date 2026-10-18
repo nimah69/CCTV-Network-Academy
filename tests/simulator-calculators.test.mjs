@@ -86,6 +86,10 @@ test("cable recommendation vectors",()=>{
  assert.ok(recommendCable({distanceM:20,emi:"high"}).options[0].id==="fiber-os2");
  assert.ok(recommendCable({distanceM:20,budget:"low"}).options.length>0);
  assert.throws(()=>recommendCable({distanceM:0}));
+ assert.throws(()=>recommendCable({distanceM:20,emi:"extreme"}),RangeError,"Unknown EMI values must not silently alter recommendations");
+ assert.throws(()=>recommendCable({distanceM:20,environment:"factory"}),RangeError,"Unknown environments must not silently alter recommendations");
+ assert.throws(()=>recommendCable({distanceM:20,budget:"free"}),RangeError,"Unknown budget levels must not silently alter recommendations");
+
 });
 test("UPS vectors",()=>{
  assert.equal(calculateUps({loadW:400,powerFactor:.8,batteryWh:600,depthOfDischarge:1,ageFactor:1,inverterEfficiency:1}).requiredVA,500);
@@ -145,6 +149,7 @@ test("integrated design vectors",()=>{
  assert.equal(invalidRaid.hddFailure.recordingCameras,0,"Invalid active-disk RAID layout must not claim recording survives a disk failure");
  assert.throws(()=>designCCTV({buildings:0}),RangeError);
  assert.throws(()=>designCCTV({environment:"unknown"}),RangeError);
+ assert.throws(()=>designCCTV({cableMaterial:"steel"}),RangeError,"Unsupported cable materials must not silently fall back to copper");
  assert.ok(designCCTV({environment:"outdoor"}).cable.warnings.length>0);
  assert.ok(Array.isArray(designCCTV().assumptions));
  assert.ok(designCCTV().reliability.notes.some(n=>n.includes("VLAN 10")&&n.includes("ACL")));
