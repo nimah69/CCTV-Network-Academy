@@ -1,4 +1,4 @@
-import { POE_TYPES, solveLink, budgetCheck } from "./sim/calc/poe.js";
+import { POE_TYPES, solveLink, budgetCheck } from "./calc/poe.js";
 (() => {
  const root=document.getElementById("poeReferenceLab"); if(!root)return;
  const $=id=>root.querySelector("#"+id);
