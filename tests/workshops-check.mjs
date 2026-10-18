@@ -42,3 +42,5 @@ assert.equal(new Set(securityIds).size,securityIds.length,"Simple security check
 assert.ok(securityIds.includes("firewall-acl"),"Firewall/ACL needs its own distinct control");
 const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
 assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
+assert.ok(html.includes('id="lensTargetDensity"'),"Lens calculator must expose an explicit pixel-density target");
+assert.ok(calcSource.includes("const densityOk=density>=target"),"Lens status must be evaluated against the selected pixel-density target");
