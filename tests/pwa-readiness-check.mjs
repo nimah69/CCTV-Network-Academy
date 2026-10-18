@@ -52,4 +52,26 @@ assert.ok(worker.includes('key !== CACHE_NAME') && worker.includes('caches.delet
 const calculatorModule = fs.readFileSync(path.join(root, "assets/js/sim/ui/calculators.js"), "utf8");
 assert.ok(!calculatorModule.includes('import { calculatePoe }'), "Calculator UI must not import the nonexistent calculatePoe export");
 assert.ok(calculatorModule.includes('import { solveLink, budgetCheck, POE_TYPES } from "../calc/poe.js";'), "Calculator UI must use the supported PoE API");
-console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true, poeCalculatorApi: true }, null, 2));
+const workshopHtml = fs.readFileSync(path.join(root, "workshops.html"), "utf8");
+const moduleEntries = [...workshopHtml.matchAll(/<script[^>]+src=["']([^"']+\.js)["'][^>]*>/g)]
+  .map((match) => match[1])
+  .filter((src) => src.startsWith("./assets/"));
+const pendingModules = moduleEntries.map((src) => src.replace(/^\.\//, ""));
+const visitedModules = new Set();
+while (pendingModules.length) {
+  const modulePath = pendingModules.pop();
+  if (visitedModules.has(modulePath)) continue;
+  visitedModules.add(modulePath);
+  assert.ok(fs.existsSync(path.join(root, modulePath)), "Missing ES module dependency: " + modulePath);
+  assert.ok(assets.includes("./" + modulePath), "Offline cache omits ES module dependency: " + modulePath);
+  const source = fs.readFileSync(path.join(root, modulePath), "utf8");
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']|^\s*import\s*["']([^"']+)["']/gm)]
+    .map((match) => match[1] || match[2]);
+  for (const specifier of imports) {
+    if (!specifier.startsWith(".")) continue;
+    const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(modulePath), specifier));
+    pendingModules.push(dependency);
+  }
+}
+
+console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true, poeCalculatorApi: true, simulatorModulesCached: visitedModules.size }, null, 2));
