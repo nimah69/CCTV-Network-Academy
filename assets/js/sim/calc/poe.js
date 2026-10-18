@@ -1,9 +1,10 @@
 import { positiveNumber, nonNegativeNumber } from "../units.js";
+import { ENGINEERING } from "../constants.js";
 export function poeCapacity({budgetW,cameraWatts,reservePercent=20}){const budget=positiveNumber(budgetW,"بودجه PoE"),load=positiveNumber(cameraWatts,"مصرف هر دوربین"),reserve=nonNegativeNumber(reservePercent,"حاشیه");return Math.floor(budget/(load*(1+reserve/100)))}
 
 // IEEE-oriented reference model for the PoE workshop.
-export const R_COND_OHM_PER_M = 0.0938;
-export const CCA_FACTOR = 1.55; // [ASSUMPTION] Verify against the selected cable datasheet.
+export const R_EFFECTIVE_LOOP_OHM_PER_M = 0.0938; // Effective two-pair power-path loop resistance model; not single-conductor resistance.
+export const CCA_FACTOR = ENGINEERING.ethernet.ccaResistanceFactor; // [ASSUMPTION] Verify against the selected cable datasheet.
 export const CU_TEMPCO = 0.00393;
 export const MAX_CHANNEL_M = 100;
 export const PERMANENT_LINK_M = 90;
@@ -27,9 +28,11 @@ function assertPositive(name, v, allowZero = false) {
 export function loopResistance({ lengthM, material = "cu", tempC = 20, pairs = 2 }) {
   assertPositive("lengthM", lengthM, true);
   if (pairs !== 2 && pairs !== 4) throw new RangeError("pairs باید 2 یا 4 باشد");
+  if (material !== "cu" && material !== "cca") throw new RangeError("جنس کابل باید cu یا cca باشد");
+  if (typeof tempC !== "number" || !Number.isFinite(tempC) || tempC < -40 || tempC > 90) throw new RangeError("دمای کابل باید بین ۴۰- تا ۹۰ درجه سانتی‌گراد باشد");
   const k = material === "cca" ? CCA_FACTOR : 1;
-  const rCond = R_COND_OHM_PER_M * lengthM * k * (1 + CU_TEMPCO * (tempC - 20));
-  return pairs === 4 ? rCond / 2 : rCond;
+  const effectiveLoopOhms = R_EFFECTIVE_LOOP_OHM_PER_M * lengthM * k * (1 + CU_TEMPCO * (tempC - 20));
+  return pairs === 4 ? effectiveLoopOhms / 2 : effectiveLoopOhms;
 }
 export function solveLink({ type, pdW, lengthM, material = "cu", tempC = 20, pairs }) {
   const t = POE_TYPES[type];
@@ -64,8 +67,10 @@ export function solveLink({ type, pdW, lengthM, material = "cu", tempC = 20, pai
 }
 export function budgetCheck({ switchBudgetW, marginPct = 20, allocationsW }) {
   assertPositive("switchBudgetW", switchBudgetW);
-  if (!Array.isArray(allocationsW) || allocationsW.some(a => !(a >= 0))) throw new RangeError("allocationsW نامعتبر است");
+  if (typeof marginPct !== "number" || !Number.isFinite(marginPct) || marginPct < 0 || marginPct >= 100) throw new RangeError("حاشیه بودجه باید از ۰ تا کمتر از ۱۰۰ درصد باشد");
+  if (!Array.isArray(allocationsW) || allocationsW.some(a => typeof a !== "number" || !Number.isFinite(a) || a < 0)) throw new RangeError("allocationsW نامعتبر است");
   const totalW = allocationsW.reduce((s, a) => s + a, 0);
+  if (!Number.isFinite(totalW)) throw new RangeError("مجموع تخصیص PoE خارج از محدوده عددی است");
   const usableW = switchBudgetW * (1 - marginPct / 100);
   const status = totalW <= usableW + EPS ? "ok" : totalW <= switchBudgetW + EPS ? "marginal" : "fail";
   const avg = allocationsW.length ? totalW / allocationsW.length : 0;

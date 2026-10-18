@@ -19,6 +19,7 @@ export function calculateCoverage({sensorWidthMm,sensorHeightMm,focalLengthMm,di
   // Pixel density is calculated from the actual projected field of view, not the user-entered scene dimensions.
   const ppmX=px/width, ppmY=py/height;
   const ppm=Math.min(ppmX,ppmY);
+  if(![fovH,fovV,width,height,ppmX,ppmY,ppm].every(Number.isFinite)||width<=0||height<=0||fovH>=180||fovV>=180)throw new RangeError("نتیجه محاسبه میدان دید/تراکم پیکسل خارج از محدوده عددی است.");
   const legacyDori=ppm>=DORI.identification?"شناسایی (DORI قدیمی)":ppm>=DORI.recognition?"تشخیص هویت (DORI قدیمی)":ppm>=DORI.observation?"مشاهده (DORI قدیمی)":ppm>=DORI.detection?"کشف (DORI قدیمی)":"کمتر از سطح کشف (DORI قدیمی)";
   const current2025DensityLevel=CURRENT_LEVELS.filter(value=>ppm>=value).at(-1)??null;
   let sceneCoverage=null;

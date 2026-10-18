@@ -1,20 +1,45 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { subnet,validateGateway,planVLSM } from "../assets/js/sim/calc/subnet.js";
-import { solveLink,POE_TYPES,poeCapacity,budgetCheck } from "../assets/js/sim/calc/poe.js";
+import { subnet,validateGateway,planVLSM,parseIPv4 } from "../assets/js/sim/calc/subnet.js";
+import { solveLink,POE_TYPES,poeCapacity,budgetCheck,R_EFFECTIVE_LOOP_OHM_PER_M } from "../assets/js/sim/calc/poe.js";
+import { ENGINEERING } from "../assets/js/sim/constants.js";
 import { calculateStorage,referenceStorageTB } from "../assets/js/sim/calc/storage.js";
 import { recommendCable } from "../assets/js/sim/calc/cable.js";
 import { calculateUps } from "../assets/js/sim/calc/ups.js";
 import { calculateCoverage } from "../assets/js/sim/calc/optics.js";
 import { assessSecurity,SECURITY_CONTROLS } from "../assets/js/sim/calc/security.js";
 import { designCCTV } from "../assets/js/sim/calc/design.js";
+test("PoE shared resistance constants stay aligned",()=>{
+ assert.equal(ENGINEERING.ethernet.copperLoopResistanceOhmPerKm,R_EFFECTIVE_LOOP_OHM_PER_M*1000);
+});
 test("subnet vectors",()=>{
  const a=subnet("192.168.1.130",26);assert.equal(a.network,"192.168.1.128");assert.equal(a.broadcast,"192.168.1.191");assert.equal(a.usableHosts,62);
  assert.equal(subnet("10.0.0.1",31).usableHosts,2);assert.equal(subnet("10.0.0.1",32).usableHosts,1);assert.equal(subnet("0.0.0.0",0).mask,"0.0.0.0");
  assert.equal(subnet("127.0.0.1",8).isLoopback,true);assert.equal(subnet("169.254.3.4",16).isLinkLocal,true);assert.equal(subnet("172.20.1.1",16).isPrivate,true);
  assert.throws(()=>subnet("192.168.001.1",24));assert.throws(()=>subnet("256.1.1.1",24));assert.throws(()=>subnet("1.2.3.4",33));
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.1").valid,true);assert.equal(validateGateway("192.168.1.20",24,"192.168.2.1").valid,false);
+ assert.equal(validateGateway("192.168.1.20",24,"192.168.1.20").valid,false);
+ assert.equal(validateGateway("192.168.1.20",24,"192.168.1.0").valid,false);
+ assert.equal(validateGateway("192.168.1.20",24,"192.168.1.255").valid,false);
+ assert.equal(validateGateway("192.168.1.0",24,"192.168.1.1").valid,false,"A network address must not be accepted as a device host IP");
+ assert.equal(validateGateway("192.168.1.255",24,"192.168.1.1").valid,false,"A broadcast address must not be accepted as a device host IP");
+ assert.equal(validateGateway("127.0.0.2",24,"127.0.0.1").valid,false,"A loopback device address must be rejected");
+
+ assert.equal(validateGateway("192.168.1.0",31,"192.168.1.1").valid,true,"Both addresses in a /31 point-to-point subnet are usable");
+ assert.equal(validateGateway("192.168.1.20",32,"192.168.1.21").valid,false,"A /32 host route must not accept a gateway outside the same subnet");
+ assert.equal(validateGateway("224.0.0.1",24,"224.0.0.2").valid,false,"Multicast addresses must not be accepted as a gateway");
+ assert.equal(validateGateway("127.0.0.2",24,"127.0.0.1").valid,false,"Loopback addresses must not be accepted as a gateway");
+ assert.equal(validateGateway("10.0.0.2",8,"0.0.0.1").valid,false,"The reserved 0/8 block must not be accepted as a gateway");
+ assert.equal(validateGateway("240.0.0.2",8,"240.0.0.1").valid,false,"Reserved class-E addresses must not be accepted as a gateway");
+
+ assert.throws(()=>planVLSM([{name:"a",hosts:2}],{address:"192.168.1.0",prefix:31}),RangeError);
+ const packed=planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24});
+ assert.equal(packed[0].cidr,"192.168.10.0/26");assert.equal(packed[1].cidr,"192.168.10.64/28");
  assert.equal(planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24}).length,2);
+ const packedAll=planVLSM([{name:"a",hosts:100},{name:"b",hosts:50},{name:"c",hosts:10}],{address:"192.168.10.1",prefix:24});
+ for(let i=1;i<packedAll.length;i++)assert.ok(parseIPv4(packedAll[i-1].broadcast)<parseIPv4(packedAll[i].network),"VLSM allocations must not overlap");
+ assert.throws(()=>planVLSM([{name:"large",hosts:200},{name:"another",hosts:100}],{address:"192.168.10.1",prefix:24}),RangeError);
+ assert.throws(()=>planVLSM([{name:"single",hosts:1}],{address:"192.168.10.0",prefix:31}),RangeError);
 });
 test("PoE vectors",()=>{
  const a=solveLink({type:"af",pdW:8,lengthM:0});assert.equal(a.status,"ok");
@@ -34,10 +59,18 @@ test("storage reference and RAID vectors",()=>{
  assert.equal(calculateStorage({cameras:8,bitrateMbps:4,days:30,diskCount:4,diskTB:8,raid:"raid5"}).usableTB,21.84);
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:2,diskTB:4,raid:"raid1"}).usableTB,3.64);
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid6"}).activeDisks,4);
+ const spareRaid=calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:3,diskTB:4,raid:"raid5",hotSpare:1});assert.equal(spareRaid.activeDisks,2);assert.equal(spareRaid.raidValid,false);assert.ok(spareRaid.warnings.some(w=>w.includes("Hot Spare")));
+ assert.match(spareRaid.raidTolerance,/نامعتبر/);
+ assert.match(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid6"}).raidTolerance,/دو دیسک/);
+ assert.throws(()=>calculateStorage({cameras:1e308,bitrateMbps:1e308,days:1}),RangeError);
+ const oneDiskRaid0=calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:1,diskTB:4,raid:"raid0"});assert.equal(oneDiskRaid0.raidValid,false);assert.equal(oneDiskRaid0.usableTB,0);
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid10"}).usableTB,7.28);
  assert.throws(()=>calculateStorage({cameras:0,bitrateMbps:8,days:1}));
  assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,hoursPerDay:25}));
  assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,raid:"bad"}));
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,playbackMbps:-1}));
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,playbackMbps:Infinity}));
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,nvrMaxInputMbps:NaN}));
  assert.equal(calculateStorage({cameras:1,bitrateMbps:8,days:1,activityPercent:0,diskCount:1,diskTB:1,raid:"none"}).rawTB,0);
  assert.ok(calculateStorage({cameras:16,bitrateMbps:8,days:30,diskCount:8,diskTB:8,raid:"raid6"}).requiredTB>41.472);
  assert.equal(calculateStorage({cameras:8,bitrateMbps:20,days:1,diskCount:4,diskTB:4,raid:"raid5",nvrMaxInputMbps:100}).nvrInputStatus,"نامناسب");
@@ -53,6 +86,10 @@ test("cable recommendation vectors",()=>{
  assert.ok(recommendCable({distanceM:20,emi:"high"}).options[0].id==="fiber-os2");
  assert.ok(recommendCable({distanceM:20,budget:"low"}).options.length>0);
  assert.throws(()=>recommendCable({distanceM:0}));
+ assert.throws(()=>recommendCable({distanceM:20,emi:"extreme"}),RangeError,"Unknown EMI values must not silently alter recommendations");
+ assert.throws(()=>recommendCable({distanceM:20,environment:"factory"}),RangeError,"Unknown environments must not silently alter recommendations");
+ assert.throws(()=>recommendCable({distanceM:20,budget:"free"}),RangeError,"Unknown budget levels must not silently alter recommendations");
+
 });
 test("UPS vectors",()=>{
  assert.equal(calculateUps({loadW:400,powerFactor:.8,batteryWh:600,depthOfDischarge:1,ageFactor:1,inverterEfficiency:1}).requiredVA,500);
@@ -65,6 +102,7 @@ test("UPS vectors",()=>{
  assert.ok(calculateUps({loadW:100,batteryWh:500}).usableWh>0);
  assert.equal(calculateUps({loadW:100,batteryWh:500}).status,"مناسب");
  assert.ok(calculateUps({loadW:1000,batteryWh:100}).runtimeMinutes<10);
+ assert.throws(()=>calculateUps({loadW:.1,batteryWh:1e308}),RangeError);
 });
 test("optics vectors",()=>{
  const a=calculateCoverage({sensorWidthMm:5.6,sensorHeightMm:3.15,focalLengthMm:4,distanceM:10,horizontalPixels:1920,verticalPixels:1080});assert.ok(a.horizontalFovDeg>60&&a.horizontalFovDeg<80);
@@ -74,6 +112,7 @@ test("optics vectors",()=>{
  assert.ok(calculateCoverage({sensorWidthMm:5.6,sensorHeightMm:3.15,focalLengthMm:4,distanceM:10,horizontalPixels:3840,verticalPixels:2160}).pixelsPerMeter>a.pixelsPerMeter);
  assert.throws(()=>calculateCoverage({sensorWidthMm:0,sensorHeightMm:3,focalLengthMm:4,distanceM:10,horizontalPixels:1920,verticalPixels:1080}));
  assert.throws(()=>calculateCoverage({sensorWidthMm:5,sensorHeightMm:3,focalLengthMm:4,distanceM:0,horizontalPixels:1920,verticalPixels:1080}));
+ assert.throws(()=>calculateCoverage({sensorWidthMm:1e308,sensorHeightMm:3,focalLengthMm:.1,distanceM:10,horizontalPixels:1920,verticalPixels:1080}),RangeError);
  assert.ok(["کشف","مشاهده","تشخیص هویت","شناسایی","کمتر از سطح کشف"].some(level=>a.dori.startsWith(level)));
  assert.ok(a.doriThresholds.identification===250);
  assert.ok(a.current2025DensityLevels.includes(1500));
@@ -82,12 +121,23 @@ test("optics vectors",()=>{
 test("security vectors",()=>{
  assert.equal(assessSecurity(SECURITY_CONTROLS.map(c=>c.id)).score,100);
  assert.equal(assessSecurity([]).score,0);
+ const scoped=assessSecurity(["default-password"],["default-password","rbac"]);
+ assert.equal(scoped.controls.length,2,"Scoped security score must only include the selected checklist controls");
+ assert.equal(scoped.score,59,"Scoped security score must use the selected controls as its denominator");
+ const scopedChain=assessSecurity(["management-access"],["default-password","management-access"]).attackChain;
+ assert.equal(scopedChain.length,1,"Attack-chain warnings must not report controls outside the selected checklist scope");
+ assert.equal(scopedChain[0].step,1);
  assert.ok(assessSecurity(["default-password"]).score>0);
  assert.ok(assessSecurity([]).attackChain.length>0);
  assert.ok(assessSecurity([]).priority.length>=10);
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="segmentation"&&c.risk==="Critical"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="management-access"&&c.risk==="Critical"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="firewall-acl"&&c.risk==="Critical"));
+ assert.equal(new Set(SECURITY_CONTROLS.map(c=>c.id)).size,SECURITY_CONTROLS.length,"Security control IDs must be unique");
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="rtsp-auth"));
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="patching"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="audit-logging"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="backup-restore"));
  assert.ok(assessSecurity(["default-password","segmentation","rbac"]).attackChain.length===0);
  assert.ok(["مناسب","مرزی","نامناسب"].includes(assessSecurity([]).rating));
 });
@@ -99,8 +149,20 @@ test("integrated design vectors",()=>{
  assert.ok(designCCTV({sensorWidthMm:5.6}).coverage);
  assert.ok(designCCTV({poeBudgetW:20}).warnings.some(w=>w.includes("بودجه")));
  assert.ok(designCCTV({raid:"raid6"}).storage.raid==="raid6");
+ const invalidRaid=designCCTV({cameras:4,raid:"raid5",diskCount:3,hotSpare:1}).reliability;
+ assert.equal(invalidRaid.hddFailure.recordingCameras,0,"Invalid active-disk RAID layout must not claim recording survives a disk failure");
+ assert.throws(()=>designCCTV({buildings:0}),RangeError);
+ assert.throws(()=>designCCTV({environment:"unknown"}),RangeError);
+ assert.throws(()=>designCCTV({cableMaterial:"steel"}),RangeError,"Unsupported cable materials must not silently fall back to copper");
  assert.ok(designCCTV({environment:"outdoor"}).cable.warnings.length>0);
  assert.ok(Array.isArray(designCCTV().assumptions));
+ assert.ok(designCCTV().reliability.notes.some(n=>n.includes("VLAN 10")&&n.includes("ACL")));
+ assert.ok(designCCTV().warnings.some(w=>w.includes("VLAN/ACL")));
+ const copperLongLink=designCCTV({cameras:1,bitrateMbps:2,retentionDays:7,poeWatts:25.5,poeStandard:"at",cableLengthM:100,cableMaterial:"cu",poeBudgetW:120,diskCount:4,diskTB:8,raid:"raid5"}).reliability.baseline;
+ const ccaLongLink=designCCTV({cameras:1,bitrateMbps:2,retentionDays:7,poeWatts:25.5,poeStandard:"at",cableLengthM:100,cableMaterial:"cca",poeBudgetW:120,diskCount:4,diskTB:8,raid:"raid5"}).reliability.baseline;
+ assert.equal(copperLongLink.streamingCameras,1,"Copper link within the selected PoE port budget should carry the camera stream");
+ assert.equal(ccaLongLink.streamingCameras,0,"CCA link requiring more than the 802.3at port budget must not be reported as streaming");
+
  const reliability=designCCTV().reliability;assert.equal(reliability.uplinkFailure.recordingCameras,0);assert.ok(reliability.hddFailure.recordingCameras>0);assert.ok(reliability.baseline.recordingCameras>0);
  const redundant=designCCTV({redundantUplink:true}).reliability;assert.ok(redundant.uplinkFailure.recordingCameras>0);assert.ok(redundant.hddFailure.events.includes("raid-degraded"));
 });

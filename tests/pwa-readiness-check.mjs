@@ -22,6 +22,7 @@ assert.ok(assetsBlock, "Service worker must define a deterministic local precach
 const assets = [...assetsBlock[1].matchAll(/["']([^"']+)["']/g)].map((match) => match[1]);
 assert.ok(assets.includes("./index.html") && assets.includes("./workshops.html"));
 assert.ok(assets.includes("./js/spaced-review.js"), "Offline cache must include spaced-review logic");
+assert.ok(assets.includes("./assets/js/sim/poe-reference-ui.js"), "Offline cache must include the PoE reference UI module");
 assert.ok(assets.length >= 10, "Core offline cache should cover the app and its local modules");
 for (const asset of assets) {
   assert.ok(!/^(?:https?:)?\/\//i.test(asset), "Precache must not depend on an external host: " + asset);
@@ -33,6 +34,10 @@ for (const page of pages) {
   const html = fs.readFileSync(path.join(root, page), "utf8");
   assert.ok(html.includes('href="./manifest.webmanifest"'), page + " must link the PWA manifest");
   assert.ok(html.includes("pwa-register.js"), page + " must register the service worker");
+  const localScripts = [...html.matchAll(/<script\b[^>]*src=["']([^"']+\.js)["'][^>]*>/gi)].map(match => match[1]).filter(src => !/^(?:https?:)?\/\//i.test(src));
+  for (const src of localScripts) assert.ok(assets.includes("./" + src.replace(/^\.\//, "")), page + " script is missing from offline precache: " + src);
+  const localStyles = [...html.matchAll(/<link\b[^>]*href=["']([^"']+\.css)["'][^>]*>/gi)].map(match => match[1]).filter(src => !/^(?:https?:)?\/\//i.test(src));
+  for (const src of localStyles) assert.ok(assets.includes("./" + src.replace(/^\.\//, "")), page + " stylesheet is missing from offline precache: " + src);
 }
 assert.ok(register.includes('navigator.serviceWorker.register("./service-worker.js"'));
 assert.ok(register.includes('location.protocol !== "https:"'), "Service worker should only register in secure contexts or localhost");
@@ -48,4 +53,49 @@ assert.ok(worker.includes('request.mode === "navigate"') || worker.includes("con
 assert.ok(worker.includes('caches.match("./index.html")'), "Offline fallback must provide the cached app shell");
 assert.ok(worker.includes('key !== CACHE_NAME') && worker.includes('caches.delete(key)'), "Activation must delete obsolete academy caches");
 
-console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true }, null, 2));
+const calculatorModule = fs.readFileSync(path.join(root, "assets/js/sim/ui/calculators.js"), "utf8");
+assert.ok(!calculatorModule.includes('import { calculatePoe }'), "Calculator UI must not import the nonexistent calculatePoe export");
+assert.ok(calculatorModule.includes('import { solveLink, budgetCheck, POE_TYPES } from "../calc/poe.js";'), "Calculator UI must use the supported PoE API");
+const workshopHtml = fs.readFileSync(path.join(root, "workshops.html"), "utf8");
+const moduleEntries = [...workshopHtml.matchAll(/<script[^>]+src=["']([^"']+\.js)["'][^>]*>/g)]
+  .map((match) => match[1])
+  .filter((src) => src.startsWith("./assets/"));
+const pendingModules = moduleEntries.map((src) => src.replace(/^\.\//, ""));
+const visitedModules = new Set();
+while (pendingModules.length) {
+  const modulePath = pendingModules.pop();
+  if (visitedModules.has(modulePath)) continue;
+  visitedModules.add(modulePath);
+  assert.ok(fs.existsSync(path.join(root, modulePath)), "Missing ES module dependency: " + modulePath);
+  assert.ok(assets.includes("./" + modulePath), "Offline cache omits ES module dependency: " + modulePath);
+  const source = fs.readFileSync(path.join(root, modulePath), "utf8");
+  const namedImports = [...source.matchAll(/\bimport\s*\{([\s\S]*?)\}\s*from\s*["']([^"']+)["']/g)];
+  for (const match of namedImports) {
+    const specifier = match[2];
+    if (!specifier.startsWith(".")) continue;
+    const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(modulePath), specifier));
+    assert.ok(fs.existsSync(path.join(root, dependency)), "Missing imported module: " + dependency);
+    const dependencySource = fs.readFileSync(path.join(root, dependency), "utf8");
+    const dependencyExports = new Set();
+    for (const item of dependencySource.matchAll(/\bexport\s+(?:async\s+)?(?:function|class|const|let|var)\s+([A-Za-z_$][\w$]*)/g)) dependencyExports.add(item[1]);
+    for (const item of dependencySource.matchAll(/\bexport\s*\{([^}]+)\}/g)) {
+      for (const entry of item[1].split(",")) {
+        const name = entry.trim().split(/\s+as\s+/)[0].trim();
+        if (name) dependencyExports.add(name);
+      }
+    }
+    for (const imported of match[1].split(",")) {
+      const name = imported.trim().split(/\s+as\s+/)[0].trim();
+      if (name) assert.ok(dependencyExports.has(name), modulePath + " imports missing export " + name + " from " + dependency);
+    }
+  }
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']|^\s*import\s*["']([^"']+)["']/gm)]
+    .map((match) => match[1] || match[2]);
+  for (const specifier of imports) {
+    if (!specifier.startsWith(".")) continue;
+    const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(modulePath), specifier));
+    pendingModules.push(dependency);
+  }
+}
+
+console.log(JSON.stringify({ status: "passed", pagesChecked: pages.length, precacheAssets: assets.length, installMetadata: true, offlineNavigationFallback: true, poeCalculatorApi: true, simulatorModulesCached: visitedModules.size }, null, 2));

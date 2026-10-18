@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -27,3 +31,117 @@ jobs:
             echo "== Running $f"
             node "$f"
           done
+
+  audit-regression:
+    name: Regression / ${{ matrix.test }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test:
+          - android-offline-check.mjs
+          - browser-smoke.test.mjs
+          - calculations-check.mjs
+          - chapter-labs-check.mjs
+          - dark-theme-check.mjs
+          - interactive-displays-check.mjs
+          - learning-quality-check.mjs
+          - micro-lessons-check.mjs
+          - mobile-readability-check.mjs
+          - offline-readiness-check.mjs
+          - poe.test.mjs
+          - pwa-readiness-check.mjs
+          - quality-check.mjs
+          - quiz-page-check.mjs
+          - routing-check.mjs
+          - scenarios.test.mjs
+          - spaced-review-check.mjs
+          - simulator-calculators.test.mjs
+          - simulator-engine.test.mjs
+          - simulator-scenarios.test.mjs
+          - simulator-syntax.test.mjs
+          - workflow-gates-check.mjs
+          - workshops-check.mjs
+          - workshops-interaction-check.mjs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run targeted regression test
+        run: node "tests/${{ matrix.test }}"
+
+  simulator-subtest:
+    name: Simulator subtest / ${{ matrix.test_name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test_name:
+          - "subnet vectors"
+          - "PoE vectors"
+          - "storage reference and RAID vectors"
+          - "cable recommendation vectors"
+          - "UPS vectors"
+          - "optics vectors"
+          - "security vectors"
+          - "integrated design vectors"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run focused simulator subtest
+        run: node --test --test-name-pattern="${{ matrix.test_name }}" tests/simulator-calculators.test.mjs
+
+  chapter-content:
+    name: Chapter content / ${{ matrix.chapter_id }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chapter_id:
+          - network-basics
+          - cctv-technical-basics
+          - cctv-design-infrastructure
+          - physical-environment-security
+          - cctv-cybersecurity
+          - backup-disaster-recovery
+          - risk-management
+          - standards-frameworks
+          - cctv-troubleshooting
+          - scenarios-interview
+          - advanced-concepts
+          - final-design-checklist
+          - source-quiz
+          - technical-interview
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check chapter question uniqueness
+        run: node tests/chapter-uniqueness-check.mjs "${{ matrix.chapter_id }}"
+
+  question-balance:
+    name: Question balance / ${{ matrix.mode }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [positions, longest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check quiz balance metric
+        run: node tests/question-balance-check.mjs "${{ matrix.mode }}"

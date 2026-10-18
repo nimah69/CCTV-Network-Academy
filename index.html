@@ -3,6 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+(function () {
+  const bridge = window.AndroidBridge;
+  if (!bridge || typeof bridge.isLegacyProgressMigrationNeeded !== "function") return;
+  const prefix = "cctvAcademyProgress";
+  let migrationNeeded;
+  try {
+    migrationNeeded = bridge.isLegacyProgressMigrationNeeded();
+  } catch (error) {
+    console.error("Legacy progress migration state unavailable", error);
+    return;
+  }
+
+  if (migrationNeeded) {
+    let entries = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(prefix)) {
+          const value = localStorage.getItem(key);
+          if (typeof value === "string") entries.push([key, value]);
+        }
+      }
+    } catch (error) {
+      // If legacy storage is blocked, do not keep the app on the legacy file origin indefinitely.
+      console.error("Legacy progress could not be read; continuing without migration data", error);
+      entries = [];
+    }
+    try {
+      bridge.storeLegacyProgress(JSON.stringify(entries));
+      bridge.finishLegacyProgressMigration();
+    } catch (error) {
+      console.error("Legacy progress migration handoff failed", error);
+    }
+    return;
+  }
+
+  try {
+    const pending = bridge.getPendingLegacyProgress();
+    if (!pending) return;
+    const entries = JSON.parse(pending);
+    if (!Array.isArray(entries)) throw new Error("Invalid saved progress payload");
+    for (const entry of entries) {
+      if (!Array.isArray(entry) || typeof entry[0] !== "string" ||
+          !entry[0].startsWith(prefix) || typeof entry[1] !== "string") continue;
+      if (localStorage.getItem(entry[0]) === null) localStorage.setItem(entry[0], entry[1]);
+    }
+    bridge.clearPendingLegacyProgress();
+  } catch (error) {
+    // Keep pending data for a later retry if secure-origin storage is temporarily unavailable.
+    console.error("Legacy progress import failed; pending data retained", error);
+  }
+})();
+</script>
 <meta name="theme-color" content="#07111f">
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">

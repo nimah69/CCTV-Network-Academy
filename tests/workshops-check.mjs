@@ -12,8 +12,23 @@ const scenarioBlock=scripts[0].match(/const scenarios=\[([\s\S]*?)\n\];/);
 assert.ok(scenarioBlock,"Scenario bank must exist");
 assert.equal((scenarioBlock[1].match(/title:"/g)||[]).length,12,"Expected 12 troubleshooting scenarios");
 assert.ok(html.includes("localStorage"),"Workshop progress should persist locally");
+assert.ok(html.includes('function readStorage(key,fallback="")'),"Workshop state loading must tolerate unavailable localStorage");
+assert.ok(html.includes("function readStoredArray(key)"),"Malformed saved progress must fall back to an empty list");
+assert.ok(html.includes("Number.isFinite(storedScore)&&storedScore>=0"),"Invalid stored scores must be normalized safely");
+assert.ok(html.includes("function writeStorage(key,value){try{localStorage.setItem(key,value);return true}catch{return false}}"),"Progress saving must not crash when localStorage is blocked");
+assert.ok(html.includes('removeStorage("cctv-workshops-completed")')&&html.includes('removeStorage("cctv-workshops-score")'),"Progress reset must tolerate unavailable localStorage");
+
 assert.ok(html.includes('src="./js/calculations.js"'),"Shared tested calculation module must load before workshop code");
 assert.ok(html.includes("function requiredNumber"),"Numeric fields must reject empty and invalid values");
+assert.ok(html.includes("function escapeHTML(value)") && html.includes("escapeHTML(name)"),"User-provided project names must be escaped before report HTML rendering");
+assert.ok(html.includes("escapeHTML(textReport)"),"Project report details must be escaped before HTML insertion");
+assert.ok(html.includes("escapeHTML(reportText)"),"Print report text must be escaped before document.write");
+assert.ok(html.includes("simEscape(extra)")&&html.includes("simEscape(details)"),"User-derived simulator feedback must be escaped before HTML insertion");
+
+const escapeMatch=html.match(/function escapeHTML\(value\)\{[^}]*\}/);
+assert.ok(escapeMatch,"HTML escaping helper must be defined");
+const escapeFn=vm.runInNewContext("("+escapeMatch[0].replace("function escapeHTML","function")+")");
+assert.equal(escapeFn("<img src=x onerror='alert(1)'>&\""),"&lt;img src=x onerror=&#39;alert(1)&#39;&gt;&amp;&quot;","HTML escaping must neutralize markup, event handlers and attribute quotes");
 assert.ok(html.includes('id="poeResult" aria-live="polite"'),"PoE validation messages must be announced politely");
 assert.ok(html.includes('id="subnetResult" aria-live="polite"'),"Subnet validation messages must be announced politely");
 assert.ok(html.includes("@media(max-width:399px)"),"Small-phone responsive overrides must exist");
@@ -28,3 +43,36 @@ assert.ok(html.includes('id="runPoeSimulation"'),"PoE must use an input-driven s
 assert.ok(html.includes("prefers-reduced-motion"),"Schematic animation must respect reduced-motion preferences");
 assert.ok(html.includes('aria-pressed="false"'),"Simulator controls must expose accessible pressed state");
 assert.ok(html.includes("اجرای شبیه‌سازی تعاملی"),"Simulator controls must be clearly labeled and actionable in Persian");
+
+const simpleSecurityBlock=html.match(/<div class="checklist" id="securityChecks">([\s\S]*?)<\/div>/);
+assert.ok(simpleSecurityBlock,"Simple security checklist must exist");
+const securityIds=[...simpleSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
+assert.equal(securityIds.length,9,"Each simple security checkbox must have a stable control ID");
+assert.equal(new Set(securityIds).size,securityIds.length,"Simple security checklist controls must not be mapped more than once");
+assert.ok(securityIds.includes("firewall-acl"),"Firewall/ACL needs its own distinct control");
+assert.ok(securityIds.includes("management-access")&&!securityIds.includes("rbac"),"Management network restrictions must not be mislabeled as role-based access control");
+const advancedSecurityBlock=html.match(/<div class="checklist" id="advancedSecurityChecks">([\s\S]*?)<\/div>/);
+assert.ok(advancedSecurityBlock,"Advanced security checklist must exist");
+const advancedSecurityIds=[...advancedSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
+assert.equal(new Set(advancedSecurityIds).size,advancedSecurityIds.length,"Advanced security control IDs must be unique");
+assert.ok(advancedSecurityIds.includes("firewall-acl"),"Advanced checklist must expose the firewall ACL control");
+const securitySource=fs.readFileSync("assets/js/sim/calc/security.js","utf8");
+const modeledSecurityIds=[...securitySource.matchAll(/\{id:"([^"]+)",title:/g)].map(match=>match[1]);
+for(const id of [...securityIds,...advancedSecurityIds]) assert.ok(modeledSecurityIds.includes(id),"Checklist control must exist in the shared scoring model: "+id);
+const advancedWeightsMatch=html.match(/const weights=(\{[^;]+\});/);
+assert.ok(advancedWeightsMatch,"Advanced security checklist must define explicit weights");
+const advancedWeights=JSON.parse(advancedWeightsMatch[1]);
+for(const id of advancedSecurityIds) assert.ok(Object.hasOwn(advancedWeights,id),"Advanced checklist control must have an explicit weight: "+id);
+
+assert.ok(html.includes('"firewall-acl":3')&&html.includes('"backup-restore":3'),"Critical firewall and recovery controls must receive explicit high weights in the advanced checklist");
+assert.ok(html.includes('if(!has("firewall-acl"))risk.push('),"Advanced attack-risk summary must separately identify missing Firewall/ACL rules");
+assert.equal(advancedSecurityIds.length,14,"Advanced security checklist must score all 14 controls");
+
+const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
+assert.ok(calcSource.includes('doc.getElementById("r").textContent=reportText'),"The module print path must use textContent for report text");
+assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
+assert.ok(calcSource.includes("try{localStorage.setItem(commissioningKey,JSON.stringify(data))}catch"),"Commissioning checklist must remain usable when WebView storage is unavailable");
+assert.ok(html.includes('id="lensTargetDensity"'),"Lens calculator must expose an explicit pixel-density target");
+assert.ok(calcSource.includes("const densityOk=density>=target"),"Lens status must be evaluated against the selected pixel-density target");
+assert.ok(html.includes('id="upsCapacityW"')&&html.includes('id="upsCapacityVA"'),"UPS calculator must collect both W and VA ratings");
+assert.ok(calcSource.includes("const powerOk=loadW<=ratedW,vaOk=r.requiredVA<=ratedVA"),"UPS suitability must check both active and apparent power");

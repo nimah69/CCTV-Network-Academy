@@ -1,5 +1,5 @@
 import { normalizeDigits } from "../units.js";
-import { calculatePoe } from "../calc/poe.js";
+import { solveLink, budgetCheck, POE_TYPES } from "../calc/poe.js";
 import { subnet, sameSubnet, validateGateway, planVLSM } from "../calc/subnet.js";
 import { calculateStorage } from "../calc/storage.js";
 import { recommendCable } from "../calc/cable.js";
@@ -17,9 +17,17 @@ function show(id,text,kind=""){const el=$(id);if(!el)return;el.className="output
 function bind(id,handler){const el=$(id);if(!el)return;el.addEventListener("click",event=>{event.preventDefault();event.stopImmediatePropagation();try{handler(event)}catch(error){const outputId=({"calcPoe":"poeResult","runPoeSimulation":"poeSimulationResult","calcSubnet":"subnetResult","calcStorage":"storageResult","recommendCable":"cableResult","scoreSecurity":"securityResult","buildReport":"capstoneResult","downloadReport":"capstoneResult","downloadJsonReport":"capstoneResult","printReport":"capstoneResult","planVlsm":"vlsmResult","calcUps":"upsResult","calcLens":"lensResult","exportCommissioning":"commissioningResult","runSwitchFeatureSim":"switchFeaturesResult"})[id];if(outputId)show(outputId,"خطا: "+error.message,"bad")}},true)}
 function getPoe(){
  const standard={"12.95":"af","25.5":"at","51":"bt3","71.3":"bt4"}[$("poePortClass").value]||"at";
- return calculatePoe({standard,cameraWatts:num("poeWatts","توان دوربین",.1),lengthM:num("cableLength","طول کابل",0,100),cable:$("cableType").value==="cca"?"cca":"copper",cameraCount:num("poeCams","تعداد دوربین",1,1024,true),budgetW:num("poeBudget","بودجه کل PoE",1),reservePercent:num("poeReserve","حاشیه اطمینان",0,100),pairs:Number($("poePairs")?.value||2),allocation:$("poeAllocation")?.value||"actual"});
+ const cameraWatts=num("poeWatts","توان دوربین",.1),lengthM=num("cableLength","طول کابل",0,100),cameraCount=num("poeCams","تعداد دوربین",1,1024,true),budgetW=num("poeBudget","بودجه کل PoE",1),reservePercent=num("poeReserve","حاشیه اطمینان",0,50),pairs=Number($("poePairs")?.value||POE_TYPES[standard].pairs);
+ const link=solveLink({type:standard,pdW:cameraWatts,lengthM,material:$("cableType").value==="cca"?"cca":"cu",pairs});
+ const budget=budgetCheck({switchBudgetW:budgetW,marginPct:reservePercent,allocationsW:Array(cameraCount).fill(link.pseW)});
+ const totalRequiredW=budget.totalW/(1-reservePercent/100);
+ const portOk=link.pseW<=POE_TYPES[standard].pseW&&link.currentA<=POE_TYPES[standard].iPairMaxA*(pairs/2)&&link.vPdV>=POE_TYPES[standard].vPdMin;
+ const totalOk=budget.totalW<=budget.usableW;
+ const warning=[...link.reasons,...link.warnings];
+ if(budget.status!=="ok")warning.push("بودجهٔ کل PoE با حاشیهٔ انتخاب‌شده کافی نیست.");
+ return {status:link.status==="fail"?"نامناسب":link.status==="marginal"?"مرزی":"مناسب",standard,pseRequiredW:link.pseW,pdW:cameraWatts,voltageDropV:POE_TYPES[standard].vPseMin-link.vPdV,lossW:link.lossW,totalRequiredW,portOk,totalOk,warning};
 }
-function poeText(r){return "وضعیت: "+r.status+"\nاستاندارد: "+r.standard+"\nتوان برآوردی موردنیاز در PSE برای هر دوربین: "+fmt(r.pseRequiredW)+" W\nتوان تخمینی رسیده به PD: "+fmt(r.pdW)+" W\nافت ولتاژ مدل‌شده: "+fmt(r.voltageDropV)+" V\nاتلاف کابل: "+fmt(r.lossW)+" W\nتوان کل با حاشیه: "+fmt(r.totalRequiredW)+" W\nبودجه پورت: "+(r.portOk?"کافی":"ناکافی")+"؛ بودجه کل: "+(r.totalOk?"کافی":"ناکافی")+"\nفرض: مقاومت حلقه ۱۸۸ Ω/km و اثر CCA تخمینی است؛ با کابل و دیتاشیت واقعی تطبیق بده.\n"+r.warning.join("\n")}
+function poeText(r){return "وضعیت: "+r.status+"\nاستاندارد: "+r.standard+"\nتوان برآوردی موردنیاز در PSE برای هر دوربین: "+fmt(r.pseRequiredW)+" وات (W)\nتوان تخمینی رسیده به PD: "+fmt(r.pdW)+" وات (W)\nافت ولتاژ مدل‌شده: "+fmt(r.voltageDropV)+" V\nاتلاف کابل: "+fmt(r.lossW)+" وات (W)\nتوان کل با حاشیه: "+fmt(r.totalRequiredW)+" وات (W)\nبودجه پورت: "+(r.portOk?"کافی":"ناکافی")+"؛ بودجه کل: "+(r.totalOk?"کافی":"ناکافی")+"\nمدل آموزشی تقریبی است؛ مشخصات کابل و دیتاشیت PSE/PD را بررسی کن.\n"+r.warning.join("\n")}
 bind("calcPoe",()=>{show("poeResult",poeText(getPoe()),"good")});
 $("poePortClass").addEventListener("change",()=>{$("poePairs").value=["51","71.3"].includes($("poePortClass").value)?"4":"2"});
 bind("runPoeSimulation",()=>{const r=getPoe();show("poeSimulationResult",poeText(r),"good");const nodes=[...document.querySelectorAll("#poe .schematic-node")];nodes.forEach(n=>{n.classList.remove("sim-pass","sim-warn","sim-fail");n.classList.add(r.status==="مناسب"?"sim-pass":r.status==="مرزی"?"sim-warn":"sim-fail")})});
@@ -41,9 +49,8 @@ bind("recommendCable",()=>{
  show("cableResult",r.options.slice(0,5).map((o,i)=>(i+1)+". "+o.name+"\nمزایا: "+o.pros.join("، ")+"\nمحدودیت‌ها: "+o.cons.join("، ")+"\n"+o.reasons.join("؛ ")).join("\n\n")+"\nهشدارها:\n"+r.warnings.join("\n"),r.options.length?"good":"warn");
 });
 bind("scoreSecurity",()=>{
- const mapping=["default-password","segmentation","segmentation","patching","patching","remote-cloud","lockout","rbac","ports"];
- const allChecks=[...document.querySelectorAll("#securityChecks input")];const ids=allChecks.map((el,i)=>el.checked?mapping[i]:null).filter(Boolean);
- const r=assessSecurity(ids);
+ const allChecks=[...document.querySelectorAll("#securityChecks input[data-security-control]")];const ids=allChecks.filter(el=>el.checked).map(el=>el.dataset.securityControl);
+ const r=assessSecurity(ids,allChecks.map(el=>el.dataset.securityControl));
  show("securityResult","امتیاز کنترل‌های نگاشت‌شده: "+r.score+"/100؛ "+r.rating+"\nاولویت‌های اصلاح:\n"+r.priority.slice(0,5).map(x=>x.risk+" · "+x.title).join("\n")+"\nزنجیره حمله احتمالی:\n"+r.attackChain.map(x=>x.text).join("\n"),r.score>=80?"good":"warn");
 });
 let reportData=null,reportText="";
@@ -77,6 +84,8 @@ bind("calcAdvancedSecurity",()=>{
 });
 bind("calcUps",()=>{
  const loadW=num("upsLoad","بار وات",.1);
+ const ratedW=num("upsCapacityW","توان پیوسته UPS",.1);
+ const ratedVA=num("upsCapacityVA","ظرفیت VA خروجی UPS",.1);
  const pf=num("upsPf","ضریب توان",.1,1);
  const batteryWh=num("upsBattery","ظرفیت باتری Wh",.1);
  const efficiency=num("upsEfficiency","بازده اینورتر",1,100)/100;
@@ -84,8 +93,9 @@ bind("calcUps",()=>{
  const health=num("upsAge","سلامت باتری",1,100)/100;
  const r=calculateUps({loadW,powerFactor:pf,batteryWh,inverterEfficiency:efficiency,depthOfDischarge:dod,ageFactor:health});
  const minutes=r.runtimeMinutes;
- const status=minutes<5?"bad":minutes<15?"warn":"good";
- show("upsResult","زمان پشتیبانی تخمینی: "+fmt(minutes)+" دقیقه\nبار اکتیو: "+fmt(loadW)+" W؛ بار ظاهری لازم: "+fmt(r.requiredVA)+" VA\nانرژی اسمی باتری: "+fmt(batteryWh)+" Wh؛ انرژی قابل استفاده پس از اعمال راندمان، عمق تخلیه و سلامت: "+fmt(r.usableWh)+" Wh\nفرض‌ها: PF="+fmt(pf)+"؛ راندمان="+fmt(efficiency*100)+"٪؛ عمق تخلیه="+fmt(dod*100)+"٪؛ سلامت="+fmt(health*100)+"٪\n"+(minutes<5?"هشدار: زمان پشتیبانی بسیار کوتاه است.":minutes<15?"توجه: زمان پشتیبانی محدود است؛ نیاز پروژه را بررسی کن.":"برآورد انرژی با ورودی‌های فعلی محاسبه شد.")+"\nقبل از انتخاب دستگاه، توان پیوسته W و ظرفیت VA خروجی UPS، جریان راه‌اندازی، ضریب توان، ولتاژ/آرایش باتری و منحنی تخلیه سازنده را جداگانه کنترل کن. این فرمول تخمین خطی است و افت ظرفیت در بار بالا را مدل نمی‌کند.",""+status);
+ const powerOk=loadW<=ratedW,vaOk=r.requiredVA<=ratedVA;
+ const status=!powerOk||!vaOk?"bad":minutes<5?"bad":minutes<15?"warn":"good";
+ show("upsResult","زمان پشتیبانی تخمینی: "+fmt(minutes)+" دقیقه\nبار اکتیو: "+fmt(loadW)+" W؛ ظرفیت پیوسته UPS: "+fmt(ratedW)+" W — "+(powerOk?"کافی":"ناکافی")+"\nبار ظاهری لازم: "+fmt(r.requiredVA)+" VA؛ ظرفیت خروجی UPS: "+fmt(ratedVA)+" VA — "+(vaOk?"کافی":"ناکافی")+"\nانرژی اسمی باتری: "+fmt(batteryWh)+" Wh؛ انرژی قابل استفاده پس از اعمال راندمان، عمق تخلیه و سلامت: "+fmt(r.usableWh)+" Wh\nفرض‌ها: PF="+fmt(pf)+"؛ راندمان="+fmt(efficiency*100)+"٪؛ عمق تخلیه="+fmt(dod*100)+"٪؛ سلامت="+fmt(health*100)+"٪\n"+(!powerOk||!vaOk?"هشدار: ظرفیت نامی UPS از بار W یا VA کمتر است؛ مدل مناسب‌تری انتخاب کن.":minutes<5?"هشدار: زمان پشتیبانی بسیار کوتاه است.":minutes<15?"توجه: زمان پشتیبانی محدود است؛ نیاز پروژه را بررسی کن.":"ظرفیت W و VA و زمان تخمینی با ورودی‌های فعلی بررسی شدند.")+"\nقبل از انتخاب دستگاه، جریان راه‌اندازی، ضریب توان، ولتاژ/آرایش باتری و منحنی تخلیه سازنده را جداگانه کنترل کن. این فرمول تخمین خطی است و افت ظرفیت در بار بالا را مدل نمی‌کند.",""+status);
 });
 bind("calcLens",()=>{
  const r=calculateCoverage({
@@ -102,8 +112,10 @@ bind("calcLens",()=>{
  const coverage=r.sceneCoverage;
  const fit=coverage.fitsSingleCamera;
  const density=r.pixelsPerMeter;
- const status=fit&&density>=25?"good":"warn";
- show("lensResult","زاویه دید افقی/عمودی: "+fmt(r.horizontalFovDeg)+"° / "+fmt(r.verticalFovDeg)+"°\nمیدان دید تخمینی در فاصله انتخابی: "+fmt(r.coveredWidthM)+" × "+fmt(r.coveredHeightM)+" متر\nتراکم پیکسل افقی/عمودی: "+fmt(r.horizontalPixelsPerMeter)+" / "+fmt(r.verticalPixelsPerMeter)+" px/m؛ مبنای ارزیابی محافظه‌کارانه: "+fmt(density)+" px/m\nسطح مرجع: "+r.dori+"\nپوشش فضای هدف "+fmt(coverage.sceneWidthM)+" × "+fmt(coverage.sceneHeightM)+" متر: "+(fit?"از نظر هندسی در میدان دید یک دوربین جا می‌گیرد.":"در یک قاب جا نمی‌گیرد؛ برآورد هندسی با هم‌پوشانی ۲۰٪ حدود "+coverage.horizontalCameras+" ستون × "+coverage.verticalRows+" ردیف دوربین می‌خواهد.")+"\n"+r.warning,""+status);
+ const target=num("lensTargetDensity","هدف تراکم پیکسل",20,1500,true);
+ const densityOk=density>=target;
+ const status=fit&&densityOk?"good":"warn";
+ show("lensResult","زاویه دید افقی/عمودی: "+fmt(r.horizontalFovDeg)+"° / "+fmt(r.verticalFovDeg)+"°\nمیدان دید تخمینی در فاصله انتخابی: "+fmt(r.coveredWidthM)+" × "+fmt(r.coveredHeightM)+" متر\nتراکم پیکسل افقی/عمودی: "+fmt(r.horizontalPixelsPerMeter)+" / "+fmt(r.verticalPixelsPerMeter)+" px/m؛ مبنای ارزیابی محافظه‌کارانه: "+fmt(density)+" px/m\nهدف انتخابی تراکم: "+fmt(target)+" px/m؛ "+(densityOk?"به هدف تراکم انتخابی می‌رسد.":"به هدف تراکم انتخابی نمی‌رسد؛ فاصله را کم کن، لنز بلندتر یا رزولوشن بالاتر انتخاب کن.")+"\nسطح مرجع DORI قدیمی: "+r.dori+"\nسطح تراکم IEC 62676-4:2025: "+(r.current2025DensityLevel===null?"کمتر از ۲۰ px/m":fmt(r.current2025DensityLevel)+" px/m")+"\nپوشش فضای هدف "+fmt(coverage.sceneWidthM)+" × "+fmt(coverage.sceneHeightM)+" متر: "+(fit?"از نظر هندسی در میدان دید یک دوربین جا می‌گیرد.":"در یک قاب جا نمی‌گیرد؛ برآورد هندسی با هم‌پوشانی ۲۰٪ حدود "+coverage.horizontalCameras+" ستون × "+coverage.verticalRows+" ردیف دوربین می‌خواهد.")+"\n"+r.warning,""+status);
  const svg=$("lensCoverageSvg");
  const sw=Math.max(20,Math.min(260,260*coverage.horizontalCoverageRatio));
  const sh=Math.max(12,Math.min(82,82*coverage.verticalCoverageRatio));
@@ -112,7 +124,7 @@ bind("calcLens",()=>{
 });
 const commissioningKey="cctvCommissioningV1";
 function loadCommissioning(){let saved={};try{saved=JSON.parse(localStorage.getItem(commissioningKey)||"{}")}catch{}document.querySelectorAll("[data-commission]").forEach(el=>el.checked=Boolean(saved[el.dataset.commission]));updateCommissioning()}
-function updateCommissioning(){const all=[...document.querySelectorAll("[data-commission]")],done=all.filter(x=>x.checked).length;$("commissioningProgress").textContent="تکمیل "+fmt(done)+" از "+fmt(all.length)+" مورد ("+fmt(done/all.length*100)+"٪)";const data=Object.fromEntries(all.map(x=>[x.dataset.commission,x.checked]));localStorage.setItem(commissioningKey,JSON.stringify(data))}
+function updateCommissioning(){const all=[...document.querySelectorAll("[data-commission]")],done=all.filter(x=>x.checked).length;$("commissioningProgress").textContent="تکمیل "+fmt(done)+" از "+fmt(all.length)+" مورد ("+fmt(done/all.length*100)+"٪)";const data=Object.fromEntries(all.map(x=>[x.dataset.commission,x.checked]));try{localStorage.setItem(commissioningKey,JSON.stringify(data))}catch{/* Storage may be unavailable in restricted/offline WebViews; the checklist remains usable for this session. */}}
 document.querySelectorAll("[data-commission]").forEach(el=>el.addEventListener("change",updateCommissioning));
 bind("exportCommissioning",()=>{const all=[...document.querySelectorAll("[data-commission]")];show("commissioningResult",all.map(x=>(x.checked?"[✓] ":"[ ] ")+x.parentElement.textContent.trim()).join("\n"),"good")});
 loadCommissioning();
