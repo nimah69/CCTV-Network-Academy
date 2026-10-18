@@ -124,7 +124,7 @@ bind("calcLens",()=>{
 });
 const commissioningKey="cctvCommissioningV1";
 function loadCommissioning(){let saved={};try{saved=JSON.parse(localStorage.getItem(commissioningKey)||"{}")}catch{}document.querySelectorAll("[data-commission]").forEach(el=>el.checked=Boolean(saved[el.dataset.commission]));updateCommissioning()}
-function updateCommissioning(){const all=[...document.querySelectorAll("[data-commission]")],done=all.filter(x=>x.checked).length;$("commissioningProgress").textContent="تکمیل "+fmt(done)+" از "+fmt(all.length)+" مورد ("+fmt(done/all.length*100)+"٪)";const data=Object.fromEntries(all.map(x=>[x.dataset.commission,x.checked]));localStorage.setItem(commissioningKey,JSON.stringify(data))}
+function updateCommissioning(){const all=[...document.querySelectorAll("[data-commission]")],done=all.filter(x=>x.checked).length;$("commissioningProgress").textContent="تکمیل "+fmt(done)+" از "+fmt(all.length)+" مورد ("+fmt(done/all.length*100)+"٪)";const data=Object.fromEntries(all.map(x=>[x.dataset.commission,x.checked]));try{localStorage.setItem(commissioningKey,JSON.stringify(data))}catch{/* Storage may be unavailable in restricted/offline WebViews; the checklist remains usable for this session. */}}
 document.querySelectorAll("[data-commission]").forEach(el=>el.addEventListener("change",updateCommissioning));
 bind("exportCommissioning",()=>{const all=[...document.querySelectorAll("[data-commission]")];show("commissioningResult",all.map(x=>(x.checked?"[✓] ":"[ ] ")+x.parentElement.textContent.trim()).join("\n"),"good")});
 loadCommissioning();
