@@ -1,5 +1,5 @@
 import { normalizeDigits } from "../units.js";
-import { calculatePoe } from "../calc/poe.js";
+import { solveLink, budgetCheck, POE_TYPES } from "../calc/poe.js";
 import { subnet, sameSubnet, validateGateway, planVLSM } from "../calc/subnet.js";
 import { calculateStorage } from "../calc/storage.js";
 import { recommendCable } from "../calc/cable.js";
@@ -17,9 +17,17 @@ function show(id,text,kind=""){const el=$(id);if(!el)return;el.className="output
 function bind(id,handler){const el=$(id);if(!el)return;el.addEventListener("click",event=>{event.preventDefault();event.stopImmediatePropagation();try{handler(event)}catch(error){const outputId=({"calcPoe":"poeResult","runPoeSimulation":"poeSimulationResult","calcSubnet":"subnetResult","calcStorage":"storageResult","recommendCable":"cableResult","scoreSecurity":"securityResult","buildReport":"capstoneResult","downloadReport":"capstoneResult","downloadJsonReport":"capstoneResult","printReport":"capstoneResult","planVlsm":"vlsmResult","calcUps":"upsResult","calcLens":"lensResult","exportCommissioning":"commissioningResult","runSwitchFeatureSim":"switchFeaturesResult"})[id];if(outputId)show(outputId,"خطا: "+error.message,"bad")}},true)}
 function getPoe(){
  const standard={"12.95":"af","25.5":"at","51":"bt3","71.3":"bt4"}[$("poePortClass").value]||"at";
- return calculatePoe({standard,cameraWatts:num("poeWatts","توان دوربین",.1),lengthM:num("cableLength","طول کابل",0,100),cable:$("cableType").value==="cca"?"cca":"copper",cameraCount:num("poeCams","تعداد دوربین",1,1024,true),budgetW:num("poeBudget","بودجه کل PoE",1),reservePercent:num("poeReserve","حاشیه اطمینان",0,100),pairs:Number($("poePairs")?.value||2),allocation:$("poeAllocation")?.value||"actual"});
+ const cameraWatts=num("poeWatts","توان دوربین",.1),lengthM=num("cableLength","طول کابل",0,100),cameraCount=num("poeCams","تعداد دوربین",1,1024,true),budgetW=num("poeBudget","بودجه کل PoE",1),reservePercent=num("poeReserve","حاشیه اطمینان",0,50),pairs=Number($("poePairs")?.value||POE_TYPES[standard].pairs);
+ const link=solveLink({type:standard,pdW:cameraWatts,lengthM,material:$("cableType").value==="cca"?"cca":"cu",pairs});
+ const budget=budgetCheck({switchBudgetW:budgetW,marginPct:reservePercent,allocationsW:Array(cameraCount).fill(link.pseW)});
+ const totalRequiredW=link.pseW*cameraCount*(1+reservePercent/100);
+ const portOk=link.pseW<=POE_TYPES[standard].pseW&&link.status!=="fail";
+ const totalOk=totalRequiredW<=budgetW;
+ const warning=[...link.reasons,...link.warnings];
+ if(budget.status!=="ok")warning.push("بودجهٔ کل PoE با حاشیهٔ انتخاب‌شده کافی نیست.");
+ return {status:link.status==="fail"?"نامناسب":link.status==="marginal"?"مرزی":"مناسب",standard,pseRequiredW:link.pseW,pdW:cameraWatts,voltageDropV:POE_TYPES[standard].vPseMin-link.vPdV,lossW:link.lossW,totalRequiredW,portOk,totalOk,warning};
 }
-function poeText(r){return "وضعیت: "+r.status+"\nاستاندارد: "+r.standard+"\nتوان برآوردی موردنیاز در PSE برای هر دوربین: "+fmt(r.pseRequiredW)+" W\nتوان تخمینی رسیده به PD: "+fmt(r.pdW)+" W\nافت ولتاژ مدل‌شده: "+fmt(r.voltageDropV)+" V\nاتلاف کابل: "+fmt(r.lossW)+" W\nتوان کل با حاشیه: "+fmt(r.totalRequiredW)+" W\nبودجه پورت: "+(r.portOk?"کافی":"ناکافی")+"؛ بودجه کل: "+(r.totalOk?"کافی":"ناکافی")+"\nفرض: مقاومت حلقه ۱۸۸ Ω/km و اثر CCA تخمینی است؛ با کابل و دیتاشیت واقعی تطبیق بده.\n"+r.warning.join("\n")}
+function poeText(r){return "وضعیت: "+r.status+"\nاستاندارد: "+r.standard+"\nتوان برآوردی موردنیاز در PSE برای هر دوربین: "+fmt(r.pseRequiredW)+" W\nتوان تخمینی رسیده به PD: "+fmt(r.pdW)+" W\nافت ولتاژ مدل‌شده: "+fmt(r.voltageDropV)+" V\nاتلاف کابل: "+fmt(r.lossW)+" W\nتوان کل با حاشیه: "+fmt(r.totalRequiredW)+" W\nبودجه پورت: "+(r.portOk?"کافی":"ناکافی")+"؛ بودجه کل: "+(r.totalOk?"کافی":"ناکافی")+"\nمدل آموزشی تقریبی است؛ مشخصات کابل و دیتاشیت PSE/PD را بررسی کن.\n"+r.warning.join("\n")}
 bind("calcPoe",()=>{show("poeResult",poeText(getPoe()),"good")});
 $("poePortClass").addEventListener("change",()=>{$("poePairs").value=["51","71.3"].includes($("poePortClass").value)?"4":"2"});
 bind("runPoeSimulation",()=>{const r=getPoe();show("poeSimulationResult",poeText(r),"good");const nodes=[...document.querySelectorAll("#poe .schematic-node")];nodes.forEach(n=>{n.classList.remove("sim-pass","sim-warn","sim-fail");n.classList.add(r.status==="مناسب"?"sim-pass":r.status==="مرزی"?"sim-warn":"sim-fail")})});
