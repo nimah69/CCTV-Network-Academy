@@ -468,6 +468,38 @@ $("calcLens").addEventListener("click",()=>{try{
  const svg=$("lensCoverageSvg"),scale=12,sw=Math.min(240,Math.max(20,fovW*scale)),sh=Math.min(90,Math.max(10,fovH*scale));
  svg.innerHTML="<rect x='20' y='20' width='"+sw+"' height='"+sh+"' rx='4' fill='#123149' stroke='#67e8f9'/><text x='20' y='125' fill='currentColor' font-size='10'>عرض ≈ "+persian(fovW)+" m · ارتفاع ≈ "+persian(fovH)+" m</text>";
 }catch(e){output("lensResult",e.message,"bad")}});
+$("calcAdvancedSecurity").addEventListener("click",()=>{try{
+ const controls=[...document.querySelectorAll("#advancedSecurityChecks input[data-security-control]")];
+ if(!controls.length)throw Error("کنترل‌های امنیتی در دسترس نیستند.");
+ const weights={"default-password":3,"remote-cloud":2,"https":1,"rtsp-auth":2,"rbac":2,"lockout":1,"segmentation":3,"port-security":2,"physical":1,"patching":3,"ports":2};
+ const max=controls.reduce((sum,el)=>sum+(weights[el.dataset.securityControl]||1),0);
+ const score=controls.filter(el=>el.checked).reduce((sum,el)=>sum+(weights[el.dataset.securityControl]||1),0);
+ const pct=Math.round(score/max*100);
+ const missing=controls.filter(el=>!el.checked);
+ const risk=[];
+ const has=id=>controls.some(el=>el.dataset.securityControl===id&&el.checked);
+ if(!has("default-password"))risk.push("رمز پیش‌فرض/ضعیف می‌تواند نقطه ورود اولیه باشد.");
+ if(!has("remote-cloud"))risk.push("سرویس‌های راه دور غیرضروری را بررسی و در صورت عدم نیاز غیرفعال کن.");
+ if(!has("segmentation"))risk.push("نبود جداسازی شبکه، حرکت جانبی مهاجم را آسان‌تر می‌کند.");
+ if(!has("patching"))risk.push("Firmware و آسیب‌پذیری‌های شناخته‌شده نیازمند بررسی‌اند.");
+ if(!has("ports"))risk.push("سطح سرویس‌ها و پورت‌های در دسترس باید محدود شود.");
+ const chain=risk.length?risk.join(" → "):"در کنترل‌های انتخاب‌شده زنجیره پرریسک آشکاری باقی نمانده؛ این به معنی تضمین امنیت نیست.";
+ output("advancedSecurityResult","<div class='result-big'>"+persian(pct)+"٪ امتیاز وزنی</div><p>"+(pct>=85?"وضعیت چک‌لیست مناسب‌تر است؛ آزمون و بازبینی دوره‌ای ادامه یابد.":pct>=60?"چند کنترل مهم هنوز نیازمند تکمیل‌اند.":"شکاف‌های مهم امنیتی باقی مانده‌اند.")+"</p><p><b>زنجیره حمله/ریسک‌های محتمل:</b> "+chain+"</p>"+(missing.length?"<b>کنترل‌های تکمیل‌نشده:</b><ul>"+missing.map(el=>"<li>"+el.parentElement.textContent.trim()+"</li>").join("")+"</ul>":"<p>تمام کنترل‌های این چک‌لیست انتخاب شده‌اند.</p>")+"<p class='help'>این چک‌لیست ارزیابی واقعی پیکربندی یا آزمون نفوذ نیست؛ هر کنترل را با شواهد دستگاه و معماری واقعی تأیید کن.</p>",pct>=85?"good":pct>=60?"warn":"bad");
+}catch(e){output("advancedSecurityResult",e.message,"bad")}});
+$("runSwitchFeatureSim").addEventListener("click",()=>{try{
+ const checked=id=>$(id).checked;
+ const loop=checked("swLoopInjected"),rstp=checked("swRstp"),multicast=checked("swMulticast"),igmp=checked("swIgmp"),qos=checked("swQos"),isolation=checked("swIsolation"),storm=checked("swStorm");
+ const issues=[];
+ if(loop&&!rstp)issues.push("حلقه لایه دوم بدون RSTP می‌تواند باعث طوفان Broadcast و ناپایداری شبکه شود.");
+ else if(loop)issues.push("حلقه تزریق شده است؛ RSTP فعال است اما وضعیت پورت‌ها و زمان همگرایی باید بررسی شود.");
+ if(multicast&&!igmp)issues.push("بدون IGMP snooping، ترافیک Multicast ممکن است به پورت‌های غیرنیازمند پخش شود.");
+ if(!qos)issues.push("QoS تنظیم نشده؛ در ازدحام، ترافیک حساس به تأخیر ممکن است افت کند.");
+ if(!isolation)issues.push("Port isolation فعال نیست؛ ارتباط مستقیم بین پورت‌ها را با VLAN/ACL بررسی کن.");
+ if(!storm)issues.push("Storm control فعال نیست؛ Broadcast/Multicast غیرعادی می‌تواند منابع سوئیچ را مصرف کند.");
+ const ping=isolation?"Ping دوربین‌به‌دوربین: در مدل ایزولاسیون پورت، ارتباط مستقیم بین پورت‌های ایزوله باید مسدود باشد؛ با آزمون واقعی تأیید کن.":"Ping دوربین‌به‌دوربین: امکان ارتباط در سطح لایه ۲/۳ به VLAN، ACL و تنظیمات واقعی بستگی دارد؛ این مدل Ping واقعی اجرا نمی‌کند.";
+ const kind=loop&&!rstp?"bad":issues.length?"warn":"good";
+ output("switchFeaturesResult","<div class='result-big'>"+(kind==="good"?"وضعیت مناسب در مدل":kind==="warn"?"نیازمند بررسی":"ریسک بحرانی")+"</div><p>"+ping+"</p>"+(issues.length?"<b>نتایج تحلیل:</b><ul>"+issues.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"<p>با فرض ورودی‌های انتخاب‌شده، ریسک فعالی در این مدل ساده ثبت نشد.</p>")+"<p class='help'>این شبیه‌سازی محلی است؛ ترافیک واقعی ارسال نمی‌کند و جایگزین بررسی تنظیمات یا آزمون شبکه نیست.</p>",kind);
+}catch(e){output("switchFeaturesResult",e.message,"bad")}});
 let reportText="";
 $("buildReport").addEventListener("click",()=>{const name=$("projectName").value.trim()||"پروژه CCTV",n=Number($("projectCams").value),r=Number($("projectRate").value),days=Number($("projectDays").value),w=Number($("projectWatts").value),len=Number($("projectCable").value),hours=$("projectStorage").value==="motion"?12:24,security=$("projectSecurity").value;if(!(n>0&&r>0&&days>0&&w>0&&len>0)){output("capstoneResult","مقادیر پروژه باید مثبت باشند.","bad");return}const storageTb=n*r*3600*hours*days/8/1e6*1.15,bandwidth=n*r*1.25,poe=n*w*1.25,switches=Math.ceil(n/24),textReport="گزارش طراحی اولیه CCTV\nپروژه: "+name+"\nتاریخ: "+new Date().toLocaleDateString("fa-IR")+"\n\nورودی‌ها\n- دوربین: "+n+"\n- Bitrate هر دوربین: "+r+" Mbps\n- نگهداری: "+days+" روز، "+hours+" ساعت در روز (فرض محاسباتی)\n- توان هر دوربین: "+w+" W\n- میانگین کابل: "+len+" m\n- سطح امنیت هدف: "+security+"\n\nبرآوردها\n- پهنای باند با ۲۵٪ حاشیه: "+bandwidth.toFixed(2)+" Mbps\n- PoE با ۲۵٪ حاشیه: "+poe.toFixed(2)+" W\n- ذخیره‌سازی با ۱۵٪ حاشیه: "+storageTb.toFixed(2)+" TB\n- تعداد پورت دوربین: حداقل "+n+" پورت PoE؛ تعداد سوئیچ‌های ۲۴ پورتی صرفاً برآورد خام: "+switches+"\n- کابل: "+(len>100?"طول بیش از ۱۰۰ متر؛ فیبر یا سوئیچ میانی بررسی شود":"Ethernet مسی با طول کانال استاندارد قابل بررسی است")+"\n\nفهرست اولیه تجهیزات\n- "+n+" دوربین IP با bitrate/توان مطابق طراحی\n- حداقل "+n+" پورت PoE و بودجه توان واقعی حداقل "+poe.toFixed(2)+" وات به‌علاوه بررسی دیتاشیت\n- NVR با پشتیبانی از "+n+" کانال و پهنای باند ورودی کافی\n- فضای ذخیره‌سازی قابل استفاده حداقل "+storageTb.toFixed(2)+" TB پس از بررسی RAID/فرمت\n- روتر/Firewall، UPS، کابل و متعلقات نصب\n- مسیر uplink مناسب و VLAN/ACL طبق سیاست امنیت\n\nموارد تأیید پیش از خرید\n- تطبیق مصرف و کلاس PoE، bitrate و قابلیت NVR با دیتاشیت\n- محاسبه ظرفیت قابل استفاده RAID و نرخ واقعی ضبط\n- نقشه محل، میدان دید، نور شب، حریم خصوصی و الزامات قانونی\n- تست کابل، ارت/صاعقه، برق پشتیبان و بازیابی تنظیمات\n- محدودسازی دسترسی، تغییر رمز پیش‌فرض، Firmware و ثبت لاگ\n\nاین گزارش برآورد آموزشی است و نقشه اجرایی/قیمت‌نامه قطعی نیست.";reportText=textReport;output("capstoneResult","<h3>گزارش آماده است: "+name+"</h3><div class='grid'><div><span class='help'>پهنای باند با حاشیه</span><div class='result-big'>"+persian(bandwidth)+" Mbps</div></div><div><span class='help'>PoE با حاشیه</span><div class='result-big'>"+persian(poe)+" W</div></div><div><span class='help'>ذخیره‌سازی با حاشیه</span><div class='result-big'>"+persian(storageTb)+" TB</div></div><div><span class='help'>پورت‌های دوربین</span><div class='result-big'>"+persian(n)+"</div></div></div><p>از «ذخیره گزارش TXT» برای دریافت گزارش متنی یا «چاپ / ذخیره PDF» برای چاپ استفاده کن.</p><details><summary>نمایش گزارش</summary><pre style='white-space:pre-wrap;overflow-wrap:anywhere;font:12px/2 Tahoma,sans-serif'>"+textReport.replace(/&/g,"&amp;").replace(/</g,"&lt;")+"</pre></details>","good");complete("capstone")});
 $("downloadReport").addEventListener("click",()=>{if(!reportText){$("buildReport").click();if(!reportText)return}const blob=new Blob(["\ufeff"+reportText],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="cctv-design-report.txt";a.click();URL.revokeObjectURL(url)});
