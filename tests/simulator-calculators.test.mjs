@@ -1,13 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { subnet,validateGateway,planVLSM,parseIPv4 } from "../assets/js/sim/calc/subnet.js";
-import { solveLink,POE_TYPES,poeCapacity,budgetCheck } from "../assets/js/sim/calc/poe.js";
+import { solveLink,POE_TYPES,poeCapacity,budgetCheck,R_COND_OHM_PER_M } from "../assets/js/sim/calc/poe.js";
+import { ENGINEERING } from "../assets/js/sim/constants.js";
 import { calculateStorage,referenceStorageTB } from "../assets/js/sim/calc/storage.js";
 import { recommendCable } from "../assets/js/sim/calc/cable.js";
 import { calculateUps } from "../assets/js/sim/calc/ups.js";
 import { calculateCoverage } from "../assets/js/sim/calc/optics.js";
 import { assessSecurity,SECURITY_CONTROLS } from "../assets/js/sim/calc/security.js";
 import { designCCTV } from "../assets/js/sim/calc/design.js";
+test("PoE shared resistance constants stay aligned",()=>{
+ assert.equal(ENGINEERING.ethernet.copperLoopResistanceOhmPerKm,R_COND_OHM_PER_M*1000);
+});
 test("subnet vectors",()=>{
  const a=subnet("192.168.1.130",26);assert.equal(a.network,"192.168.1.128");assert.equal(a.broadcast,"192.168.1.191");assert.equal(a.usableHosts,62);
  assert.equal(subnet("10.0.0.1",31).usableHosts,2);assert.equal(subnet("10.0.0.1",32).usableHosts,1);assert.equal(subnet("0.0.0.0",0).mask,"0.0.0.0");
