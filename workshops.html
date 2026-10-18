@@ -297,6 +297,8 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 <div class="field"><label for="projectBudget">بودجه تقریبی (اختیاری)</label><input id="projectBudget" type="text" inputmode="decimal" min="0" value="0"></div>
 </div><button class="btn primary" id="buildReport">ساخت گزارش پروژه</button><button class="btn" id="downloadReport">ذخیره گزارش TXT</button><button class="btn" id="downloadJsonReport" type="button">ذخیره گزارش JSON</button><button class="btn" id="printReport">چاپ / ذخیره PDF</button><div id="capstoneResult" aria-live="polite"></div></div><section class="card" id="upsWorkshop"><h3>کارگاه تخصصی UPS و برق پشتیبان</h3><div class="grid">
 <div class="field"><label for="upsLoad">بار کل (وات)</label><input id="upsLoad" type="text" inputmode="decimal" min="1" value="180"></div>
+<div class="field"><label for="upsCapacityW">توان پیوسته خروجی UPS (W)</label><input id="upsCapacityW" type="text" inputmode="decimal" min="1" value="600"></div>
+<div class="field"><label for="upsCapacityVA">ظرفیت ظاهری خروجی UPS (VA)</label><input id="upsCapacityVA" type="text" inputmode="decimal" min="1" value="1000"></div>
 <div class="field"><label for="upsPf">ضریب توان</label><input id="upsPf" type="text" inputmode="decimal" min="0.1" max="1" step="0.05" value="0.8"></div>
 <div class="field"><label for="upsBattery">ظرفیت باتری (Wh)</label><input id="upsBattery" type="text" inputmode="decimal" min="1" value="600"></div>
 <div class="field"><label for="upsEfficiency">بازده اینورتر (%)</label><input id="upsEfficiency" type="text" inputmode="decimal" min="1" max="100" value="85"></div>
