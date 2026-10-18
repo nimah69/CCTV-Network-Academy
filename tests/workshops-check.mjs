@@ -14,6 +14,7 @@ assert.equal((scenarioBlock[1].match(/title:"/g)||[]).length,12,"Expected 12 tro
 assert.ok(html.includes("localStorage"),"Workshop progress should persist locally");
 assert.ok(html.includes('src="./js/calculations.js"'),"Shared tested calculation module must load before workshop code");
 assert.ok(html.includes("function requiredNumber"),"Numeric fields must reject empty and invalid values");
+assert.ok(html.includes("function escapeHTML(value)") && html.includes("escapeHTML(name)"),"User-provided project names must be escaped before report HTML rendering");
 assert.ok(html.includes('id="poeResult" aria-live="polite"'),"PoE validation messages must be announced politely");
 assert.ok(html.includes('id="subnetResult" aria-live="polite"'),"Subnet validation messages must be announced politely");
 assert.ok(html.includes("@media(max-width:399px)"),"Small-phone responsive overrides must exist");
