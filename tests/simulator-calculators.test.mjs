@@ -126,6 +126,8 @@ test("integrated design vectors",()=>{
  assert.ok(designCCTV({raid:"raid6"}).storage.raid==="raid6");
  assert.ok(designCCTV({environment:"outdoor"}).cable.warnings.length>0);
  assert.ok(Array.isArray(designCCTV().assumptions));
+ assert.ok(designCCTV().reliability.notes.some(n=>n.includes("VLAN 10")&&n.includes("ACL")));
+ assert.ok(designCCTV().warnings.some(w=>w.includes("VLAN/ACL")));
  const reliability=designCCTV().reliability;assert.equal(reliability.uplinkFailure.recordingCameras,0);assert.ok(reliability.hddFailure.recordingCameras>0);assert.ok(reliability.baseline.recordingCameras>0);
  const redundant=designCCTV({redundantUplink:true}).reliability;assert.ok(redundant.uplinkFailure.recordingCameras>0);assert.ok(redundant.hddFailure.events.includes("raid-degraded"));
 });
