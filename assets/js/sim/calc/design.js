@@ -46,7 +46,8 @@ export function designCCTV(input={}){
  if(!["H.264","H.265"].includes(codec)||!["1080p","4MP","4K"].includes(resolution))throw new RangeError("کدک یا رزولوشن پشتیبانی نمی‌شود.");
  const recommendedBitrate=ENGINEERING.video.bitrateMbps[resolution]?.[codec]??null;
  const storage=calculateStorage({cameras,bitrateMbps,days,hoursPerDay:Number(input.hoursPerDay??24),activityPercent:Number(input.activityPercent??100),audioMbps:audio?ENGINEERING.video.typicalAudioMbps:0,substreamMbps:Number(input.substreamMbps??0),prePostPercent:Number(input.prePostPercent??0),overheadPercent:Number(input.overheadPercent??7),headroomPercent:Number(input.headroomPercent??10),diskCount:Number(input.diskCount??4),diskTB:Number(input.diskTB??8),hotSpare:Number(input.hotSpare??0),raid:input.raid??"raid5",nvrMaxInputMbps:Number(input.nvrMaxInputMbps??160),uplinkMbps:Number(input.uplinkMbps??1000),playbackMbps:remoteViewing?cameras*ENGINEERING.video.typicalRemoteStreamMbps:0});
- const poeLengthM=Number(input.cableLengthM??50),poeBudgetW=Number(input.poeBudgetW??120),reservePercent=Number(input.reservePercent??20),poeMaterial=input.cableMaterial==="cca"?"cca":"cu";
+ const poeLengthM=Number(input.cableLengthM??50),poeBudgetW=Number(input.poeBudgetW??120),reservePercent=Number(input.reservePercent??20),poeMaterial=input.cableMaterial??"cu";
+ if(!["cu","cca"].includes(poeMaterial))throw new RangeError("جنس کابل PoE باید cu یا cca باشد.");
  const poeLink=solveLink({type:poeStandard,pdW:poeWatts,lengthM:poeLengthM,pairs:input.pairs??POE_TYPES[poeStandard]?.pairs,material:poeMaterial});
  const poeClass=Object.entries(POE_CLASSES).find(([,entry])=>poeWatts<=entry.pdW);
  const poeAllocation=input.poeAllocation==="class"?(poeClass?.[1].pseW??POE_CLASSES[8].pseW):poeLink.pseW;
