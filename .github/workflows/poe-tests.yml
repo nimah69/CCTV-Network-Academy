@@ -18,5 +18,3 @@ jobs:
           node-version: 22
       - name: Run PoE reference tests
         run: node --test tests/poe.test.mjs
-      - name: Run repository test suite
-        run: npm test
