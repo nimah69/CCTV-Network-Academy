@@ -154,22 +154,8 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 
 
 
-/* Native dropdowns: keep the browser's built-in selection behavior and request dark popup UI. */
-select {
-  color-scheme: dark;
-}
-select option,
-select optgroup {
-  background-color: #0b192a;
-  color: #eaf2ff;
-}
-@media (forced-colors: active) {
-  select, select option { forced-color-adjust: auto; }
-}
-
 /* ca-select-portal-v1: themed dropdown rendered in body to avoid clipping by cards/sections */
 select.ca-native-hidden{position:absolute!important;width:1px!important;height:1px!important;min-height:1px!important;padding:0!important;margin:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;opacity:0!important;pointer-events:none!important}
-.ca-select-wrap{position:relative;display:block;width:100%;min-width:0}
 .ca-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:9px 12px;border:1px solid #35516e;border-radius:10px;background:#0b192a;color:#eaf2ff;text-align:right;font:inherit;line-height:1.6;cursor:pointer}
 .ca-select-trigger:focus-visible{outline:2px solid #67e8f9;outline-offset:2px}
 .ca-select-trigger:disabled{opacity:.55;cursor:not-allowed}
