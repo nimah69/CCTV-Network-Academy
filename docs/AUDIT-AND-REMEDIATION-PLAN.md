@@ -1100,11 +1100,11 @@
 - Quality checks: **موفق**.
 - PoE module tests: **موفق**.
 - Validate academy content and JavaScript: همهٔ jobها بدون شکست تکمیل شدند؛ وضعیت نهایی workflow در حال ثبت بود.
-- ساخت APK در زمان ثبت این بخش هنوز در حال اجرا بود.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] خواندن، ذخیره و reset پیشرفت بدون اتکای اجباری به localStorage.
 - [x] مدیریت JSON خراب و امتیاز ذخیره‌شدهٔ نامعتبر.
 - [x] آزمون‌های کیفیت، PoE و محتوای/JavaScript بدون شکست.
-- [ ] تأیید نهایی ساخت APK روی commit این مرحله.
+- [x] تأیید نهایی ساخت APK روی commit این مرحله.
 - [ ] تست واقعی آفلاین روی گوشی Android.
