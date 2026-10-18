@@ -1076,11 +1076,11 @@
 - Quality checks: **موفق**.
 - PoE module tests: **موفق**.
 - Validate academy content and JavaScript: **موفق**.
-- ساخت APK هنوز در حال اجرا بود هنگام ثبت این مرحله.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] شناسه‌های تمام checkboxها باید در مدل مشترک وجود داشته باشند.
 - [x] وزن تمام کنترل‌های پیشرفته باید صریح باشد.
 - [x] آزمون‌های کیفیت، PoE و محتوای/JavaScript موفق.
-- [ ] تأیید نهایی ساخت APK.
+- [x] تأیید نهایی ساخت APK.
 - [ ] آزمون میدانی Android.
