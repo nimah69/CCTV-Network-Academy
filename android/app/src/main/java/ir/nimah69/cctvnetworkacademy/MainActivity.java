@@ -94,6 +94,7 @@ public class MainActivity extends Activity {
                 trustedAppPage = true;
                 if (webView != null) {
                     webView.getSettings().setAllowFileAccess(false);
+                    webView.clearHistory();
                     webView.loadUrl(APP_ASSET_BASE_URL + "index.html");
                 }
             });
