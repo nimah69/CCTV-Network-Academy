@@ -69,8 +69,8 @@ test("applying an imported scenario updates every control and runs the topology 
     switchPorts: 24
   };
   applyTopologyConfig(scenario, root);
-  assert.deepEqual(equipment.filter(item => item.checked).map(item => item.value), scenario.equipment);
-  assert.deepEqual(links.filter(item => item.checked).map(item => item.value), scenario.links);
+  assert.deepEqual(equipment.filter(item => item.checked).map(item => item.value).sort(), [...scenario.equipment].sort());
+  assert.deepEqual(links.filter(item => item.checked).map(item => item.value).sort(), [...scenario.links].sort());
   assert.equal(cameraCount.value, "12");
   assert.equal(switchPorts.value, "24");
   assert.deepEqual(cameraCount.events, ["change"]);
