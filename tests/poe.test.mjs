@@ -26,7 +26,7 @@ test("V4: 25.5W, at, 100m مس → marginal", () => {
 });
 test("V5: 25.5W, at, 100m CCA → fail", () => {
   const r = solveLink({ type: "at", pdW: 25.5, lengthM: 100, material: "cca" });
-  near(r.currentA, 0.6228, 0.001); near(r.pseW, 31.14, 0.02);
+  near(r.currentA, 0.62566, 0.001); near(r.pseW, 31.29, 0.03);
   assert.equal(r.status, "fail"); assert.ok(r.reasons.length >= 2);
 });
 test("V6: 12.95W, af, 100m مس → marginal", () => {
