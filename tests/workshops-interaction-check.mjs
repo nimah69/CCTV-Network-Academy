@@ -38,7 +38,8 @@ assert.match(html, /delete node\.dataset\.simRunCount/, "Reset must reset the si
 
 assert.match(html, /classList\.add\(target&&status===\"fail\"\?\"sim-fail\"/, "Simulation must render calculated equipment states");
 assert.match(html, /ورودی‌های همین صفحه/, "Simulation must disclose it uses current page inputs");
-assert.match(html, /if\(eq\.includes\("camera"\)&&!has\("switch-camera"\)\)/, "Topology validation must flag a missing camera-to-switch link");
+assert.match(html, /if\(eq\.includes\("camera"\)&&!has\("switch-camera"\)&&!has\("switch2-camera"\)\)/, "Topology validation must flag a camera that is not connected to either switch");
+assert.match(html, /if\(has\("switch2-camera"\)&&!has\("switch-switch"\)\)/, "Topology validation must flag a missing inter-switch uplink for a camera on switch two");
 assert.match(html, /"camera-power":\{/, "Fault simulation must include a camera power/PoE failure");
 assert.match(html, /"camera-link":\{/, "Fault simulation must include a broken camera link");
 assert.match(html, /"switch-nvr":\{/, "Fault simulation must include a switch-to-NVR failure");
