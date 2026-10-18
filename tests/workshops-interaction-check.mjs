@@ -22,7 +22,8 @@ assert.match(html, /function renderTopologyDiagram\(\)/, "Topology must be rende
 assert.match(html, /const edges=valid\.map\(id=>/, "Topology edges must be rendered from selected links");
 assert.match(html, /names\[ep\[id\]\[0\]\]/, "Rendered links must show the selected source endpoint");
 assert.match(html, /names\[ep\[id\]\[1\]\]/, "Rendered links must show the selected destination endpoint");
-assert.match(html, /cams>ports/, "Topology validation must check camera count against available switch ports");
+assert.match(html, /const availableCameraPorts=ports\*\(eq\.includes\("switch2"\)&&has\("switch-switch"\)\?2:1\)/, "Topology validation must include the second switch only when its uplink is connected");
+assert.match(html, /cams>availableCameraPorts/, "Topology validation must check camera count against the total connected switch-port capacity");
 assert.match(html, /function runWorkshopSimulation\(button\)/, "All workshop simulators must execute a domain-specific analysis");
 assert.match(html, /workshop=button\.closest\("section\[id\]"\)/, "Simulator dispatch must locate the actual section[id] workshop container");
 assert.doesNotMatch(html, /button\.closest\("\.workshop"\)/, "Simulator dispatch must not depend on a missing .workshop class");
