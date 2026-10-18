@@ -154,22 +154,8 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 
 
 
-/* Native dropdowns: keep the browser's built-in selection behavior and request dark popup UI. */
-select {
-  color-scheme: dark;
-}
-select option,
-select optgroup {
-  background-color: #0b192a;
-  color: #eaf2ff;
-}
-@media (forced-colors: active) {
-  select, select option { forced-color-adjust: auto; }
-}
-
 /* ca-select-portal-v1: themed dropdown rendered in body to avoid clipping by cards/sections */
 select.ca-native-hidden{position:absolute!important;width:1px!important;height:1px!important;min-height:1px!important;padding:0!important;margin:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;opacity:0!important;pointer-events:none!important}
-.ca-select-wrap{position:relative;display:block;width:100%;min-width:0}
 .ca-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:9px 12px;border:1px solid #35516e;border-radius:10px;background:#0b192a;color:#eaf2ff;text-align:right;font:inherit;line-height:1.6;cursor:pointer}
 .ca-select-trigger:focus-visible{outline:2px solid #67e8f9;outline-offset:2px}
 .ca-select-trigger:disabled{opacity:.55;cursor:not-allowed}
@@ -663,7 +649,7 @@ renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
  function render(s){portal.replaceChildren();Array.from(s.options).forEach((o,i)=>{const b=document.createElement("button");b.type="button";b.className="ca-select-option";b.setAttribute("role","option");b.setAttribute("aria-selected",String(i===s.selectedIndex));b.disabled=!!o.disabled||(o.parentElement?.tagName==="OPTGROUP"&&o.parentElement.disabled);b.textContent=o.textContent.trim();b.addEventListener("click",()=>{if(b.disabled)return;s.selectedIndex=i;s.dispatchEvent(new Event("input",{bubbles:true}));s.dispatchEvent(new Event("change",{bubbles:true}));refresh(s);close();dFocus(s);});portal.appendChild(b);});if(!s.options.length){const e=document.createElement("div");e.className="ca-select-empty";e.textContent="گزینه‌ای موجود نیست";portal.append(e);} }
  function dFocus(s){enhanced.get(s)?.trigger.focus({preventScroll:true});}
  function open(s){const d=enhanced.get(s);if(!d||s.disabled)return;if(active?.select===s){close();return;}close();active={select:s,trigger:d.trigger};render(s);portal.classList.add("is-visible");d.trigger.setAttribute("aria-expanded","true");position();const selected=portal.querySelector('[aria-selected="true"]:not(:disabled)')||portal.querySelector("button:not(:disabled)");if(selected)selected.focus({preventScroll:true});}
- function enhance(s){if(!(s instanceof HTMLSelectElement)||s.multiple||enhanced.has(s)||!s.parentNode)return;const wrap=document.createElement("div");wrap.className="ca-select-wrap";s.parentNode.insertBefore(wrap,s);wrap.appendChild(s);s.classList.add("ca-native-hidden");const t=document.createElement("button");t.type="button";t.className="ca-select-trigger";t.setAttribute("aria-haspopup","listbox");t.setAttribute("aria-expanded","false");const v=document.createElement("span");v.className="ca-select-value";const ch=document.createElement("span");ch.className="ca-select-chevron";ch.setAttribute("aria-hidden","true");ch.textContent="▾";t.append(v,ch);wrap.appendChild(t);enhanced.set(s,{wrap,trigger:t,value:v});t.addEventListener("click",()=>open(s));t.addEventListener("keydown",e=>{if(["ArrowDown","ArrowUp","Enter"," "].includes(e.key)){e.preventDefault();open(s);if(e.key==="ArrowUp"&&active){const a=portal.querySelectorAll("button:not(:disabled)");a[a.length-1]?.focus();}}else if(e.key==="Escape")close();});s.addEventListener("change",()=>refresh(s));s.addEventListener("input",()=>refresh(s));new MutationObserver(()=>refresh(s)).observe(s,{childList:true,subtree:true,characterData:true,attributes:true});refresh(s);}
+ function enhance(s){if(!(s instanceof HTMLSelectElement)||s.multiple||enhanced.has(s)||!s.parentNode)return;s.classList.add("ca-native-hidden");const t=document.createElement("button");t.type="button";t.className="ca-select-trigger";t.setAttribute("aria-haspopup","listbox");t.setAttribute("aria-expanded","false");const v=document.createElement("span");v.className="ca-select-value";const ch=document.createElement("span");ch.className="ca-select-chevron";ch.setAttribute("aria-hidden","true");ch.textContent="▾";t.append(v,ch);s.parentNode.insertBefore(t,s.nextSibling);enhanced.set(s,{trigger:t,value:v});t.addEventListener("click",()=>open(s));t.addEventListener("keydown",e=>{if(["ArrowDown","ArrowUp","Enter"," "].includes(e.key)){e.preventDefault();open(s);if(e.key==="ArrowUp"&&active){const a=portal.querySelectorAll("button:not(:disabled)");a[a.length-1]?.focus();}}else if(e.key==="Escape")close();});s.addEventListener("change",()=>refresh(s));s.addEventListener("input",()=>refresh(s));new MutationObserver(()=>refresh(s)).observe(s,{childList:true,subtree:true,characterData:true,attributes:true});refresh(s);}
  function scan(root){if(root instanceof HTMLSelectElement)enhance(root);root.querySelectorAll?.("select").forEach(enhance);}
  scan(document);new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n);}))).observe(document.documentElement,{childList:true,subtree:true});
  portal.addEventListener("keydown",e=>{const items=Array.from(portal.querySelectorAll("button:not(:disabled)"));const i=items.indexOf(document.activeElement);if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length]?.focus();}else if(e.key==="Home"){e.preventDefault();items[0]?.focus();}else if(e.key==="End"){e.preventDefault();items[items.length-1]?.focus();}else if(e.key==="Escape"){e.preventDefault();const s=active?.select;close();if(s)dFocus(s);}else if(e.key==="Tab")close();});
