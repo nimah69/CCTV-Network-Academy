@@ -105,6 +105,9 @@ test("optics vectors",()=>{
 test("security vectors",()=>{
  assert.equal(assessSecurity(SECURITY_CONTROLS.map(c=>c.id)).score,100);
  assert.equal(assessSecurity([]).score,0);
+ const scoped=assessSecurity(["default-password"],["default-password","rbac"]);
+ assert.equal(scoped.controls.length,2,"Scoped security score must only include the selected checklist controls");
+ assert.equal(scoped.score,59,"Scoped security score must use the selected controls as its denominator");
  assert.ok(assessSecurity(["default-password"]).score>0);
  assert.ok(assessSecurity([]).attackChain.length>0);
  assert.ok(assessSecurity([]).priority.length>=10);
