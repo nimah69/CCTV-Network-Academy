@@ -12,6 +12,12 @@ const scenarioBlock=scripts[0].match(/const scenarios=\[([\s\S]*?)\n\];/);
 assert.ok(scenarioBlock,"Scenario bank must exist");
 assert.equal((scenarioBlock[1].match(/title:"/g)||[]).length,12,"Expected 12 troubleshooting scenarios");
 assert.ok(html.includes("localStorage"),"Workshop progress should persist locally");
+assert.ok(html.includes('function readStorage(key,fallback="")'),"Workshop state loading must tolerate unavailable localStorage");
+assert.ok(html.includes("function readStoredArray(key)"),"Malformed saved progress must fall back to an empty list");
+assert.ok(html.includes("Number.isFinite(storedScore)&&storedScore>=0"),"Invalid stored scores must be normalized safely");
+assert.ok(html.includes("function writeStorage(key,value){try{localStorage.setItem(key,value);return true}catch{return false}}"),"Progress saving must not crash when localStorage is blocked");
+assert.ok(html.includes('removeStorage("cctv-workshops-completed")')&&html.includes('removeStorage("cctv-workshops-score")'),"Progress reset must tolerate unavailable localStorage");
+
 assert.ok(html.includes('src="./js/calculations.js"'),"Shared tested calculation module must load before workshop code");
 assert.ok(html.includes("function requiredNumber"),"Numeric fields must reject empty and invalid values");
 assert.ok(html.includes("function escapeHTML(value)") && html.includes("escapeHTML(name)"),"User-provided project names must be escaped before report HTML rendering");
