@@ -40,5 +40,5 @@ const securityIds=[...simpleSecurityBlock[1].matchAll(/data-security-control="([
 assert.equal(securityIds.length,9,"Each simple security checkbox must have a stable control ID");
 assert.equal(new Set(securityIds).size,securityIds.length,"Simple security checklist controls must not be mapped more than once");
 assert.ok(securityIds.includes("firewall-acl"),"Firewall/ACL needs its own distinct control");
-const calcSource=fs.readFileSync(path.join(root,"assets/js/sim/ui/calculators.js"),"utf8");
+const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
 assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
