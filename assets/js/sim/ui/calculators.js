@@ -110,8 +110,8 @@ bind("calcLens",()=>{
  const coverage=r.sceneCoverage;
  const fit=coverage.fitsSingleCamera;
  const density=r.pixelsPerMeter;
- const status=fit&&density>=25?"good":"warn";
- show("lensResult","زاویه دید افقی/عمودی: "+fmt(r.horizontalFovDeg)+"° / "+fmt(r.verticalFovDeg)+"°\nمیدان دید تخمینی در فاصله انتخابی: "+fmt(r.coveredWidthM)+" × "+fmt(r.coveredHeightM)+" متر\nتراکم پیکسل افقی/عمودی: "+fmt(r.horizontalPixelsPerMeter)+" / "+fmt(r.verticalPixelsPerMeter)+" px/m؛ مبنای ارزیابی محافظه‌کارانه: "+fmt(density)+" px/m\nسطح مرجع: "+r.dori+"\nپوشش فضای هدف "+fmt(coverage.sceneWidthM)+" × "+fmt(coverage.sceneHeightM)+" متر: "+(fit?"از نظر هندسی در میدان دید یک دوربین جا می‌گیرد.":"در یک قاب جا نمی‌گیرد؛ برآورد هندسی با هم‌پوشانی ۲۰٪ حدود "+coverage.horizontalCameras+" ستون × "+coverage.verticalRows+" ردیف دوربین می‌خواهد.")+"\n"+r.warning,""+status);
+ const status=fit&&r.current2025DensityLevel!==null?"good":"warn";
+ show("lensResult","زاویه دید افقی/عمودی: "+fmt(r.horizontalFovDeg)+"° / "+fmt(r.verticalFovDeg)+"°\nمیدان دید تخمینی در فاصله انتخابی: "+fmt(r.coveredWidthM)+" × "+fmt(r.coveredHeightM)+" متر\nتراکم پیکسل افقی/عمودی: "+fmt(r.horizontalPixelsPerMeter)+" / "+fmt(r.verticalPixelsPerMeter)+" px/m؛ مبنای ارزیابی محافظه‌کارانه: "+fmt(density)+" px/m\nسطح مرجع DORI قدیمی: "+r.dori+"\nسطح تراکم IEC 62676-4:2025: "+(r.current2025DensityLevel===null?"کمتر از ۲۰ px/m":fmt(r.current2025DensityLevel)+" px/m")+"\nپوشش فضای هدف "+fmt(coverage.sceneWidthM)+" × "+fmt(coverage.sceneHeightM)+" متر: "+(fit?"از نظر هندسی در میدان دید یک دوربین جا می‌گیرد.":"در یک قاب جا نمی‌گیرد؛ برآورد هندسی با هم‌پوشانی ۲۰٪ حدود "+coverage.horizontalCameras+" ستون × "+coverage.verticalRows+" ردیف دوربین می‌خواهد.")+"\n"+r.warning,""+status);
  const svg=$("lensCoverageSvg");
  const sw=Math.max(20,Math.min(260,260*coverage.horizontalCoverageRatio));
  const sh=Math.max(12,Math.min(82,82*coverage.verticalCoverageRatio));
