@@ -1,4 +1,4 @@
-import { calculatePoe } from "./poe.js";
+import { solveLink, budgetCheck, POE_TYPES, POE_CLASSES } from "./poe.js";
 import { subnet, planVLSM } from "./subnet.js";
 import { calculateStorage } from "./storage.js";
 import { recommendCable } from "./cable.js";
@@ -41,7 +41,12 @@ export function designCCTV(input={}){
  if(!Number.isInteger(cameras)||cameras<1||cameras>2048)throw new RangeError("تعداد دوربین باید عدد صحیح بین ۱ تا ۲۰۴۸ باشد.");
  const recommendedBitrate=ENGINEERING.video.bitrateMbps[resolution]?.[codec]??null;
  const storage=calculateStorage({cameras,bitrateMbps,days,hoursPerDay:Number(input.hoursPerDay??24),activityPercent:Number(input.activityPercent??100),audioMbps:audio?ENGINEERING.video.typicalAudioMbps:0,substreamMbps:Number(input.substreamMbps??0),prePostPercent:Number(input.prePostPercent??0),overheadPercent:Number(input.overheadPercent??7),headroomPercent:Number(input.headroomPercent??10),diskCount:Number(input.diskCount??4),diskTB:Number(input.diskTB??8),hotSpare:Number(input.hotSpare??0),raid:input.raid??"raid5",nvrMaxInputMbps:Number(input.nvrMaxInputMbps??160),uplinkMbps:Number(input.uplinkMbps??1000),playbackMbps:remoteViewing?cameras*ENGINEERING.video.typicalRemoteStreamMbps:0});
- const poe=calculatePoe({standard:poeStandard,cameraWatts:poeWatts,lengthM:Number(input.cableLengthM??50),cameraCount:cameras,budgetW:Number(input.poeBudgetW??120),reservePercent:Number(input.reservePercent??20),pairs:input.pairs??null,cable:input.cableMaterial??"copper"});
+ const poeLengthM=Number(input.cableLengthM??50),poeBudgetW=Number(input.poeBudgetW??120),reservePercent=Number(input.reservePercent??20),poeMaterial=input.cableMaterial==="cca"?"cca":"cu";
+ const poeLink=solveLink({type:poeStandard,pdW:poeWatts,lengthM:poeLengthM,pairs:input.pairs??POE_TYPES[poeStandard]?.pairs,material:poeMaterial});
+ const poeClass=Object.entries(POE_CLASSES).find(([,entry])=>poeWatts<=entry.pdW);
+ const poeAllocation=input.poeAllocation==="class"?(poeClass?.[1].pseW??POE_CLASSES[8].pseW):poeLink.pseW;
+ const poeBudget=budgetCheck({switchBudgetW:poeBudgetW,marginPct:reservePercent,allocationsW:Array(cameras).fill(poeAllocation)});
+ const poe={...poeLink,pdW:poeWatts,pseRequiredW:poeLink.pseW,voltageDropV:POE_TYPES[poeStandard].vPseMin-poeLink.vPdV,totalRequiredW:poeBudget.totalW*(1+reservePercent/100),totalOk:poeBudget.status!=="fail"&&(input.poeAllocation!=="class"||Boolean(poeClass)),portOk:poeLink.status!=="fail",status:poeBudget.status==="fail"||poeLink.status==="fail"?"نامناسب":poeBudget.status==="marginal"||poeLink.status==="marginal"?"مرزی":"مناسب",warning:[...poeLink.reasons,...poeLink.warnings,...(poeBudget.status!=="ok"?["بودجه کل PoE برای مصرف سمت PSE و حاشیه انتخابی کافی نیست."]:[]),...(input.poeAllocation==="class"?["رزرو ایستا بر اساس کلاس "+(poeClass?.[0]??"۸")+" انتخاب شده است."]:[]),...(input.poeAllocation==="class"&&!poeClass?["توان دوربین از سقف توان PD کلاس ۸ بیشتر است."]:[])]};
  const ip=subnet(input.baseIp??"192.168.10.10",Number(input.cidr??24));
  const cable=recommendCable({distanceM:Number(input.cableLengthM??50),environment,emi:input.emi??"low",speedMbps:Number(input.uplinkMbps??1000),needsPoe:true,budget:input.budget??"medium"});
  const totalLoadW=Number(input.totalLoadW??cameras*poeWatts+ENGINEERING.video.typicalNvrOtherLoadW);
