@@ -23,6 +23,11 @@ test("subnet vectors",()=>{
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.255").valid,false);
  assert.equal(validateGateway("192.168.1.0",31,"192.168.1.1").valid,true,"Both addresses in a /31 point-to-point subnet are usable");
  assert.equal(validateGateway("192.168.1.20",32,"192.168.1.21").valid,false,"A /32 host route must not accept a gateway outside the same subnet");
+ assert.equal(validateGateway("224.0.0.1",24,"224.0.0.2").valid,false,"Multicast addresses must not be accepted as a gateway");
+ assert.equal(validateGateway("127.0.0.2",24,"127.0.0.1").valid,false,"Loopback addresses must not be accepted as a gateway");
+ assert.equal(validateGateway("10.0.0.2",8,"0.0.0.1").valid,false,"The reserved 0/8 block must not be accepted as a gateway");
+ assert.equal(validateGateway("240.0.0.2",8,"240.0.0.1").valid,false,"Reserved class-E addresses must not be accepted as a gateway");
+
  assert.throws(()=>planVLSM([{name:"a",hosts:2}],{address:"192.168.1.0",prefix:31}),RangeError);
  const packed=planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24});
  assert.equal(packed[0].cidr,"192.168.10.0/26");assert.equal(packed[1].cidr,"192.168.10.64/28");
