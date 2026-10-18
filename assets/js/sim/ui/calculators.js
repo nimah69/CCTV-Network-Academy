@@ -49,7 +49,7 @@ bind("recommendCable",()=>{
  show("cableResult",r.options.slice(0,5).map((o,i)=>(i+1)+". "+o.name+"\nمزایا: "+o.pros.join("، ")+"\nمحدودیت‌ها: "+o.cons.join("، ")+"\n"+o.reasons.join("؛ ")).join("\n\n")+"\nهشدارها:\n"+r.warnings.join("\n"),r.options.length?"good":"warn");
 });
 bind("scoreSecurity",()=>{
- const mapping=["default-password","segmentation","segmentation","patching","patching","remote-cloud","lockout","rbac","ports"];
+ const mapping=["default-password","rbac","segmentation","segmentation","patching","remote-cloud","audit-logging","backup-restore","ports"];
  const allChecks=[...document.querySelectorAll("#securityChecks input")];const ids=allChecks.map((el,i)=>el.checked?mapping[i]:null).filter(Boolean);
  const r=assessSecurity(ids);
  show("securityResult","امتیاز کنترل‌های نگاشت‌شده: "+r.score+"/100؛ "+r.rating+"\nاولویت‌های اصلاح:\n"+r.priority.slice(0,5).map(x=>x.risk+" · "+x.title).join("\n")+"\nزنجیره حمله احتمالی:\n"+r.attackChain.map(x=>x.text).join("\n"),r.score>=80?"good":"warn");
