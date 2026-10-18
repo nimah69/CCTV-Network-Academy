@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "cctv-academy-static-v__BUILD_VERSION__";
+const CACHE_NAME = "cctv-academy-static-v20261018-select-menu-fix1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
