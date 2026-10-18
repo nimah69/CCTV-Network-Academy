@@ -6,10 +6,11 @@ export function calculateStorage({cameras,bitrateMbps,days,hoursPerDay=24,activi
  if(hours>24||activity>100||over>100||head>100||pre>100||factor>1)throw new RangeError("ساعات، درصدها یا ضریب ظرفیت خارج از محدوده‌اند.");
  const perCamera=rate*(activity/100)+audio+sub,aggregateMbps=n*perCamera*(1+pre/100),dailyTB=aggregateMbps*1e6/8*3600*hours/1e12;
  const rawTB=dailyTB*duration,withOverheadTB=rawTB*(1+over/100),requiredTB=withOverheadTB*(1+head/100);
- const active=count-spare;let usable;
+ const playback=nonNegativeNumber(playbackMbps,"پخش هم‌زمان"),active=count-spare;let usable;
  switch(raid){case "none":case "raid0":usable=active*size;break;case "raid1":usable=active>=2?size:0;break;case "raid5":usable=active>=3?(active-1)*size:0;break;case "raid6":usable=active>=4?(active-2)*size:0;break;case "raid10":usable=active>=4&&active%2===0?active/2*size:0;break;default:throw new RangeError("نوع RAID پشتیبانی نمی‌شود.")}
  usable*=factor;
- const maxInput=Number.isFinite(nvrMaxInputMbps)?positiveNumber(nvrMaxInputMbps,"حد ورودی NVR"):Infinity,up=positiveNumber(uplinkMbps,"سرعت Uplink"),totalLoad=aggregateMbps+playbackMbps,utilization=totalLoad/up;
+ const maxInput=nvrMaxInputMbps===Infinity?Infinity:positiveNumber(nvrMaxInputMbps,"حد ورودی NVR"),up=positiveNumber(uplinkMbps,"سرعت Uplink"),totalLoad=aggregateMbps+playback,utilization=totalLoad/up;
+ if(!Number.isFinite(totalLoad)||!Number.isFinite(utilization))throw new RangeError("بار شبکه خارج از محدوده عددی است.");
  return {aggregateMbps,perCameraMbps:perCamera,rawTB,withOverheadTB,requiredTB,raid,activeDisks:active,usableTB:usable,raidTolerance:raid==="raid5"?"یک دیسک":raid==="raid6"?"دو دیسک":raid==="raid1"?"یک دیسک در آینه":raid==="raid10"?"یک دیسک در هر آینه (بسته به چینش)":"بدون افزونگی",capacityStatus:usable>=requiredTB?"مناسب":usable>=requiredTB*.9?"مرزی":"نامناسب",nvrInputStatus:aggregateMbps<=maxInput?"مناسب":"نامناسب",uplinkUtilization:utilization,uplinkStatus:utilization<=ENGINEERING.design.uplinkTargetUtilization?"مناسب":"نامناسب",warnings:[...(usable<requiredTB?["ظرفیت قابل استفاده RAID از نیاز نگهداری کمتر است."]:[]),...(aggregateMbps>maxInput?["ورودی تجمیعی از سقف ورودی NVR بیشتر است."]:[]),...(utilization>ENGINEERING.design.uplinkTargetUtilization?["بار Uplink از آستانه طراحی ۷۰٪ بیشتر است."]:[])]};
 }
 export function referenceStorageTB(cameras,bitrateMbps,days,hoursPerDay=24){return positiveNumber(cameras,"تعداد دوربین")*positiveNumber(bitrateMbps,"Mbps")*1e6/8*3600*positiveNumber(hoursPerDay,"ساعات ضبط")/1e12*positiveNumber(days,"روز")}
