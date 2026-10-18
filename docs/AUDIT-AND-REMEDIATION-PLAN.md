@@ -1054,11 +1054,11 @@
 - Quality checks: **موفق**.
 - PoE module tests: **موفق**.
 - Validate academy content and JavaScript: **موفق**.
-- ساخت APK هنگام ثبت این بخش در حال اجرا بود.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] جداسازی معنایی RBAC و محدودسازی مسیر دسترسی مدیریت.
 - [x] زنجیره حمله متناسب با scope.
 - [x] آزمون‌های کیفیت، PoE و محتوای/JavaScript موفق.
-- [ ] تأیید نهایی APK برای commit این مرحله.
+- [x] تأیید نهایی APK برای commit این مرحله.
 - [ ] آزمون واقعی Android.
