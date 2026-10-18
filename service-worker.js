@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "cctv-academy-static-v20261018-dropdown-sibling7";
+const CACHE_NAME = "cctv-academy-static-v20261018-custom-select-runtime1";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -17,6 +17,7 @@ const CORE_ASSETS = [
   "./js/chapter-lab-ui.js",
   "./js/spaced-review.js",
   "./js/pwa-register.js",
+  "./js/custom-select.js",
   "./assets/js/sim/constants.js",
   "./assets/js/sim/units.js",
   "./assets/js/sim/graph.js",
