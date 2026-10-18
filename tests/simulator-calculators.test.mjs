@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { subnet,validateGateway,planVLSM } from "../assets/js/sim/calc/subnet.js";
-import { calculatePoe,poeCapacity } from "../assets/js/sim/calc/poe.js";
+import { solveLink,POE_TYPES,poeCapacity,budgetCheck } from "../assets/js/sim/calc/poe.js";
 import { calculateStorage,referenceStorageTB } from "../assets/js/sim/calc/storage.js";
 import { recommendCable } from "../assets/js/sim/calc/cable.js";
 import { calculateUps } from "../assets/js/sim/calc/ups.js";
@@ -17,15 +17,15 @@ test("subnet vectors",()=>{
  assert.equal(planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24}).length,2);
 });
 test("PoE vectors",()=>{
- const a=calculatePoe({standard:"af",cameraWatts:8,lengthM:0,budgetW:50,cameraCount:4});assert.equal(a.status,"مناسب");
- assert.ok(calculatePoe({standard:"at",cameraWatts:20,lengthM:80}).voltageDropV>0);
- assert.ok(calculatePoe({standard:"bt3",cameraWatts:40,lengthM:50,pairs:4}).pdW>0);
- assert.equal(calculatePoe({standard:"bt4",cameraWatts:60,lengthM:10}).standard,"IEEE 802.3bt / Type 4");
- assert.throws(()=>calculatePoe({standard:"bad",cameraWatts:12}));
- assert.throws(()=>calculatePoe({standard:"at",cameraWatts:12,lengthM:101}));
- assert.throws(()=>calculatePoe({standard:"at",cameraWatts:0}));
- assert.equal(calculatePoe({standard:"at",cameraWatts:12,cable:"cca"}).material,"cca");
- assert.ok(calculatePoe({standard:"at",cameraWatts:12,budgetW:10}).totalOk===false);
+ const a=solveLink({type:"af",pdW:8,lengthM:0});assert.equal(a.status,"ok");
+ assert.ok(POE_TYPES.at.vPseMin-solveLink({type:"at",pdW:20,lengthM:80}).vPdV>0);
+ assert.ok(solveLink({type:"bt3",pdW:40,lengthM:50,pairs:4}).vPdV>0);
+ assert.equal(POE_TYPES.bt4.pseW,90);
+ assert.throws(()=>solveLink({type:"bad",pdW:12,lengthM:0}));
+ assert.equal(solveLink({type:"at",pdW:12,lengthM:101}).status,"fail");
+ assert.throws(()=>solveLink({type:"at",pdW:0,lengthM:0}));
+ assert.ok(solveLink({type:"at",pdW:12,lengthM:10,material:"cca"}).resistanceOhm>0);
+ assert.equal(budgetCheck({switchBudgetW:10,allocationsW:[solveLink({type:"at",pdW:12,lengthM:0}).pseW]}).status,"fail");
  assert.equal(poeCapacity({budgetW:120,cameraWatts:12,reservePercent:20}),8);
 });
 test("storage reference and RAID vectors",()=>{
