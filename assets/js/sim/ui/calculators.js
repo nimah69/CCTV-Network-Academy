@@ -20,9 +20,9 @@ function getPoe(){
  const cameraWatts=num("poeWatts","توان دوربین",.1),lengthM=num("cableLength","طول کابل",0,100),cameraCount=num("poeCams","تعداد دوربین",1,1024,true),budgetW=num("poeBudget","بودجه کل PoE",1),reservePercent=num("poeReserve","حاشیه اطمینان",0,50),pairs=Number($("poePairs")?.value||POE_TYPES[standard].pairs);
  const link=solveLink({type:standard,pdW:cameraWatts,lengthM,material:$("cableType").value==="cca"?"cca":"cu",pairs});
  const budget=budgetCheck({switchBudgetW:budgetW,marginPct:reservePercent,allocationsW:Array(cameraCount).fill(link.pseW)});
- const totalRequiredW=link.pseW*cameraCount*(1+reservePercent/100);
- const portOk=link.pseW<=POE_TYPES[standard].pseW&&link.status!=="fail";
- const totalOk=totalRequiredW<=budgetW;
+ const totalRequiredW=budget.totalW/(1-reservePercent/100);
+ const portOk=link.pseW<=POE_TYPES[standard].pseW&&link.currentA<=POE_TYPES[standard].iPairMaxA*(pairs/2)&&link.vPdV>=POE_TYPES[standard].vPdMin;
+ const totalOk=budget.totalW<=budget.usableW;
  const warning=[...link.reasons,...link.warnings];
  if(budget.status!=="ok")warning.push("بودجهٔ کل PoE با حاشیهٔ انتخاب‌شده کافی نیست.");
  return {status:link.status==="fail"?"نامناسب":link.status==="marginal"?"مرزی":"مناسب",standard,pseRequiredW:link.pseW,pdW:cameraWatts,voltageDropV:POE_TYPES[standard].vPseMin-link.vPdV,lossW:link.lossW,totalRequiredW,portOk,totalOk,warning};
