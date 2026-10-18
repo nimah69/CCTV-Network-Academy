@@ -21,6 +21,9 @@ test("subnet vectors",()=>{
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.20").valid,false);
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.0").valid,false);
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.255").valid,false);
+ assert.equal(validateGateway("192.168.1.0",31,"192.168.1.1").valid,true,"Both addresses in a /31 point-to-point subnet are usable");
+ assert.equal(validateGateway("192.168.1.20",32,"192.168.1.21").valid,false,"A /32 host route must not accept a gateway outside the same subnet");
+ assert.throws(()=>planVLSM([{name:"a",hosts:2}],{address:"192.168.1.0",prefix:31}),RangeError);
  const packed=planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24});
  assert.equal(packed[0].cidr,"192.168.10.0/26");assert.equal(packed[1].cidr,"192.168.10.64/28");
  assert.equal(planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24}).length,2);
