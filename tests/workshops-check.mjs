@@ -40,6 +40,11 @@ const securityIds=[...simpleSecurityBlock[1].matchAll(/data-security-control="([
 assert.equal(securityIds.length,9,"Each simple security checkbox must have a stable control ID");
 assert.equal(new Set(securityIds).size,securityIds.length,"Simple security checklist controls must not be mapped more than once");
 assert.ok(securityIds.includes("firewall-acl"),"Firewall/ACL needs its own distinct control");
+const advancedSecurityBlock=html.match(/<div class="checklist" id="advancedSecurityChecks">([\s\S]*?)<\/div>/);
+assert.ok(advancedSecurityBlock,"Advanced security checklist must exist");
+const advancedSecurityIds=[...advancedSecurityBlock[1].matchAll(/data-security-control="([^"]+)"/g)].map(match=>match[1]);
+assert.equal(new Set(advancedSecurityIds).size,advancedSecurityIds.length,"Advanced security control IDs must be unique");
+assert.ok(advancedSecurityIds.includes("firewall-acl"),"Advanced checklist must expose the firewall ACL control");
 const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
 assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
 assert.ok(html.includes('id="lensTargetDensity"'),"Lens calculator must expose an explicit pixel-density target");
