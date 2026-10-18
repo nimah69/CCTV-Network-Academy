@@ -457,3 +457,41 @@
 - [x] بازبینی triggerهای PR برای APK.
 - [ ] افزودن smoke test برای importهای ماژول و DOM/browser.
 - [ ] اجرای APK روی گوشی واقعی در حالت آنلاین، آفلاینِ نصب‌اول و پس از restart.
+
+
+## مرحلهٔ دهم — ممیزی بسته‌بندی واقعی APK و مسیر بارگذاری WebView
+
+**وضعیت:** بررسی استاتیک اسکریپت bundle و مسیرهای HTML انجام شد. CI build موفق است، اما محتوای موردنیاز شبیه‌سازها در بسته‌بندی تعریف‌شده حضور ندارد؛ اجرای APK واقعی برای تأیید نهایی همچنان لازم است.
+
+### J1. بسته‌بند Android پوشهٔ `assets/js/sim/` را کپی نمی‌کند، درحالی‌که صفحهٔ کارگاه به آن وابسته است
+- **شواهد:** `scripts/bundle-android-assets.sh` فقط پوشه‌های `js/*.js`, `css/*.css`, `icons/*.svg` و در صورت وجود `fonts/*` را به `android/app/src/main/assets/academy` کپی می‌کند؛ هیچ دستور کپی برای `assets/**` ندارد. در عین حال `workshops.html` این ماژول‌ها را مستقیماً بارگذاری می‌کند:
+  - `./assets/js/sim/ui/calculators.js`
+  - `./assets/js/sim/ui/real-simulator.js`
+  - `./assets/js/sim/poe-reference-ui.js`
+  و این ماژول‌ها نیز از فایل‌های دیگر زیر `assets/js/sim/` import می‌کنند.
+- **نتیجه:** build APK می‌تواند موفق شود، چون Gradle لزوماً منابع HTML/JS را validate نمی‌کند؛ ولی فایل‌های ماژول‌های شبیه‌ساز در مسیر مقصد تولیدشده وجود نخواهند داشت. در نتیجه ابزارهای جدید شبکه، PoE، UPS، لنز و شبیه‌ساز واقعی در نسخهٔ APK در دسترس نیستند یا با خطای بارگذاری منبع اجرا نمی‌شوند.
+- **وضعیت:** نقص بسته‌بندی تأییدشده با مقایسهٔ script و مسیرهای HTML؛ شکست runtime هنوز روی APK نصب‌شده مشاهده نشده است.
+- **اولویت:** بحرانی / P0 برای قابلیت‌های کارگاه در نسخهٔ Android.
+- **دستور اصلاح:** در اسکریپت bundle، کل `assets/js/sim/` (شامل تمام زیرپوشه‌ها مثل `calc/` و `ui/`) را با حفظ ساختار نسبی به `$DEST/assets/js/sim/` کپی کنید. به‌جای بررسی فقط فایل‌های `js/*.js`, یک تست کامل local-resource/import graph اضافه کنید که تمام `src`, `href` و importهای نسبی HTML/ESM را در bundle نهایی resolve کند و در صورت فقدان هر فایل build را fail کند.
+- **آزمون پذیرش:** پس از bundle، وجود و تطابق فایل‌های `calculators.js`, `real-simulator.js`, `poe-reference-ui.js`, `calc/poe.js`, `calc/ups.js`, `calc/optics.js`, `engine.js`, `scenarios.js` و تمام importهای transitive در `android/app/src/main/assets/academy/assets/js/sim/` بررسی شود؛ سپس APK از نصب پاک باز و هر کارگاه به‌صورت عملی اجرا شود.
+
+### J2. CI ساخت موفق APK را به‌اشتباه می‌توان با صحت اجرای منابع محلی یکی دانست
+- **شواهد:** `.github/workflows/offline-apk-ci.yml` اسکریپت bundle را اجرا می‌کند، سپس `assembleDebug`, `unzip -t` و `apksigner verify` را انجام می‌دهد. این مراحل معتبر بودن بسته و امضای آن را بررسی می‌کنند، اما تستی برای وجود تمام مسیرهای منبع HTML/ESM در پوشهٔ assets نهایی تعریف نشده است.
+- **وضعیت:** شکاف اعتبارسنجی بسته تأییدشده.
+- **دستور اصلاح:** یک مرحلهٔ `verify-bundled-assets` بلافاصله پس از bundle و پیش از Gradle اضافه شود؛ تست باید هر منبع محلی را از HTML دنبال کند و سپس importهای نسبی را به‌صورت بازگشتی resolve کند. تست باید روی پوشهٔ bundleشده اجرا شود، نه فقط ریشهٔ سورس.
+- **معیار پذیرش:** حذف عمدی یک فایل importشده از bundle باید CI را قرمز کند، حتی اگر Gradle بتواند APK بسازد.
+
+### J3. WebView از `file://` بارگذاری می‌کند، ولی صفحات به ES modules وابسته‌اند
+- **شواهد:** `MainActivity.java` از `file:///android_asset/academy/index.html` استفاده می‌کند، JavaScript و `setAllowFileAccess(true)` را فعال می‌کند و ماژول‌های ES از HTML کارگاه بارگذاری می‌شوند. پیکربندی فعلی `android/app/build.gradle` وابستگی `androidx.webkit:webkit` ندارد و `WebViewAssetLoader` استفاده نشده است.
+- **وضعیت:** ریسک سازگاری معماری تأییدشده؛ چون J1 به‌تنهایی منابع را غایب می‌کند، ابتدا J1 باید اصلاح شود و سپس سازگاری ESM در WebView واقعی جداگانه آزموده شود.
+- **دستور اصلاح:** مسیر پیشنهادی Android، `WebViewAssetLoader` با origin محلی HTTPS مجازی و نگاشت امن فایل‌های asset است. این تغییر باید مرحله‌ای انجام شود تا رفتار ذخیره فایل، انتخاب فایل، دکمهٔ Back، PWA و ناوبری خارجی حفظ شود. `setAllowFileAccess` را صرفاً برای دور زدن خطای module loading گسترش ندهید.
+- **معیار پذیرش:** در دستگاه/APIهای پشتیبانی‌شده، ماژول‌ها بدون خطای CORS/MIME بارگذاری شوند؛ فایل‌های محلی خارج از مسیر مجاز قابل دسترسی نباشند؛ تمام ابزارها در حالت آفلاین پس از نصب پاک اجرا شوند.
+
+### فهرست کار مرحلهٔ دهم
+- [x] مقایسهٔ بسته‌بند با مسیرهای ماژول‌های HTML.
+- [x] تأیید اینکه workflow ساخت فعلی تست جامع محتوای bundle ندارد.
+- [x] بررسی پیکربندی MainActivity و نبود WebViewAssetLoader.
+- [ ] اصلاح bundle و افزودن import-graph verification.
+- [ ] تصمیم‌گیری و پیاده‌سازی امن WebViewAssetLoader در شاخهٔ اصلاحات.
+- [ ] اجرای نصب پاک و تست عملی APK روی گوشی.
+
