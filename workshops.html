@@ -609,9 +609,7 @@ document.querySelectorAll("[data-sim-reset]").forEach(button=>button.addEventLis
   const resetSimButtons=[...resetSection.querySelectorAll("[data-sim-toggle]")].map(node=>[node,node.textContent]);
   resetButton.addEventListener("click",()=>{
    resetSection.querySelectorAll("input,select,textarea").forEach(control=>{
-    if(control instanceof HTM
-
-LInputElement && (control.type==="checkbox"||control.type==="radio")) control.checked=control.defaultChecked;
+    if(control instanceof HTMLInputElement && (control.type==="checkbox"||control.type==="radio")) control.checked=control.defaultChecked;
     else if(control instanceof HTMLSelectElement){
      const defaults=[...control.options].filter(option=>option.defaultSelected);
      if(defaults.length) control.value=defaults[0].value;
