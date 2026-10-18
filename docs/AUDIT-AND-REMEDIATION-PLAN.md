@@ -1007,12 +1007,12 @@
 ### وضعیت آزمون روی commit `6e3c6669a8d2ceacf60d4207b6e69474171bdbbb`
 - Quality checks: **موفق**.
 - PoE module tests: **موفق**.
-- Validate academy content and JavaScript: همهٔ jobها بدون شکست تکمیل شدند؛ نتیجهٔ نهایی workflow در حال ثبت بود.
-- ساخت APK هنوز در حال اجرا بود؛ پس از تکمیل باید نتیجه ثبت شود.
+- Validate academy content and JavaScript: **موفق**؛ همهٔ jobها بدون شکست تکمیل شدند.
+- Build Offline Android APK، بررسی بسته/امضا و بارگذاری artifact: **موفق**.
 
 ### پذیرش
 - [x] رد مقادیر نامعتبر در پیشنهاد کابل.
 - [x] رد جنس کابل ناشناخته در طراحی یکپارچه.
 - [x] آزمون‌های کیفیت، PoE و اعتبارسنجی محتوا بدون شکست.
-- [ ] تأیید نهایی workflow و ساخت APK روی commit همین مرحله.
+- [x] تأیید نهایی workflow و ساخت APK روی commit همین مرحله.
 - [ ] آزمون واقعی در گوشی Android.
