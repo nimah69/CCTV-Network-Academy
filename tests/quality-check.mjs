@@ -19,6 +19,10 @@ new vm.Script(dataSource, { filename: "js/academy-data.js" }).runInNewContext(sa
 const chapters = sandbox.window.CCTVAcademyData.chapters;
 
 assert.equal(chapters.length, 14, "Expected exactly 14 learning chapters");
+assert.equal(new Set(chapters.map(chapter=>chapter.id)).size,chapters.length,"Every chapter must have a stable unique ID");
+assert.ok(chapters.every(chapter=>Array.isArray(chapter.supplemental?.items)),"Every chapter must have a supplemental-content block");
+assert.match(chapters.find(chapter=>chapter.id==="backup-disaster-recovery").supplemental.items.flat().join(" "),/RPO|RTO|Backup|بازیابی/i,"Backup chapter must contain explicit recovery learning objectives");
+assert.match(chapters.find(chapter=>chapter.id==="final-design-checklist").sections.flat().join(" "),/مدارک تحویل|پس از نصب/,"Final design chapter must include acceptance and handover content");
 let total = 0;
 let scenarioCount = 0;
 let sourceQuestionCount = 0;
