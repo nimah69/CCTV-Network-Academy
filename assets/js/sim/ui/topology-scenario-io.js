@@ -1,5 +1,5 @@
 const DEVICES = new Set(["router", "switch", "switch2", "camera", "nvr", "monitor", "ups"]);
-const LINKS = new Set(["router-switch", "switch-camera", "switch-nvr", "nvr-monitor", "router-camera", "switch-switch"]);
+const LINKS = new Set(["router-switch", "switch-camera", "switch2-camera", "switch-nvr", "switch2-nvr", "nvr-monitor", "router-camera", "switch-switch"]);
 const SWITCH_PORTS = new Set([8, 16, 24, 48]);
 
 export function normalizeTopologyConfig(value) {
