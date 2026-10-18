@@ -635,26 +635,5 @@ renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
 
 
 
-<script>
-/* ca-select-portal-v1: custom dropdown; native select remains the source of truth */
-(function(){
- "use strict";
- if(window.__caSelectPortalV1)return;window.__caSelectPortalV1=true;
- const enhanced=new WeakMap();let active=null;
- const portal=document.createElement("div");portal.className="ca-select-portal";portal.id="ca-select-portal-v1";portal.setAttribute("role","listbox");document.body.appendChild(portal);
- function close(){portal.classList.remove("is-visible");portal.replaceChildren();if(active){active.trigger.setAttribute("aria-expanded","false");active=null;}}
- function labelOf(s){const o=s.options[s.selectedIndex];return o?o.textContent.trim():"انتخاب کنید…";}
- function position(){if(!active)return;const r=active.trigger.getBoundingClientRect();const gap=5;const vh=window.innerHeight;const below=vh-r.bottom;const above=r.top;const maxH=Math.min(340,Math.floor(vh*.45));const openAbove=below<Math.min(maxH,180)&&above>below;portal.style.left=Math.max(8,Math.min(r.left,window.innerWidth-r.width-8))+"px";portal.style.width=Math.min(r.width,window.innerWidth-16)+"px";portal.style.maxHeight=Math.max(100,Math.min(maxH,(openAbove?above:below)-gap-8))+"px";portal.style.top=(openAbove?Math.max(8,r.top-Math.min(portal.scrollHeight||maxH,maxH)-gap):Math.min(vh-60,r.bottom+gap))+"px";if(openAbove){requestAnimationFrame(()=>{if(active)portal.style.top=Math.max(8,r.top-portal.getBoundingClientRect().height-gap)+"px";});}}
- function refresh(s){const d=enhanced.get(s);if(!d)return;d.value.textContent=labelOf(s);d.trigger.disabled=s.disabled;d.trigger.setAttribute("aria-label",s.getAttribute("aria-label")||s.labels?.[0]?.textContent?.trim()||labelOf(s));if(active&&active.select===s)render(s);}
- function render(s){portal.replaceChildren();Array.from(s.options).forEach((o,i)=>{const b=document.createElement("button");b.type="button";b.className="ca-select-option";b.setAttribute("role","option");b.setAttribute("aria-selected",String(i===s.selectedIndex));b.disabled=!!o.disabled||(o.parentElement?.tagName==="OPTGROUP"&&o.parentElement.disabled);b.textContent=o.textContent.trim();b.addEventListener("click",()=>{if(b.disabled)return;s.selectedIndex=i;s.dispatchEvent(new Event("input",{bubbles:true}));s.dispatchEvent(new Event("change",{bubbles:true}));refresh(s);close();dFocus(s);});portal.appendChild(b);});if(!s.options.length){const e=document.createElement("div");e.className="ca-select-empty";e.textContent="گزینه‌ای موجود نیست";portal.append(e);} }
- function dFocus(s){enhanced.get(s)?.trigger.focus({preventScroll:true});}
- function open(s){const d=enhanced.get(s);if(!d||s.disabled)return;if(active?.select===s){close();return;}close();active={select:s,trigger:d.trigger};render(s);portal.classList.add("is-visible");d.trigger.setAttribute("aria-expanded","true");position();const selected=portal.querySelector('[aria-selected="true"]:not(:disabled)')||portal.querySelector("button:not(:disabled)");if(selected)selected.focus({preventScroll:true});}
- function enhance(s){if(!(s instanceof HTMLSelectElement)||s.multiple||enhanced.has(s)||!s.parentNode)return;s.classList.add("ca-native-hidden");const t=document.createElement("button");t.type="button";t.className="ca-select-trigger";t.setAttribute("aria-haspopup","listbox");t.setAttribute("aria-expanded","false");const v=document.createElement("span");v.className="ca-select-value";const ch=document.createElement("span");ch.className="ca-select-chevron";ch.setAttribute("aria-hidden","true");ch.textContent="▾";t.append(v,ch);s.parentNode.insertBefore(t,s.nextSibling);enhanced.set(s,{trigger:t,value:v});t.addEventListener("click",()=>open(s));t.addEventListener("keydown",e=>{if(["ArrowDown","ArrowUp","Enter"," "].includes(e.key)){e.preventDefault();open(s);if(e.key==="ArrowUp"&&active){const a=portal.querySelectorAll("button:not(:disabled)");a[a.length-1]?.focus();}}else if(e.key==="Escape")close();});s.addEventListener("change",()=>refresh(s));s.addEventListener("input",()=>refresh(s));new MutationObserver(()=>refresh(s)).observe(s,{childList:true,subtree:true,characterData:true,attributes:true});refresh(s);}
- function scan(root){if(root instanceof HTMLSelectElement)enhance(root);root.querySelectorAll?.("select").forEach(enhance);}
- scan(document);new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n);}))).observe(document.documentElement,{childList:true,subtree:true});
- portal.addEventListener("keydown",e=>{const items=Array.from(portal.querySelectorAll("button:not(:disabled)"));const i=items.indexOf(document.activeElement);if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length]?.focus();}else if(e.key==="Home"){e.preventDefault();items[0]?.focus();}else if(e.key==="End"){e.preventDefault();items[items.length-1]?.focus();}else if(e.key==="Escape"){e.preventDefault();const s=active?.select;close();if(s)dFocus(s);}else if(e.key==="Tab")close();});
- document.addEventListener("pointerdown",e=>{if(active&&!portal.contains(e.target)&&!active.trigger.contains(e.target))close();},true);
- window.addEventListener("resize",position,{passive:true});window.addEventListener("scroll",position,{passive:true,capture:true});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&active){const s=active.select;close();dFocus(s);}});
-})();
-</script>
+<script src="./js/custom-select.js?v=20261018-runtime1" defer></script>
 </body></html>
