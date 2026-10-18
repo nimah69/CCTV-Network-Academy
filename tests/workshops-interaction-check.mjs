@@ -22,7 +22,8 @@ assert.match(html, /function renderTopologyDiagram\(\)/, "Topology must be rende
 assert.match(html, /const edges=valid\.map\(id=>/, "Topology edges must be rendered from selected links");
 assert.match(html, /names\[ep\[id\]\[0\]\]/, "Rendered links must show the selected source endpoint");
 assert.match(html, /names\[ep\[id\]\[1\]\]/, "Rendered links must show the selected destination endpoint");
-assert.match(html, /cams>ports/, "Topology validation must check camera count against available switch ports");
+assert.match(html, /const availableCameraPorts=ports\*\(eq\.includes\("switch2"\)&&has\("switch-switch"\)\?2:1\)/, "Topology validation must include the second switch only when its uplink is connected");
+assert.match(html, /cams>availableCameraPorts/, "Topology validation must check camera count against the total connected switch-port capacity");
 assert.match(html, /function runWorkshopSimulation\(button\)/, "All workshop simulators must execute a domain-specific analysis");
 assert.match(html, /workshop=button\.closest\("section\[id\]"\)/, "Simulator dispatch must locate the actual section[id] workshop container");
 assert.doesNotMatch(html, /button\.closest\("\.workshop"\)/, "Simulator dispatch must not depend on a missing .workshop class");
@@ -38,7 +39,8 @@ assert.match(html, /delete node\.dataset\.simRunCount/, "Reset must reset the si
 
 assert.match(html, /classList\.add\(target&&status===\"fail\"\?\"sim-fail\"/, "Simulation must render calculated equipment states");
 assert.match(html, /ورودی‌های همین صفحه/, "Simulation must disclose it uses current page inputs");
-assert.match(html, /if\(eq\.includes\("camera"\)&&!has\("switch-camera"\)\)/, "Topology validation must flag a missing camera-to-switch link");
+assert.match(html, /if\(eq\.includes\("camera"\)&&!has\("switch-camera"\)&&!has\("switch2-camera"\)\)/, "Topology validation must flag a camera that is not connected to either switch");
+assert.match(html, /if\(has\("switch2-camera"\)&&!has\("switch-switch"\)\)/, "Topology validation must flag a missing inter-switch uplink for a camera on switch two");
 assert.match(html, /"camera-power":\{/, "Fault simulation must include a camera power/PoE failure");
 assert.match(html, /"camera-link":\{/, "Fault simulation must include a broken camera link");
 assert.match(html, /"switch-nvr":\{/, "Fault simulation must include a switch-to-NVR failure");

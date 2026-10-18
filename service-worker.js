@@ -35,6 +35,7 @@ const CORE_ASSETS = [
   "./assets/js/sim/calc/optics.js",
   "./assets/js/sim/calc/design.js",
   "./assets/js/sim/ui/real-simulator.js",
+  "./assets/js/sim/ui/topology-scenario-io.js",
   "./assets/js/sim/ui/calculators.js",
   "./assets/js/sim/poe-reference-ui.js"
 ];
