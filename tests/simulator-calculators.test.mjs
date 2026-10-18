@@ -48,6 +48,9 @@ test("storage reference and RAID vectors",()=>{
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:2,diskTB:4,raid:"raid1"}).usableTB,3.64);
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid6"}).activeDisks,4);
  const spareRaid=calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:3,diskTB:4,raid:"raid5",hotSpare:1});assert.equal(spareRaid.activeDisks,2);assert.equal(spareRaid.raidValid,false);assert.ok(spareRaid.warnings.some(w=>w.includes("Hot Spare")));
+ assert.match(spareRaid.raidTolerance,/نامعتبر/);
+ assert.match(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid6"}).raidTolerance,/دو دیسک/);
+ assert.throws(()=>calculateStorage({cameras:1e308,bitrateMbps:1e308,days:1}),RangeError);
  const oneDiskRaid0=calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:1,diskTB:4,raid:"raid0"});assert.equal(oneDiskRaid0.raidValid,false);assert.equal(oneDiskRaid0.usableTB,0);
  assert.equal(calculateStorage({cameras:1,bitrateMbps:1,days:1,diskCount:4,diskTB:4,raid:"raid10"}).usableTB,7.28);
  assert.throws(()=>calculateStorage({cameras:0,bitrateMbps:8,days:1}));
