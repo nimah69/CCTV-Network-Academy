@@ -18,7 +18,7 @@ document.getElementById("app").addEventListener("load",()=>{
   if(!need("realToolResult").textContent.includes("PoE"))throw new Error("switch port/PoE diagnostics are not computed: "+need("realToolResult").textContent);
   need("ipAddress").value="۱۹۲.۱۶۸.۱.۱۳۰";need("cidr").value="26";click("calcSubnet");
   if(!need("subnetResult").textContent.includes("192.168.1.128"))throw new Error("subnet calculator output mismatch");
-  click("calcPoe");if(!need("poeResult").textContent.includes("PSE"))throw new Error("PoE calculator did not run");
+  click("calcPoe");if(!need("poeResult").textContent.includes("وات"))throw new Error("legacy PoE budget calculator did not run");click("refPoeRun");if(!need("refPoeResult").textContent.includes("توان سمت PSE"))throw new Error("reference PoE calculator did not run");
   click("runPoeSimulation");if(!need("poeSimulationResult").textContent.trim())throw new Error("PoE simulator did not run");
   click("calcStorage");if(!need("storageResult").textContent.includes("RAID"))throw new Error("storage calculator did not run");
   click("calcUps");if(!need("upsResult").textContent.includes("دقیقه"))throw new Error("UPS calculator did not run");
