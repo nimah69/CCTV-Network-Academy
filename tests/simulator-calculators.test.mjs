@@ -14,6 +14,10 @@ test("subnet vectors",()=>{
  assert.equal(subnet("127.0.0.1",8).isLoopback,true);assert.equal(subnet("169.254.3.4",16).isLinkLocal,true);assert.equal(subnet("172.20.1.1",16).isPrivate,true);
  assert.throws(()=>subnet("192.168.001.1",24));assert.throws(()=>subnet("256.1.1.1",24));assert.throws(()=>subnet("1.2.3.4",33));
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.1").valid,true);assert.equal(validateGateway("192.168.1.20",24,"192.168.2.1").valid,false);
+ assert.equal(validateGateway("192.168.1.20",24,"192.168.1.20").valid,false);
+ const packed=planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24});
+ assert.equal(packed[0].cidr,"192.168.10.0/26");assert.equal(packed[1].cidr,"192.168.10.64/28");
+ assert.ok(packed[0].broadcast<packed[1].network.replace(/\\./g,"").length || packed[0].broadcast!=="192.168.10.127");
  assert.equal(planVLSM([{name:"camera",hosts:50},{name:"mgmt",hosts:10}],{address:"192.168.10.1",prefix:24}).length,2);
 });
 test("PoE vectors",()=>{
@@ -38,6 +42,9 @@ test("storage reference and RAID vectors",()=>{
  assert.throws(()=>calculateStorage({cameras:0,bitrateMbps:8,days:1}));
  assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,hoursPerDay:25}));
  assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,raid:"bad"}));
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,playbackMbps:-1}));
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,playbackMbps:Infinity}));
+ assert.throws(()=>calculateStorage({cameras:1,bitrateMbps:8,days:1,nvrMaxInputMbps:NaN}));
  assert.equal(calculateStorage({cameras:1,bitrateMbps:8,days:1,activityPercent:0,diskCount:1,diskTB:1,raid:"none"}).rawTB,0);
  assert.ok(calculateStorage({cameras:16,bitrateMbps:8,days:30,diskCount:8,diskTB:8,raid:"raid6"}).requiredTB>41.472);
  assert.equal(calculateStorage({cameras:8,bitrateMbps:20,days:1,diskCount:4,diskTB:4,raid:"raid5",nvrMaxInputMbps:100}).nvrInputStatus,"نامناسب");
