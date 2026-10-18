@@ -7,7 +7,7 @@ import { POE_TYPES, POE_CLASSES, solveLink, budgetCheck } from "./calc/poe.js";
  const fmt=n=>Number.isFinite(n)?n.toLocaleString("fa-IR",{maximumFractionDigits:3}):"—";
  const statusText={ok:"مناسب",marginal:"مرزی",fail:"ناموفق"};
  function calculate(){
-  const type=$("refPoeType").value, pdW=num("poeLoad"), lengthM=num("poeLength"),tempC=num("poeTemp"),switchBudgetW=num("poeBudget"),marginPct=num("poeMargin"),count=num("poeCount"),material=$("refPoeMaterial").value,allocation=$("refPoeAllocation").value;
+  const type=$("refPoeType").value, pdW=num("refPoeLoad"), lengthM=num("refPoeLength"),tempC=num("refPoeTemp"),switchBudgetW=num("refPoeBudget"),marginPct=num("refPoeMargin"),count=num("refPoeCount"),material=$("refPoeMaterial").value,allocation=$("refPoeAllocation").value;
   if(lengthM<0||pdW<=0||count<1||!Number.isInteger(count)||tempC < -40||tempC>100)throw Error("توان باید مثبت، طول نامنفی، تعداد صحیح و دما بین ‎−40 تا 100°C باشد.");
   const link=solveLink({type,pdW,lengthM,material,tempC});
   const selectedClass=Object.entries(POE_CLASSES).find(([,c])=>pdW<=c.pdW);
