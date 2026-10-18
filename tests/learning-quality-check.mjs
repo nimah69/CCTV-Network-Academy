@@ -51,10 +51,6 @@ let templatedStems = 0;
 let correctLongest = 0;
 const answerPositions = [0, 0, 0, 0];
 const perChapter = [];
-assert.equal(missingKind, 0, "Every quiz question must carry a type label");
-assert.equal(shortExplanation, 0, "Explanations must not be shorter than the agreed 40-character learning threshold");
-assert.equal(explanationCounts.size, questions.length, "Explanations must not be duplicated across the question bank");
-assert.equal(templatedStems, 0, "Supplemental question stems must not use the rejected generic templates");
 
 
 for (const question of questions) {
@@ -86,6 +82,13 @@ const repeatedExplanations = [...explanationCounts.entries()]
   .slice(0, 8)
   .map(([text, count]) => ({ count, sample: text.slice(0, 100) }));
 
+assert.ok(correctLongest <= Math.floor(questions.length * 0.35), "Correct answer must not be the longest option too often");
+assert.ok(answerPositions.every((count) => count >= Math.ceil(questions.length * 0.20) && count <= Math.floor(questions.length * 0.30)), "Correct-answer positions must stay balanced");
+
+assert.equal(missingKind, 0, "Every quiz question must carry a type label");
+assert.equal(shortExplanation, 0, "Explanations must not be shorter than the agreed 40-character learning threshold");
+assert.equal(explanationCounts.size, questions.length, "Explanations must not be duplicated across the question bank");
+assert.equal(templatedStems, 0, "Supplemental question stems must not use the rejected generic templates");
 assert.ok(correctLongest <= Math.floor(questions.length * 0.35), "Correct answer must not be the longest option too often");
 assert.ok(answerPositions.every((count) => count >= Math.ceil(questions.length * 0.20) && count <= Math.floor(questions.length * 0.30)), "Correct-answer positions must stay balanced");
 
