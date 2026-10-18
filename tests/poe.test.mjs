@@ -46,6 +46,8 @@ test("ورودی نامعتبر", () => {
   assert.throws(() => solveLink({ type: "af", pdW: -1, lengthM: 10 }), RangeError);
   assert.throws(() => solveLink({ type: "af", pdW: 10, lengthM: NaN }), RangeError);
   assert.throws(() => loopResistance({ lengthM: 10, pairs: 3 }), RangeError);
+  assert.throws(() => loopResistance({ lengthM: 10, material: "mystery" }), RangeError);
+  assert.throws(() => loopResistance({ lengthM: 10, tempC: 200 }), RangeError);
 });
 test("B1: بودجه، 8 دوربین × 13W روی 120W با حاشیه 20٪ → marginal", () => {
   const r = budgetCheck({ switchBudgetW: 120, allocationsW: Array(8).fill(13) });
@@ -53,6 +55,11 @@ test("B1: بودجه، 8 دوربین × 13W روی 120W با حاشیه 20٪ �
 });
 test("B2: 6 × 13W → ok", () => assert.equal(budgetCheck({ switchBudgetW: 120, allocationsW: Array(6).fill(13) }).status, "ok"));
 test("B3: 10 × 13W → fail", () => assert.equal(budgetCheck({ switchBudgetW: 120, allocationsW: Array(10).fill(13) }).status, "fail"));
+test("B5: بودجه باید اعداد محدود و حاشیه معتبر داشته باشد", () => {
+  assert.throws(() => budgetCheck({ switchBudgetW: 120, allocationsW: [Infinity] }), RangeError);
+  assert.throws(() => budgetCheck({ switchBudgetW: 120, allocationsW: [NaN] }), RangeError);
+  assert.throws(() => budgetCheck({ switchBudgetW: 120, marginPct: 100, allocationsW: [10] }), RangeError);
+});
 test("B4: تخصیص ایستا کلاس 3 در برابر تخصیص پویا", () => {
   assert.equal(budgetCheck({ switchBudgetW: 120, allocationsW: Array(8).fill(15.4) }).status, "fail");
   assert.equal(budgetCheck({ switchBudgetW: 120, allocationsW: Array(8).fill(10.406) }).status, "ok");
