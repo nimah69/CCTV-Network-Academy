@@ -107,6 +107,8 @@ test("security vectors",()=>{
  assert.ok(assessSecurity([]).attackChain.length>0);
  assert.ok(assessSecurity([]).priority.length>=10);
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="segmentation"&&c.risk==="Critical"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="firewall-acl"&&c.risk==="Critical"));
+ assert.equal(new Set(SECURITY_CONTROLS.map(c=>c.id)).size,SECURITY_CONTROLS.length,"Security control IDs must be unique");
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="rtsp-auth"));
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="patching"));
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="audit-logging"));
