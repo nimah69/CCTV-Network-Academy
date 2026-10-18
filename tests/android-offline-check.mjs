@@ -5,6 +5,7 @@ const root=process.cwd();
 const manifest=fs.readFileSync(path.join(root,"android/app/src/main/AndroidManifest.xml"),"utf8");
 const activity=fs.readFileSync(path.join(root,"android/app/src/main/java/ir/nimah69/cctvnetworkacademy/MainActivity.java"),"utf8");
 const gradle=fs.readFileSync(path.join(root,"android/app/build.gradle"),"utf8");
+const gradleProperties=fs.readFileSync(path.join(root,"android/gradle.properties"),"utf8");
 const workflow=fs.readFileSync(path.join(root,".github/workflows/offline-apk-ci.yml"),"utf8");
 const bundler=fs.readFileSync(path.join(root,"scripts/bundle-android-assets.sh"),"utf8");
 const sw=fs.readFileSync(path.join(root,"service-worker.js"),"utf8");
@@ -25,6 +26,7 @@ assert.match(activity,/webView\.loadUrl\(APP_ASSET_BASE_URL \+ "index\.html"\)/,
 assert.match(activity,/setAllowFileAccess\(false\)/,"File URL access must be disabled");
 assert.match(activity,/setAllowUniversalAccessFromFileURLs\(false\)/,"Universal access from file URLs must be disabled");
 assert.match(gradle,/androidx\.webkit:webkit:1\.12\.1/,"WebViewAssetLoader dependency must be declared");
+assert.match(gradleProperties,/android\.useAndroidX=true/,"AndroidX must be enabled for AndroidX WebView dependencies");
 assert.match(activity,/webView\.loadUrl\("file:\/\/\/android_asset\/academy\/index\.html"\)/,"The legacy file origin may be used only to export existing progress once");
 assert.match(activity,/setAllowFileAccess\(migrationPending\)/,"File access must be enabled only during the one-time migration");
 assert.match(activity,/migrationPending\) \{[\s\S]*?file:\/\/\/android_asset\/academy\/index\.html/,"Normal app startup must use the secure local HTTPS origin");
@@ -38,6 +40,9 @@ assert.match(activity,/webView\.canGoBack\(\)\) webView\.goBack\(\)/,"Native Bac
 assert.match(gradle,/targetSdk 34/,"Target SDK should remain at the reviewed conservative level");
 assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the same bundler as local builds");
 assert.match(bundler,/cp "\$ROOT_DIR\/js\/"\*\.js/);
+assert.match(bundler,/cp -R "\$ROOT_DIR\/assets\/"\./,"Bundler must copy the simulator ES-module tree into Android assets");
+assert.match(bundler,/diff -qr "\$ROOT_DIR\/assets" "\$DEST\/assets"/,"Bundler must verify the complete simulator asset tree");
+assert.match(workflow,/assets\/\*\*/,"Changes to simulator assets must trigger Android APK CI");
 assert.match(bundler,/cmp -s/,"Bundler must verify copied assets");
 assert.ok(fs.existsSync(font),"Local variable font must be present");
 assert.ok(fs.statSync(font).size<300*1024,"Bundled font must stay below 300 KB");
