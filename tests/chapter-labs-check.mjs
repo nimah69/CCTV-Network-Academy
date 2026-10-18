@@ -37,6 +37,50 @@ context.runChapterLabSimulation(groups[0][0].answer);assert.equal(context.state.
 context.advanceLabSimulator(1);context.runChapterLabSimulation((groups[0][0].answer+1)%3);assert.equal(context.state.labSimOutcome,"fail");
 context.state.labDraft=groups[0][0].answer;context.runChapterLabScenario();assert.equal(context.state.progress.labs["0:0"].correct,true);
 context.retryChapterLabScenario(0);assert.equal(context.state.progress.labs["0:0"],undefined);
+
+// Regression coverage for the shared simulator across all 70 scenarios.
+const allLabsContext={
+ window:{CCTVChapterLabs:groups},
+ state:{chapter:0,labScenario:0,labDraft:null,labSimStep:0,labSimOutcome:"",labSimAction:null,progress:{labs:{},done:[]}},
+ chapters:[],saveProgress(){},render(){},alert(){},console
+};
+vm.createContext(allLabsContext);
+vm.runInContext(uiSource,allLabsContext,{filename:"js/chapter-lab-ui.js:all-scenarios"});
+let scenarioCountChecked=0;
+for(const [chapterIndex,scenarios] of groups.entries()){
+ for(const [scenarioIndex,scenario] of scenarios.entries()){
+  allLabsContext.state.chapter=chapterIndex;
+  allLabsContext.state.labScenario=scenarioIndex;
+  allLabsContext.state.labSimStep=0;
+  let rendered=allLabsContext.chapterLabSimulatorHTML(scenario);
+  assert.ok(rendered.includes(allLabsContext.chapterLabEsc(scenario.context)),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must start from its own situation`);
+  assert.ok(!rendered.includes(allLabsContext.chapterLabEsc(scenario.simulator.prompt)),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not repeat the generic recommended-action prompt`);
+  allLabsContext.state.labSimStep=1;
+  rendered=allLabsContext.chapterLabSimulatorHTML(scenario);
+  assert.ok(scenario.options.every(option=>rendered.includes(allLabsContext.chapterLabEsc(option))),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must show its own actions`);
+  assert.ok(!rendered.includes("cl-btn-success"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not reveal the answer before selection`);
+  assert.equal(allLabsContext.chapterLabDecisionFeedback(scenario,scenario.answer),scenario.why);
+  const wrongFeedback=scenario.options.map((_,optionIndex)=>optionIndex).filter(optionIndex=>optionIndex!==scenario.answer).map(optionIndex=>allLabsContext.chapterLabDecisionFeedback(scenario,optionIndex));
+  assert.equal(new Set(wrongFeedback).size,wrongFeedback.length,`Scenario ${chapterIndex+1}:${scenarioIndex+1} needs distinct feedback for each wrong action`);
+  for(const [wrongIndex,optionIndex] of scenario.options.map((_,optionIndex)=>optionIndex).filter(optionIndex=>optionIndex!==scenario.answer).entries()){
+   const feedback=allLabsContext.chapterLabDecisionFeedback(scenario,optionIndex);
+   assert.ok(feedback.includes(scenario.title)&&feedback.includes(scenario.options[optionIndex]),`Scenario ${chapterIndex+1}:${scenarioIndex+1} feedback must identify the actual scenario and selected action`);
+   assert.notEqual(feedback,scenario.why);
+  }
+  scenarioCountChecked++;
+ }
+}
+assert.equal(scenarioCountChecked,70,"All 70 practical scenarios must be checked by regression tests");
+allLabsContext.state.labSimStep=2;
+allLabsContext.state.labSimOutcome="fail";
+allLabsContext.state.labSimAction=1;
+const resultHtml=allLabsContext.chapterLabSimulatorHTML(groups[0][0]);
+assert.ok(resultHtml.includes(allLabsContext.chapterLabEsc(allLabsContext.chapterLabDecisionFeedback(groups[0][0],1))));
+// Reset must clear all simulator selections and outcomes.
+allLabsContext.resetLabSimulator();
+assert.equal(allLabsContext.state.labSimStep,0);
+assert.equal(allLabsContext.state.labSimOutcome,"");
+assert.equal(allLabsContext.state.labSimAction,null);
 const inlineScripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.ok(inlineScripts.length>=2,"Expected both inline scripts in index.html");
 inlineScripts.forEach((match,index)=>new vm.Script(match[1],{filename:"index.html:inline-script-"+(index+1)}));
