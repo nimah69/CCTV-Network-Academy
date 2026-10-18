@@ -52,6 +52,7 @@ assert.ok(advancedSecurityIds.includes("firewall-acl"),"Advanced checklist must 
 const calcSource=fs.readFileSync("assets/js/sim/ui/calculators.js","utf8");
 assert.ok(calcSource.includes('doc.getElementById("r").textContent=reportText'),"The module print path must use textContent for report text");
 assert.ok(calcSource.includes('#securityChecks input[data-security-control]'),"Security scoring must use stable IDs instead of positional indexes");
+assert.ok(calcSource.includes("try{localStorage.setItem(commissioningKey,JSON.stringify(data))}catch"),"Commissioning checklist must remain usable when WebView storage is unavailable");
 assert.ok(html.includes('id="lensTargetDensity"'),"Lens calculator must expose an explicit pixel-density target");
 assert.ok(calcSource.includes("const densityOk=density>=target"),"Lens status must be evaluated against the selected pixel-density target");
 assert.ok(html.includes('id="upsCapacityW"')&&html.includes('id="upsCapacityVA"'),"UPS calculator must collect both W and VA ratings");
