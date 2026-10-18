@@ -124,10 +124,14 @@ test("security vectors",()=>{
  const scoped=assessSecurity(["default-password"],["default-password","rbac"]);
  assert.equal(scoped.controls.length,2,"Scoped security score must only include the selected checklist controls");
  assert.equal(scoped.score,59,"Scoped security score must use the selected controls as its denominator");
+ const scopedChain=assessSecurity(["management-access"],["default-password","management-access"]).attackChain;
+ assert.equal(scopedChain.length,1,"Attack-chain warnings must not report controls outside the selected checklist scope");
+ assert.equal(scopedChain[0].step,1);
  assert.ok(assessSecurity(["default-password"]).score>0);
  assert.ok(assessSecurity([]).attackChain.length>0);
  assert.ok(assessSecurity([]).priority.length>=10);
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="segmentation"&&c.risk==="Critical"));
+ assert.ok(SECURITY_CONTROLS.some(c=>c.id==="management-access"&&c.risk==="Critical"));
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="firewall-acl"&&c.risk==="Critical"));
  assert.equal(new Set(SECURITY_CONTROLS.map(c=>c.id)).size,SECURITY_CONTROLS.length,"Security control IDs must be unique");
  assert.ok(SECURITY_CONTROLS.some(c=>c.id==="rtsp-auth"));
