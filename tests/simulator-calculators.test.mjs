@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { subnet,validateGateway,planVLSM,parseIPv4 } from "../assets/js/sim/calc/subnet.js";
-import { solveLink,POE_TYPES,poeCapacity,budgetCheck,R_COND_OHM_PER_M } from "../assets/js/sim/calc/poe.js";
+import { solveLink,POE_TYPES,poeCapacity,budgetCheck,R_EFFECTIVE_LOOP_OHM_PER_M } from "../assets/js/sim/calc/poe.js";
 import { ENGINEERING } from "../assets/js/sim/constants.js";
 import { calculateStorage,referenceStorageTB } from "../assets/js/sim/calc/storage.js";
 import { recommendCable } from "../assets/js/sim/calc/cable.js";
