@@ -23,7 +23,7 @@ groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter mus
  assert.ok(s.simulator.prompt&&s.simulator.pass&&s.simulator.fail&&s.simulator.next,"Each scenario needs a working simulator path");
  assert.ok(s.nodes.length===3,"Each scenario uses the new three-step model");
 });});
-assert.ok(uiSource.includes("آزمایش اقدام و مشاهده نتیجه"));
+assert.ok(uiSource.includes("بررسی مسئله و انتخاب اقدام"));
 assert.ok(uiSource.includes("function advanceLabSimulator"));
 assert.ok(uiSource.includes("function runChapterLabSimulation(actionIndex)"));
 assert.ok(!uiSource.includes("function setLabSimulatorOutcome"),"Learners must not choose the simulator outcome directly");
@@ -31,7 +31,7 @@ assert.ok(!uiSource.includes("function setChapterLabFault"));
 const context={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,labDraft:null,labSimStep:0,labSimOutcome:"",progress:{labs:{},done:[]}},chapters:[{title:"فصل آزمایشی"}],saveProgress(){},render(){},alert(){},console};
 vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
 context.window.CCTVChapterLabs=[groups[0]];
-assert.ok(context.chapterLabHTML().includes("آزمایش اقدام و مشاهده نتیجه"));
+assert.ok(context.chapterLabHTML().includes("بررسی مسئله و انتخاب اقدام"));
 context.advanceLabSimulator(1);assert.equal(context.state.labSimStep,1);
 context.runChapterLabSimulation(groups[0][0].answer);assert.equal(context.state.labSimOutcome,"pass");assert.equal(context.state.labSimStep,2);
 context.advanceLabSimulator(1);context.runChapterLabSimulation((groups[0][0].answer+1)%3);assert.equal(context.state.labSimOutcome,"fail");
