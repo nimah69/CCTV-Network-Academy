@@ -15,6 +15,10 @@ assert.ok(html.includes("localStorage"),"Workshop progress should persist locall
 assert.ok(html.includes('src="./js/calculations.js"'),"Shared tested calculation module must load before workshop code");
 assert.ok(html.includes("function requiredNumber"),"Numeric fields must reject empty and invalid values");
 assert.ok(html.includes("function escapeHTML(value)") && html.includes("escapeHTML(name)"),"User-provided project names must be escaped before report HTML rendering");
+assert.ok(html.includes("escapeHTML(textReport)"),"Project report details must be escaped before HTML insertion");
+assert.ok(html.includes("escapeHTML(reportText)"),"Print report text must be escaped before document.write");
+assert.ok(html.includes("simEscape(extra)")&&html.includes("simEscape(details)"),"User-derived simulator feedback must be escaped before HTML insertion");
+assert.ok(html.includes('doc.getElementById("r").textContent=reportText')||html.includes('doc.getElementById("r").textContent = reportText'),"The module print path must use textContent for report text");
 const escapeMatch=html.match(/function escapeHTML\(value\)\{[^}]*\}/);
 assert.ok(escapeMatch,"HTML escaping helper must be defined");
 const escapeFn=vm.runInNewContext("("+escapeMatch[0].replace("function escapeHTML","function")+")");
