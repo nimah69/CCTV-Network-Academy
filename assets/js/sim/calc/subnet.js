@@ -18,7 +18,9 @@ export function subnet(address,prefixValue){
 export function sameSubnet(a,b){const x=subnet(a.ip,a.prefix),y=subnet(b.ip,b.prefix);return x.network===y.network&&x.prefix===y.prefix}
 export function validateGateway(ip,prefix,gateway){const net=subnet(ip,prefix),device=parseIPv4(ip),gw=parseIPv4(gateway);if(gw===device)return {valid:false,reason:"Gateway نمی‌تواند با آدرس خود دستگاه یکسان باشد."};if(net.prefix<=30&&(formatIPv4(gw)===net.network||formatIPv4(gw)===net.broadcast))return {valid:false,reason:"Gateway نمی‌تواند آدرس شبکه یا Broadcast باشد."};if(subnet(gateway,prefix).network!==net.network)return {valid:false,reason:"Gateway باید در همان زیرشبکه باشد."};return {valid:true,reason:"Gateway در محدوده زیرشبکه است."}}
 export function planVLSM(requirements,baseCidr){
- const base=subnet(baseCidr.address,baseCidr.prefix),start=parseIPv4(base.network),end=parseIPv4(base.broadcast);
+ const base=subnet(baseCidr.address,baseCidr.prefix);
+ if(base.prefix>30)throw new RangeError("VLSM برای LAN به بلوک پایه /30 یا بزرگ‌تر نیاز دارد.");
+ const start=parseIPv4(base.network),end=parseIPv4(base.broadcast);
  const sorted=requirements.map(r=>({...r,hosts:Number(normalizeDigits(r.hosts))})).sort((a,b)=>b.hosts-a.hosts);
  let cursor=start;const results=[];
  for(const req of sorted){if(!Number.isInteger(req.hosts)||req.hosts<1)throw new RangeError("تعداد میزبان هر VLAN باید عدد صحیح مثبت باشد.");let prefix=32;while((2**(32-prefix)-2)<req.hosts&&prefix>0)prefix--;if(prefix<1)throw new RangeError("تعداد میزبان در محدوده IPv4 پشتیبانی نمی‌شود.");const size=2**(32-prefix),network=Math.ceil(cursor/size)*size,broadcast=network+size-1;if(network<start||broadcast>end)throw new RangeError("فضای آدرس‌دهی برای تمام VLANها کافی نیست.");results.push({...req,prefix,cidr:formatIPv4(network)+"/"+prefix,network:formatIPv4(network),first:formatIPv4(network+1),last:formatIPv4(broadcast-1),broadcast:formatIPv4(broadcast)});cursor=broadcast+1}
