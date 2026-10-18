@@ -40,7 +40,7 @@ assert.match(activity,/webView\.canGoBack\(\)\) webView\.goBack\(\)/,"Native Bac
 assert.match(gradle,/targetSdk 34/,"Target SDK should remain at the reviewed conservative level");
 assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the same bundler as local builds");
 assert.match(bundler,/cp "\$ROOT_DIR\/js\/"\*\.js/);
-assert.match(bundler,/cp -R "\$ROOT_DIR\/assets\/"\./,"Bundler must copy the simulator ES-module tree into Android assets");
+assert.ok(bundler.includes('cp -R "$ROOT_DIR/assets/." "$DEST/assets/"'),"Bundler must copy the simulator ES-module tree into Android assets");
 assert.match(bundler,/diff -qr "\$ROOT_DIR\/assets" "\$DEST\/assets"/,"Bundler must verify the complete simulator asset tree");
 assert.match(workflow,/assets\/\*\*/,"Changes to simulator assets must trigger Android APK CI");
 assert.match(bundler,/cmp -s/,"Bundler must verify copied assets");
