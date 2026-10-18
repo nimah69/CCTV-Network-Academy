@@ -50,7 +50,7 @@ bind("recommendCable",()=>{
 });
 bind("scoreSecurity",()=>{
  const allChecks=[...document.querySelectorAll("#securityChecks input[data-security-control]")];const ids=allChecks.filter(el=>el.checked).map(el=>el.dataset.securityControl);
- const r=assessSecurity(ids);
+ const r=assessSecurity(ids,allChecks.map(el=>el.dataset.securityControl));
  show("securityResult","امتیاز کنترل‌های نگاشت‌شده: "+r.score+"/100؛ "+r.rating+"\nاولویت‌های اصلاح:\n"+r.priority.slice(0,5).map(x=>x.risk+" · "+x.title).join("\n")+"\nزنجیره حمله احتمالی:\n"+r.attackChain.map(x=>x.text).join("\n"),r.score>=80?"good":"warn");
 });
 let reportData=null,reportText="";
