@@ -21,6 +21,10 @@ test("subnet vectors",()=>{
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.20").valid,false);
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.0").valid,false);
  assert.equal(validateGateway("192.168.1.20",24,"192.168.1.255").valid,false);
+ assert.equal(validateGateway("192.168.1.0",24,"192.168.1.1").valid,false,"A network address must not be accepted as a device host IP");
+ assert.equal(validateGateway("192.168.1.255",24,"192.168.1.1").valid,false,"A broadcast address must not be accepted as a device host IP");
+ assert.equal(validateGateway("127.0.0.2",24,"127.0.0.1").valid,false,"A loopback device address must be rejected");
+
  assert.equal(validateGateway("192.168.1.0",31,"192.168.1.1").valid,true,"Both addresses in a /31 point-to-point subnet are usable");
  assert.equal(validateGateway("192.168.1.20",32,"192.168.1.21").valid,false,"A /32 host route must not accept a gateway outside the same subnet");
  assert.equal(validateGateway("224.0.0.1",24,"224.0.0.2").valid,false,"Multicast addresses must not be accepted as a gateway");
