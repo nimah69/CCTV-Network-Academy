@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { normalizeTopologyConfig } from "../assets/js/sim/ui/topology-scenario-io.js";
+import { normalizeTopologyConfig, applyTopologyConfig } from "../assets/js/sim/ui/topology-scenario-io.js";
 
 const valid = {
   schemaVersion: 1,
@@ -34,6 +34,50 @@ test("rejects invalid camera counts and unsupported switch port counts", () => {
   for (const switchPorts of [0, 12, 32, "sixteen", null]) {
     assert.throws(() => normalizeTopologyConfig({ ...valid, switchPorts }), /تعداد پورت/);
   }
+});
+
+
+test("applying an imported scenario updates every control and runs the topology analysis", () => {
+  const makeCheckboxes = values => values.map(value => ({
+    value, checked: false, events: [],
+    dispatchEvent(event) { this.events.push(event.type); }
+  }));
+  const equipment = makeCheckboxes(["router", "switch", "switch2", "camera", "nvr", "monitor", "ups"]);
+  const links = makeCheckboxes(["router-switch", "switch-camera", "switch2-camera", "switch-nvr", "switch2-nvr", "nvr-monitor", "router-camera", "switch-switch"]);
+  const cameraCount = { value: "1", events: [], dispatchEvent(event) { this.events.push(event.type); } };
+  const switchPorts = { value: "8", events: [], dispatchEvent(event) { this.events.push(event.type); } };
+  const checkTopology = { clicks: 0, click() { this.clicks += 1; } };
+  const root = {
+    querySelectorAll(selector) {
+      if (selector === "#equipmentChecks input[type=checkbox]") return equipment;
+      if (selector === "#linkChecks input[type=checkbox]") return links;
+      throw new Error("Unexpected selector: " + selector);
+    },
+    querySelector(selector) {
+      return ({
+        "#camCount": cameraCount,
+        "#switchPorts": switchPorts,
+        "#checkTopology": checkTopology
+      })[selector] || null;
+    }
+  };
+  const scenario = {
+    ...valid,
+    equipment: ["switch", "switch2", "camera", "nvr"],
+    links: ["switch2-camera", "switch-switch", "switch2-nvr"],
+    cameraCount: 12,
+    switchPorts: 24
+  };
+  applyTopologyConfig(scenario, root);
+  assert.deepEqual(equipment.filter(item => item.checked).map(item => item.value), scenario.equipment);
+  assert.deepEqual(links.filter(item => item.checked).map(item => item.value), scenario.links);
+  assert.equal(cameraCount.value, "12");
+  assert.equal(switchPorts.value, "24");
+  assert.deepEqual(cameraCount.events, ["change"]);
+  assert.deepEqual(switchPorts.events, ["change"]);
+  assert.ok(equipment.filter(item => item.checked).every(item => item.events.includes("change")));
+  assert.ok(links.filter(item => item.checked).every(item => item.events.includes("change")));
+  assert.equal(checkTopology.clicks, 1);
 });
 
 test("rejects malformed objects and missing arrays", () => {
