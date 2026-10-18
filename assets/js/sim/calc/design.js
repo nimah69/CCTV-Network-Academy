@@ -39,6 +39,11 @@ export function designCCTV(input={}){
  const redundantUplink=input.redundantUplink===true;
  const cameras=Number(input.cameras??8),bitrateMbps=Number(input.bitrateMbps??4),days=Number(input.retentionDays??30),basePoeWatts=Number(input.poeWatts??12),ptz=input.ptz===true,audio=input.audio===true,remoteViewing=input.remoteViewing===true,poeWatts=basePoeWatts+(ptz?ENGINEERING.video.typicalPtzExtraW:0),upsMinutes=Number(input.upsMinutes??30),codec=input.codec??"H.264",resolution=input.resolution??"1080p",buildings=Number(input.buildings??1),environment=input.environment??"indoor",poeStandard=input.poeStandard??"at";
  if(!Number.isInteger(cameras)||cameras<1||cameras>2048)throw new RangeError("تعداد دوربین باید عدد صحیح بین ۱ تا ۲۰۴۸ باشد.");
+ if(!Number.isInteger(buildings)||buildings<1||buildings>1000)throw new RangeError("تعداد ساختمان/طبقه باید عدد صحیح بین ۱ تا ۱۰۰۰ باشد.");
+ if(!Number.isFinite(upsMinutes)||upsMinutes<=0)throw new RangeError("هدف زمان UPS باید عدد مثبت و محدود باشد.");
+ if(!["af","at","bt3","bt4"].includes(poeStandard))throw new RangeError("استاندارد PoE انتخاب‌شده پشتیبانی نمی‌شود.");
+ if(!["indoor","outdoor"].includes(environment))throw new RangeError("محیط نصب باید indoor یا outdoor باشد.");
+ if(!["H.264","H.265"].includes(codec)||!["1080p","4MP","4K"].includes(resolution))throw new RangeError("کدک یا رزولوشن پشتیبانی نمی‌شود.");
  const recommendedBitrate=ENGINEERING.video.bitrateMbps[resolution]?.[codec]??null;
  const storage=calculateStorage({cameras,bitrateMbps,days,hoursPerDay:Number(input.hoursPerDay??24),activityPercent:Number(input.activityPercent??100),audioMbps:audio?ENGINEERING.video.typicalAudioMbps:0,substreamMbps:Number(input.substreamMbps??0),prePostPercent:Number(input.prePostPercent??0),overheadPercent:Number(input.overheadPercent??7),headroomPercent:Number(input.headroomPercent??10),diskCount:Number(input.diskCount??4),diskTB:Number(input.diskTB??8),hotSpare:Number(input.hotSpare??0),raid:input.raid??"raid5",nvrMaxInputMbps:Number(input.nvrMaxInputMbps??160),uplinkMbps:Number(input.uplinkMbps??1000),playbackMbps:remoteViewing?cameras*ENGINEERING.video.typicalRemoteStreamMbps:0});
  const poeLengthM=Number(input.cableLengthM??50),poeBudgetW=Number(input.poeBudgetW??120),reservePercent=Number(input.reservePercent??20),poeMaterial=input.cableMaterial==="cca"?"cca":"cu";
@@ -68,7 +73,7 @@ export function designCCTV(input={}){
  const model=buildReliabilityGraph({cameras,poeWatts,poeStandard,cableLengthM:Number(input.cableLengthM??50),poeBudgetW:Number(input.poeBudgetW??120),storage,raid:input.raid??"raid5",diskCount:Number(input.diskCount??4),trafficMbps:storage.aggregateMbps,redundantUplink});
  const baseline=reliabilitySummary(model);
  const noUplink=createGraph({nodes:model.nodes,links:model.links.map(l=>l.id==="nvr-link"?{...l,active:false}:l),vlans:model.vlans,acl:model.acl,trafficMbps:model.trafficMbps});
- const raid=input.raid??"raid5",diskCount=Number(input.diskCount??4),activeDiskCount=diskCount-Number(input.hotSpare??0),raidTolerance=["raid1","raid5","raid6","raid10"].includes(raid)&&activeDiskCount>=(raid==="raid6"||raid==="raid10"?4:raid==="raid5"?3:2)&&(raid!=="raid10"||activeDiskCount%2===0);
+ const raid=storage.raid,diskCount=Number(input.diskCount??4),activeDiskCount=storage.activeDisks,raidTolerance=storage.raidValid&&["raid1","raid5","raid6","raid10"].includes(raid);
  const hddNodes=model.nodes.map(n=>n.id!=="nvr"?n:{...n,diskHealthy:raidTolerance,raidDegraded:raidTolerance});
  const hddGraph=createGraph({nodes:hddNodes,links:model.links,vlans:model.vlans,acl:model.acl,trafficMbps:model.trafficMbps});
  const powerOk=ups.runtimeMinutes>=upsMinutes;
