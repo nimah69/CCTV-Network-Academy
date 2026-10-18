@@ -42,6 +42,9 @@ assert.match(activity,/webView\.saveState\(outState\)/,"WebView navigation state
 assert.match(activity,/webView\.canGoBack\(\)\) webView\.goBack\(\)/,"Native Back must use WebView history before exiting");
 assert.match(gradle,/targetSdk 34/,"Target SDK should remain at the reviewed conservative level");
 assert.match(workflow,/bash scripts\/bundle-android-assets\.sh/,"CI must use the same bundler as local builds");
+assert.match(workflow,/assets\/academy\/assets\/js\/sim\/ui\/calculators\.js/,"APK CI must verify that the calculator ES module is packaged");
+assert.match(workflow,/assets\/academy\/assets\/js\/sim\/calc\/poe\.js/,"APK CI must verify that the PoE calculation module is packaged");
+assert.match(workflow,/unzip -p "\$APK" assets\/academy\/service-worker\.js \| grep -q "\$GITHUB_SHA"/,"APK CI must verify the service-worker cache version was injected");
 assert.match(bundler,/cp "\$ROOT_DIR\/js\/"\*\.js/);
 assert.ok(bundler.includes('cp -R "$ROOT_DIR/assets/." "$DEST/assets/"'),"Bundler must copy the simulator ES-module tree into Android assets");
 assert.match(bundler,/diff -qr "\$ROOT_DIR\/assets" "\$DEST\/assets"/,"Bundler must verify the complete simulator asset tree");
