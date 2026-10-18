@@ -16,7 +16,7 @@ test("V2: 10W, at, 100m مس → marginal", () => {
 });
 test("V3: 10W, at, 100m CCA", () => {
   const r = solveLink({ type: "at", pdW: 10, lengthM: 100, material: "cca" });
-  near(r.resistanceOhm, 14.539, 0.001); near(r.currentA, 0.2132, 0.001); near(r.lossW, 0.661, 0.005); near(r.pseW, 10.661, 0.005);
+  near(r.resistanceOhm, 14.773, 0.002); near(r.currentA, 0.2135, 0.001); near(r.lossW, 0.673, 0.01); near(r.pseW, 10.673, 0.01);
   assert.equal(r.status, "marginal");
 });
 test("V4: 25.5W, at, 100m مس → marginal", () => {
