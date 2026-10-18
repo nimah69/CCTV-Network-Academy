@@ -5,8 +5,8 @@ import { normalizeTopologyConfig } from "../assets/js/sim/ui/topology-scenario-i
 
 const valid = {
   schemaVersion: 1,
-  equipment: ["router", "switch", "camera", "nvr"],
-  links: ["router-switch", "switch-camera", "switch-nvr"],
+  equipment: ["router", "switch", "switch2", "camera", "nvr"],
+  links: ["router-switch", "switch-camera", "switch-nvr", "switch-switch"],
   cameraCount: 8,
   switchPorts: 16
 };
@@ -47,4 +47,7 @@ test("workshop UI exposes import/export controls and loads the scenario module",
   assert.match(html, /id="topologyScenarioFile"[^>]*type="file"/);
   assert.match(html, /assets\/js\/sim\/ui\/topology-scenario-io\.js/);
   assert.match(html, /id="topologyScenarioStatus"[^>]*aria-live="polite"/);
+  assert.match(html, /value="switch2"/, "The second switch must be a real selectable device");
+  assert.match(html, /"switch-switch":\["switch","switch2"\]/, "The inter-switch link must connect two distinct modeled devices");
+  assert.doesNotMatch(html, /مدل فعلی سوئیچ دوم را جداگانه تعریف نمی‌کند/, "The old nonfunctional switch link warning must be removed");
 });
