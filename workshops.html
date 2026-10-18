@@ -154,27 +154,19 @@ body{padding-bottom:env(safe-area-inset-bottom)}
 
 
 
-/* Cyber Academy custom dropdowns: avoid Android/WebView native light menus. */
-.ca-select-wrap{position:relative;display:block;width:100%;min-width:0;color:var(--ink);isolation:isolate}
-.ca-native-select{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;opacity:0!important;pointer-events:none!important}
-.ca-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:10px 12px;border:1px solid #334a65;border-radius:9px;background:#081524;color:#eaf2ff;text-align:right;font:inherit;line-height:1.6;cursor:pointer}
-.ca-select-trigger:hover,.ca-select-trigger:focus-visible,.ca-select-wrap.is-open .ca-select-trigger{border-color:#67e8f9;outline:none;box-shadow:0 0 0 2px #38bdf826}
-.ca-select-trigger:disabled{opacity:.55;cursor:not-allowed}
-.ca-select-value{min-width:0;overflow-wrap:anywhere}
-.ca-select-chevron{flex:0 0 auto;color:#67e8f9;font-size:12px;transition:transform .15s ease}
-.ca-select-wrap.is-open .ca-select-chevron{transform:rotate(180deg)}
-.ca-select-menu{position:absolute;z-index:1000;inset-inline:0;top:calc(100% + 5px);max-height:min(320px,48vh);overflow-y:auto;overscroll-behavior:contain;padding:5px;border:1px solid #35516e;border-radius:11px;background:#0b192a;color:#eaf2ff;box-shadow:0 16px 38px #0009;display:none}
-.ca-select-wrap.is-open{z-index:1001}
-.ca-select-wrap.is-open .ca-select-menu{display:block}
-.ca-select-option{display:block;width:100%;min-height:42px;padding:9px 11px;border:1px solid transparent;border-radius:7px;background:transparent;color:#dce8f8;text-align:right;white-space:normal;overflow-wrap:anywhere;font:inherit;font-size:14px;line-height:1.65;cursor:pointer}
-.ca-select-option:hover,.ca-select-option:focus-visible{background:#142b43;border-color:#2c5571;outline:none;color:#fff}
-.ca-select-option[aria-selected="true"]{background:#123b4b;border-color:#38bdf8;color:#effcff}
-.ca-select-option:disabled{opacity:.45;cursor:not-allowed}
-.ca-select-empty{padding:10px;color:#9aabc3;font-size:12px}
-@media(max-width:520px){.ca-select-menu{max-height:min(45vh,280px)}.ca-select-option{min-height:44px;font-size:14px}}
-@media(prefers-reduced-motion:reduce){.ca-select-chevron{transition:none}}
-
-/* Dark custom select menus for mobile */ .ca-select-wrap{position:relative;width:100%;min-width:0}.ca-native-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;clip-path:inset(50%)!important}.ca-select-trigger{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:44px;padding:10px 11px;border:1px solid #334a65;border-radius:9px;background:#081524;color:#eaf2ff;text-align:right}.ca-select-menu{display:none;position:absolute;z-index:9999;inset-inline:0;top:calc(100% + 4px);max-height:45vh;overflow:auto;padding:5px;border:1px solid #3b5875;border-radius:10px;background:#0b192a;color:#eaf2ff;box-shadow:0 12px 32px #0009}.ca-select-wrap.is-open{z-index:10000}.ca-select-wrap.is-open .ca-select-menu{display:grid;gap:3px}.ca-select-option{width:100%;min-height:44px;padding:9px 11px;border:1px solid transparent;border-radius:7px;background:#10253a;color:#eaf2ff;text-align:right;white-space:normal}.ca-select-option[aria-selected=true]{background:#14384a;border-color:#2d7d91;color:#aef5ff}.ca-select-option:focus{outline:2px solid #67e8f9}.ca-select-empty{padding:10px;color:#a7bad2}</style>
+/* Native dropdowns: keep the browser's built-in selection behavior and request dark popup UI. */
+select {
+  color-scheme: dark;
+}
+select option,
+select optgroup {
+  background-color: #0b192a;
+  color: #eaf2ff;
+}
+@media (forced-colors: active) {
+  select, select option { forced-color-adjust: auto; }
+}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -638,96 +630,6 @@ renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
 <script src="./js/pwa-register.js"></script>
 <script type="module" src="./assets/js/sim/poe-reference-ui.js"></script>
 
-<script>
-/* Replace native select popups on the interactive workshops page with themed controls. */
-(function(){
-  "use strict";
-  const enhanced=new WeakMap();
-  let openWrap=null;
-  function closeAll(except){
-    document.querySelectorAll(".ca-select-wrap.is-open").forEach(w=>{
-      if(w===except)return;
-      w.classList.remove("is-open");
-      const t=w.querySelector(".ca-select-trigger");
-      if(t)t.setAttribute("aria-expanded","false");
-    });
-    if(!except)openWrap=null;
-  }
-  function selectedText(select){
-    const option=select.options[select.selectedIndex];
-    return option?option.textContent.trim():"انتخاب کنید…";
-  }
-  function refresh(select){
-    const d=enhanced.get(select);if(!d)return;
-    d.value.textContent=selectedText(select);
-    d.trigger.disabled=select.disabled;
-    d.trigger.setAttribute("aria-label",select.getAttribute("aria-label")||select.labels?.[0]?.textContent?.trim()||selectedText(select));
-    d.menu.replaceChildren();
-    const opts=Array.from(select.options);
-    if(!opts.length){
-      const empty=document.createElement("div");empty.className="ca-select-empty";empty.textContent="گزینه‌ای موجود نیست";d.menu.append(empty);d.trigger.disabled=true;return;
-    }
-    opts.forEach((option,index)=>{
-      const item=document.createElement("button");item.type="button";item.className="ca-select-option";item.setAttribute("role","option");
-      item.setAttribute("aria-selected",String(index===select.selectedIndex));
-      item.disabled=option.disabled||(option.parentElement?.tagName==="OPTGROUP"&&option.parentElement.disabled);
-      item.textContent=option.textContent.trim();item.dataset.index=String(index);
-      item.addEventListener("click",()=>{
-        if(item.disabled)return;
-        select.selectedIndex=index;
-        select.dispatchEvent(new Event("input",{bubbles:true}));
-        select.dispatchEvent(new Event("change",{bubbles:true}));
-        refresh(select);closeAll();d.trigger.focus({preventScroll:true});
-      });
-      d.menu.append(item);
-    });
-  }
-  function enhance(select){
-    if(!(select instanceof HTMLSelectElement)||enhanced.has(select)||select.multiple||!select.parentNode)return;
-    const wrap=document.createElement("div");wrap.className="ca-select-wrap";
-    select.parentNode.insertBefore(wrap,select);wrap.append(select);select.classList.add("ca-native-select");
-    const trigger=document.createElement("button");trigger.type="button";trigger.className="ca-select-trigger";
-    trigger.setAttribute("aria-haspopup","listbox");trigger.setAttribute("aria-expanded","false");
-    const value=document.createElement("span");value.className="ca-select-value";
-    const chevron=document.createElement("span");chevron.className="ca-select-chevron";chevron.setAttribute("aria-hidden","true");chevron.textContent="▾";
-    trigger.append(value,chevron);
-    const menu=document.createElement("div");menu.className="ca-select-menu";menu.setAttribute("role","listbox");
-    wrap.append(trigger,menu);
-    const d={wrap,trigger,value,menu};enhanced.set(select,d);
-    trigger.addEventListener("click",()=>{
-      if(select.disabled)return;
-      const opening=!wrap.classList.contains("is-open");closeAll(wrap);
-      wrap.classList.toggle("is-open",opening);trigger.setAttribute("aria-expanded",String(opening));openWrap=opening?wrap:null;
-      if(opening){refresh(select);const current=menu.querySelector('[aria-selected="true"]:not(:disabled)')||menu.querySelector("button:not(:disabled)");current?.focus({preventScroll:true});}
-    });
-    trigger.addEventListener("keydown",e=>{
-      if(["ArrowDown","ArrowUp","Enter"," "].includes(e.key)){
-        e.preventDefault();
-        if(!wrap.classList.contains("is-open"))trigger.click();
-        else{const items=Array.from(menu.querySelectorAll("button:not(:disabled)"));if(items.length)items[e.key==="ArrowUp"?items.length-1:0].focus();}
-      }else if(e.key==="Escape"){closeAll();trigger.focus({preventScroll:true});}
-    });
-    menu.addEventListener("keydown",e=>{
-      const items=Array.from(menu.querySelectorAll("button:not(:disabled)"));const i=items.indexOf(document.activeElement);
-      if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();items[(i+(e.key==="ArrowDown"?1:-1)+items.length)%items.length]?.focus();}
-      else if(e.key==="Home"){e.preventDefault();items[0]?.focus();}
-      else if(e.key==="End"){e.preventDefault();items[items.length-1]?.focus();}
-      else if(e.key==="Escape"){e.preventDefault();closeAll();trigger.focus({preventScroll:true});}
-      else if(e.key==="Tab")closeAll();
-    });
-    select.addEventListener("change",()=>refresh(select));select.addEventListener("input",()=>refresh(select));
-    new MutationObserver(()=>refresh(select)).observe(select,{childList:true,subtree:true,characterData:true,attributes:true});
-    refresh(select);
-  }
-  function scan(root){if(root instanceof HTMLSelectElement)enhance(root);root.querySelectorAll?.("select").forEach(enhance);}
-  scan(document);
-  new MutationObserver(records=>records.forEach(record=>{
-    record.addedNodes.forEach(node=>{if(node.nodeType===1)scan(node);});
-    if(record.type==="childList"&&record.target instanceof HTMLSelectElement)refresh(record.target);
-  })).observe(document.documentElement,{childList:true,subtree:true});
-  document.addEventListener("click",e=>{if(openWrap&&!openWrap.contains(e.target))closeAll();});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll();});
-})();
-</script>
+
 
 </body></html>
