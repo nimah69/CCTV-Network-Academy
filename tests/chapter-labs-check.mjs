@@ -20,6 +20,10 @@ assert.ok(allLabScenarios.every(s=>s.simulator.pass.includes("فرضی")&&s.simu
 
 assert.ok(uiSource.includes("cl-option-analysis") && uiSource.includes("تحلیل گزینه‌ها و دلیل انتخاب"),"After submission, the lab must expose an option-analysis section");
 assert.ok(uiSource.includes("s.options.map(function(option,i)") && uiSource.includes("chapterLabDecisionFeedback(s,i)"),"The option analysis must explain all four choices, not only the selected answer");
+assert.ok(uiSource.includes("class=\\"cl-simulator\\"")&&uiSource.includes("شبیه‌ساز تصمیم‌گیری"),"Every practical scenario must render its interactive decision simulator");
+assert.ok(uiSource.includes("function runChapterLabSimulator(outcome)")&&uiSource.includes("state.labSimulatorResults[ state.chapter"),"Simulator result selection must update the displayed state");
+assert.ok(uiSource.includes("sim.pass")&&uiSource.includes("sim.fail")&&uiSource.includes("گام دوم انتخاب اقدام"),"Simulator must display scenario-specific outcomes and a second-step action");
+
 
 // Regression checks for answer keys in safety-, security-, and design-critical scenarios.
 const expectedCorrectActions = new Map([
