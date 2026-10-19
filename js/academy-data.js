@@ -631,6 +631,25 @@ chapters.forEach((c,ci)=>{
     (t)=>"در بررسی «"+t+"» نشانهٔ اولیه برای تعیین علت قطعی کافی است.",
     (t)=>"«"+t+"» در تمام مدل‌ها و نسخه‌ها الزاماً رفتار یکسانی دارد."
   ];
+  const balancedClaims=[
+    (t)=>"«"+t+"» به‌تنهایی کافی است.",
+    (t)=>"برای «"+t+"» آزمون واقعی و ثبت نتیجه لازم نیست.",
+    (t)=>"«"+t+"» مستقل از شرایط نصب و سازگاری تجهیزات عمل می‌کند.",
+    (t)=>"برای «"+t+"» نام قابلیت کافی است؛ مشخصات سازنده اهمیتی ندارد.",
+    (t)=>"پس از اجرای «"+t+"» بازبینی دوره‌ای ضرورتی ندارد.",
+    (t)=>"«"+t+"» جایگزین کنترل‌ها و آزمون‌های مکمل است.",
+    (t)=>"در «"+t+"» نتیجهٔ یک آزمون همهٔ شرایط را ثابت می‌کند.",
+    (t)=>"برای «"+t+"» قیمت از عملکرد و ریسک مهم‌تر است.",
+    (t)=>"«"+t+"» بدون توجه به برق، شبکه یا نسخهٔ دستگاه کار می‌کند.",
+    (t)=>"برای پذیرش «"+t+"» مشاهدهٔ اولیه کافی است.",
+    (t)=>"«"+t+"» همیشه نتیجهٔ یکسانی می‌دهد و محدودیت ندارد.",
+    (t)=>"در «"+t+"» ثبت فرض‌ها و تغییرات لازم نیست.",
+    (t)=>"«"+t+"» به‌تنهایی علت خطا را مشخص می‌کند.",
+    (t)=>"برای «"+t+"» مستندات سازنده و آزمون سازگاری لازم نیست.",
+    (t)=>"«"+t+"» همهٔ خرابی‌های سایر اجزا را جبران می‌کند.",
+    (t)=>"در انتخاب «"+t+"» شرایط محل و هدف پروژه اهمیتی ندارد.",
+    (t)=>"«"+t+"» را می‌توان بدون معیار پذیرش تحویل داد."
+  ];
   const rationale=[
     (t)=>"برای «"+t+"»، نتیجه را با نیاز پروژه و شواهد قابل مشاهده تطبیق بده.",
     (t)=>"این پاسخ باید با مشخصات سازنده و شرایط واقعی محل سنجیده شود.",
@@ -652,17 +671,28 @@ chapters.forEach((c,ci)=>{
     const prompt=accurateStems[stemIndex](concept.title);
     const correct=completeClaim(concept.summary,concept.title);
     const distractors=[];
-    let offset=0;
-    while(distractors.length<3&&offset<falseClaims.length*2){
-      const claimIndex=(n*5+ci+offset*7)%falseClaims.length;
-      const option=shortenOption(falseClaims[claimIndex](concept.title));
-      if(option!==correct&&!distractors.includes(option))distractors.push(option);
-      offset++;
+    const minLength=correct.length+1;
+    const maxLength=correct.length+35;
+    const claimPool=[...balancedClaims,...falseClaims];
+    const candidates=[];
+    for(let offset=0;offset<claimPool.length*3;offset++){
+      const claimIndex=(n*5+ci+offset*7)%claimPool.length;
+      const option=shortenOption(claimPool[claimIndex](concept.title));
+      if(option!==correct&&!candidates.includes(option)&&option.length>=minLength&&option.length<=maxLength)candidates.push(option);
+    }
+    for(const option of candidates){
+      if(distractors.length===3)break;
+      distractors.push(option);
     }
     while(distractors.length<3){
-      const option=shortenOption("«"+concept.title+"» بدون آزمون و ثبت نتیجه قابل تأیید نیست؛ "+String(round+1));
+      const variant=balancedClaims[(n+ci+distractors.length)%balancedClaims.length];
+      const option=shortenOption(variant(concept.title)+"؛ نیازی به آزمون مستقل و ثبت نتیجه نیست.");
       if(option!==correct&&!distractors.includes(option))distractors.push(option);
-      else distractors.push(shortenOption("برای «"+concept.title+"» باید شواهد و محدودیت‌ها بررسی شوند؛ "+String(n+1)));
+      else {
+        const alternate=shortenOption("«"+concept.title+"» همیشه کافی است و بررسی سازگاری تجهیزات لازم نیست.");
+        if(alternate!==correct&&!distractors.includes(alternate))distractors.push(alternate);
+        else throw new Error("Could not produce unique distractors for "+concept.title);
+      }
     }
     const answerIndex=(n*7+ci)%4;
     const options=distractors.slice();
