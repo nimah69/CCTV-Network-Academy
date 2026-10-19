@@ -70,7 +70,7 @@
 <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
 <aside class="side" id="sidebar">
   <button class="sidebar-close" id="closeMenuBtn" type="button" aria-label="بستن منو" title="بستن منو">× <span>بستن منو</span></button>
-  <div class="brand"><div class="brand-icon">◈</div><div><strong>آکادمی شبکه و نظارت تصویری</strong><small>یادگیری مرحله‌به‌مرحله • نسخه آزمایشی</small></div></div>
+  <div class="brand"><div class="brand-icon">◈</div><div><strong>آکادمی شبکه و نظارت تصویری</strong><small>یادگیری گام‌به‌گام • نسخه آزمایشی</small></div></div>
   <div><div class="side-label">فضای یادگیری</div><nav class="nav">
     <button class="active" data-view="home"><span>⌂</span> داشبورد یادگیری</button>
     <button data-view="all"><span>▤</span> فهرست فصل‌ها <span class="num">۱۴</span></button>
@@ -132,7 +132,7 @@ function resumeStudy(){const p=state.progress.studyPosition;if(!p||!Number.isInt
 function go(view,idx){if(state.view==="lesson")saveStudyPosition();state.view=view;if(idx!==undefined)state.chapter=idx;if(view==="chapterLab"){state.labScenario=0;state.labDraft=null}state.quizAnswers={};state.quizSubmitted=false;state.quizIndex=0;state.quizRevealed={};if(view==="quiz")state.quizQuestions=buildComprehensiveQuiz();else if(view==="chapterQuiz")state.quizQuestions=buildChapterQuiz(state.chapter);else state.quizQuestions=[];const nextHash=routeHash(view,state.chapter);if(location.hash!==nextHash)history.pushState({academyRoute:true},"",nextHash);document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));render();closeSidebar();window.scrollTo({top:0,behavior:"smooth"})}
 function render(){const root=$("#view");if(state.view==="lesson")root.innerHTML=lessonHTML();else if(state.view==="chapterLab")root.innerHTML=chapterLabHTML();else if(state.view==="chapterQuiz")root.innerHTML=quizHTML(false);else if(state.view==="quiz")root.innerHTML=quizHTML(true);else if(state.view==="saved")root.innerHTML=savedHTML();else if(state.view==="tools")root.innerHTML=calculatorHTML();else root.innerHTML=homeHTML(state.view==="all");wire();updateLessonProgress();if(state.view==="tools"){calculatePoE();calculateBandwidth();calculateStorage();calculateLink();calculateSubnet()}}
 function calculatorHTML(){
- return `<section class="tools-hero tools-hero-v2"><div class="tools-kicker">آزمایشگاه طراحی CCTV • ابزارهای مهندسی</div><h1>ابزارهای تعاملی؛ قدم‌به‌قدم</h1><p>سناریو را انتخاب کن، ابزار را باز کن و مقادیر پروژه را وارد کن. نتیجه‌ها برآورد آموزشی‌اند.</p><div class="tools-steps"><span><b>۱</b> انتخاب سناریو</span><span><b>۲</b> انتخاب ابزار</span><span><b>۳</b> بررسی نتیجه</span></div></section>
+ return `<section class="tools-hero tools-hero-v2"><div class="tools-kicker">آزمایشگاه طراحی CCTV • ابزارهای مهندسی</div><h1>ابزارهای تعاملی؛ گام‌به‌گام</h1><p>سناریو را انتخاب کن، ابزار را باز کن و مقادیر پروژه را وارد کن. نتیجه‌ها برآورد آموزشی‌اند.</p><div class="tools-steps"><span><b>۱</b> انتخاب سناریو</span><span><b>۲</b> انتخاب ابزار</span><span><b>۳</b> بررسی نتیجه</span></div></section>
  <div class="tool-summary tool-summary-v2"><div class="stat"><div class="stat-icon">⚡</div><div><small>برق و توان</small><strong>PoE</strong></div></div><div class="stat"><div class="stat-icon">⇄</div><div><small>شبکه</small><strong>ترافیک و IP</strong></div></div><div class="stat"><div class="stat-icon">▣</div><div><small>ذخیره‌سازی</small><strong>هارد و زمان</strong></div></div></div>
  <section class="tool-start panel"><div class="tool-start-copy"><h2>با پروژه خودت شروع کن</h2><p>سناریوها فقط نقطه شروع هستند. بعد از انتخاب، مقادیر را با تعداد دوربین‌ها، دیتاشیت و نرخ بیت واقعی اصلاح کن.</p></div><div class="tools-presets"><button class="preset-card" type="button" onclick="applyToolPreset('shop')"><b>🏪 فروشگاه یا دفتر کوچک</b><span>۸ دوربین • 4 Mbps • ضبط ۱۴ روز</span></button><button class="preset-card" type="button" onclick="applyToolPreset('site')"><b>🏢 ساختمان اداری</b><span>۱۶ دوربین • 6 Mbps • ضبط ۳۰ روز</span></button><button class="preset-card" type="button" onclick="applyToolPreset('yard')"><b>🚧 محوطه و پارکینگ</b><span>۲۴ دوربین • 8 Mbps • ضبط ۳۰ روز</span></button></div><div class="tool-toolbar"><button class="secondary" type="button" onclick="applyToolPreset('default')">بازنشانی مقادیر</button><span class="tool-hint" id="presetStatus" aria-live="polite">یک سناریو را انتخاب کن یا مقادیر را دستی وارد کن.</span></div></section>
  <div class="section-head tool-section-head"><div><h2>کدام ابزار را لازم داری؟</h2><p>یکی را انتخاب کن؛ در موبایل فقط همان ابزار باز می‌شود تا صفحه شلوغ نشود.</p></div><span class="pill">۵ ابزار</span></div>
@@ -165,7 +165,7 @@ function applyToolPreset(name){
  calculatePoE();calculateBandwidth();calculateStorage();calculateLink();
 }
 function calculateLink(){
- const load=calcNum("linkLoad",0.1,1000000),speed=calcNum("linkSpeed",1,1000000),limit=calcNum("linkLimit",1,100);const out=$("#linkResult");if([load,speed,limit].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const load=calcNum("linkLoad",0.1,1000000),speed=calcNum("linkSpeed",1,1000000),limit=calcNum("linkLimit",1,100);const out=$("#linkResult");if([load,speed,limit].some(v=>v===null)){out.textContent=window.__academyCalcError||"مقادیر را در محدوده مجاز وارد کن.";return}
  const result=window.CCTVCalculations.link(load,speed,limit),pct=result.percent,remaining=result.remaining,status=result.status,advice=result.advice;
  out.innerHTML="اشغال برآوردی لینک: <b class='"+status+"'>"+pct.toFixed(1)+"٪</b><br>ظرفیت اسمی باقی‌مانده: <b>"+remaining.toFixed(1)+" Mbps</b><br>"+advice;
 }
@@ -178,19 +178,19 @@ function calcNum(id,min,max){
 }
 function calculatePoE(){
  const n=calcNum("poeCount",1,1000),w=calcNum("poeWatts",0.1,200),r=calcNum("poeReserve",0,100);
- const out=$("#poeResult");if([n,w,r].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const out=$("#poeResult");if([n,w,r].some(v=>v===null)){out.textContent=window.__academyCalcError||"مقادیر را در محدوده مجاز وارد کن.";return}
  const {base,total}=window.CCTVCalculations.poe(n,w,r);
- out.innerHTML="مصرف پایه: <b>"+base.toFixed(1)+" وات</b><br>با ذخیره "+r+"٪: <b>"+total.toFixed(1)+" وات</b><br>سوئیچ را با بودجه توان PoE کل بالاتر از این مقدار و توان مجاز هر پورت انتخاب کن.";
+ out.innerHTML="مصرف پایه: <b>"+base.toFixed(1)+" وات</b><br>با حاشیه اطمینان "+r+"٪: <b>"+total.toFixed(1)+" وات</b><br>سوئیچ را با بودجه توان PoE کل بالاتر از این مقدار و توان مجاز هر پورت انتخاب کن.";
 }
 function calculateBandwidth(){
  const n=calcNum("bwCount",1,1000),rate=calcNum("bwRate",0.1,500),r=calcNum("bwReserve",0,100);
- const out=$("#bwResult");if([n,rate,r].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const out=$("#bwResult");if([n,rate,r].some(v=>v===null)){out.textContent=window.__academyCalcError||"مقادیر را در محدوده مجاز وارد کن.";return}
  const {base,total,gigabits}=window.CCTVCalculations.bandwidth(n,rate,r);
  out.innerHTML="مجموع نرخ تصویر: <b>"+base.toFixed(1)+" Mbps</b><br>با حاشیه "+r+"٪: <b>"+total.toFixed(1)+" Mbps</b><br>معادل تقریبی: <b>"+gigabits.toFixed(2)+" Gbps</b><br>این مقدار را با ظرفیت واقعی لینک‌ها، uplink سوئیچ، NVR و ترافیک هم‌زمان مقایسه کن.";
 }
 function calculateStorage(){
  const n=calcNum("hddCount",1,1000),rate=calcNum("hddRate",0.1,500),days=calcNum("hddDays",1,365),hours=calcNum("hddHours",1,24),overhead=calcNum("hddOverhead",0,100);
- const out=$("#hddResult");if([n,rate,days,hours,overhead].some(v=>v===null)){out.textContent="مقادیر را در محدوده مجاز وارد کن.";return}
+ const out=$("#hddResult");if([n,rate,days,hours,overhead].some(v=>v===null)){out.textContent=window.__academyCalcError||"مقادیر را در محدوده مجاز وارد کن.";return}
  const {tb,withHeadroom}=window.CCTVCalculations.storage(n,rate,days,10,hours,overhead);
  out.innerHTML="ظرفیت تخمینی داده: <b>"+tb.toFixed(2)+" TB</b><br>با ۱۰٪ حاشیه و "+overhead+"٪ سربار: <b>"+withHeadroom.toFixed(2)+" TB</b><br>این برآورد "+hours+" ساعت ضبط در روز را فرض می‌کند؛ ظرفیت قابل استفاده دیسک، RAID، نرخ بیت متغیر و صدای همراه باید جداگانه بررسی شوند.";
 }
@@ -280,7 +280,7 @@ function technicalDetailHTML(p){
   faults=["دستگاه IP می‌گیرد اما سرویس ندارد: VLAN پورت، trunk، gateway و قوانین ACL/Firewall را بررسی کن.","پس از تغییر، دسترسی مجاز و مسدود بودن مسیرهای غیرمجاز را آزمایش کن."];
  }else{
   ports=["RJ45/Ethernet: لینک فیزیکی؛ IP/Subnet: آدرس‌دهی؛ Gateway: خروج از subnet؛ DNS: نام دامنه.","شماره پورت سرویس را از تنظیمات و مستندات دستگاه بگیر؛ شماره‌های پیش‌فرض ممکن است تغییر کرده باشند."];
-  alternatives=["ابتدا مسیر محلی و مستقیم را تست کن؛ سپس سوئیچ/VLAN، روتر و سرویس برنامه را مرحله‌به‌مرحله اضافه کن."];
+  alternatives=["ابتدا مسیر محلی و مستقیم را تست کن؛ سپس سوئیچ/VLAN، روتر و سرویس برنامه را گام‌به‌گام اضافه کن."];
   faults=["لینک خاموش: برق و کابل؛ لینک روشن ولی دسترسی نیست: IP/Subnet/VLAN؛ رابط باز می‌شود ولی تصویر نیست: سرویس، کدک، مجوز و سازگاری را بررسی کن."];
  }
  const list=a=>'<ul>'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
