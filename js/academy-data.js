@@ -715,7 +715,24 @@ chapters.forEach((c,ci)=>{
       (t)=>"کدام توضیح دربارهٔ «"+t+"» از ادعای قطعی بدون شواهد پرهیز می‌کند؟"
     ]
   };
-  const falseClaims=[
+  function contextualGeneratedClarifiers(prompt,title,seed=0){
+ const topic=String(title||"").toLowerCase();
+ const t=String(prompt||"").toLowerCase();
+ if(/حساب|دسترسی|امنیت|رمز|firewall|vpn|حمله|تهدید|رخداد|ریسک/.test(topic))return ["؛ دسترسی‌ها و شواهد رخداد باید جداگانه بررسی شوند.","؛ این ادعا بدون کنترل دسترسی قابل پذیرش نیست."];
+ if(/backup|بازیابی|raid|rpo|rto|هارد|ذخیره|ظرفیت|دیسک/.test(topic))return ["؛ ظرفیت و بازیابی باید جداگانه آزمایش شوند.","؛ این نتیجه بدون آزمون بازگردانی کافی نیست."];
+ if(/استاندارد|iso|nist|tia|ieee|سند|انطباق/.test(topic))return ["؛ نسخه و دامنهٔ سند باید تطبیق داده شوند.","؛ ادعای انطباق به مدرک معتبر نیاز دارد."];
+ if(/نور|تصویر|رزولوشن|لنز|wdr|hlc|چهره|پلاک|فشرده‌سازی|bitrate|fps/.test(topic))return ["؛ نتیجه به نور و شرایط واقعی صحنه وابسته است.","؛ کیفیت هدف باید با نمونهٔ ضبط‌شده سنجیده شود."];
+ if(/poe|توان|برق|سوئیچ/.test(topic))return ["؛ بودجهٔ توان و محدودیت هر پورت باید سنجیده شود.","؛ این ادعا بدون بررسی مصرف واقعی کافی نیست."];
+ if(/dns|نام‌گشایی|نام دستگاه|نام میزبان/.test(t))return ["؛ این گزینه مشکل نام‌گشایی را رفع نمی‌کند.","؛ نگاشت نام و IP باید جداگانه بررسی شود."];
+ if(/ip|dhcp|subnet|gateway|vlan|شبکه|ping|لینک|مسیر/.test(t))return ["؛ تنظیمات و مسیر واقعی شبکه باید بررسی شوند.","؛ این ادعا بدون آزمون ارتباط قابل پذیرش نیست."];
+ if(/backup|بازیابی|raid|rpo|rto|هارد|ذخیره|ظرفیت|دیسک/.test(t))return ["؛ ظرفیت و بازیابی باید جداگانه آزمایش شوند.","؛ این نتیجه بدون آزمون بازگردانی کافی نیست."];
+ if(/poe|توان|برق|سوئیچ/.test(t))return ["؛ بودجهٔ توان و محدودیت هر پورت باید سنجیده شود.","؛ این ادعا بدون بررسی مصرف واقعی کافی نیست."];
+ if(/امنیت|دسترسی|حساب|رمز|firewall|vpn|رخداد|تهدید|ریسک/.test(t))return ["؛ دسترسی‌ها و شواهد رخداد باید جداگانه بررسی شوند.","؛ این ادعا بدون کنترل دسترسی قابل پذیرش نیست."];
+ if(/استاندارد|iso|nist|tia|ieee|سند|انطباق/.test(t))return ["؛ نسخه و دامنهٔ سند باید تطبیق داده شوند.","؛ ادعای انطباق به مدرک معتبر نیاز دارد."];
+ if(/نور|تصویر|رزولوشن|لنز|wdr|hlc|چهره|پلاک|فشرده‌سازی|bitrate|fps/.test(t))return ["؛ نتیجه به نور و شرایط واقعی صحنه وابسته است.","؛ کیفیت هدف باید با نمونهٔ ضبط‌شده سنجیده شود."];
+ return seed%2?["؛ نتیجه باید با آزمون و شواهد تأیید شود.","؛ این ادعا محدودیت‌های فنی را نادیده می‌گیرد."]:["؛ این ادعا بدون آزمون کافی قابل پذیرش نیست.","؛ شرایط محل و معیار پذیرش باید بررسی شوند."];
+}
+const falseClaims=[
     (t)=>"«"+t+"» به‌تنهایی عملکرد کل سامانه را تضمین می‌کند.",
     (t)=>"برای «"+t+"» می‌توان شرایط محل و نیاز پروژه را نادیده گرفت.",
     (t)=>"در «"+t+"» سازگاری تجهیزات و مشخصات سازنده اهمیتی ندارد.",
@@ -803,7 +820,8 @@ chapters.forEach((c,ci)=>{
     while(distractors.length<3){
       const variant=balancedClaims[(n+ci+distractors.length)%balancedClaims.length];
       const base=variant(concept.title).replace(/[.!؟]\s*$/,"");
-      const option=shortenOption(base+"؛ نیازی به آزمون مستقل و ثبت نتیجه نیست.");
+      const endings=contextualGeneratedClarifiers(prompt,concept.title,n);
+      const option=shortenOption(base+endings[(distractors.length+ci+n)%endings.length]);
       if(option!==correct&&!distractors.includes(option))distractors.push(option);
       else {
         const alternate=shortenOption("«"+concept.title+"» همیشه کافی است و بررسی سازگاری تجهیزات لازم نیست.");
@@ -891,30 +909,35 @@ questionEntries.forEach((entry,index)=>{
  if(q.a!==target){const correct=q.o.splice(q.a,1)[0];q.o.splice(target,0,correct);q.a=target}
 });
 
-const optionQualifiers=[
-  "؛ بدون بررسی علت","؛ بدون آزمون واقعی","؛ بدون ثبت وضعیت اولیه",
-  "؛ بدون تطبیق با نیاز پروژه","؛ بدون بررسی محدودیت سازنده","؛ بدون بررسی سازگاری",
-  "؛ بدون سنجش شرایط شب","؛ بدون کنترل مسیر شبکه","؛ بدون محاسبه ظرفیت واقعی",
-  "؛ بدون ثبت نتیجه آزمون","؛ بدون بررسی برق و PoE","؛ بدون کنترل تنظیمات NVR",
-  "؛ بدون آزمون در شرایط محل","؛ بدون سنجش اثر جانبی","؛ بدون ثبت تغییرات",
-  "؛ بدون معیار پذیرش","؛ بدون بررسی نسخه و سازگاری","؛ بدون نگهداری شواهد"
-];
+function contextualDistractorClarifier(question){
+ const t=String(question.q||"").toLowerCase();
+ if(/dns|نام دستگاه|نام میزبان|نام به ip/.test(t))return ["؛ نام‌گشایی را حل نمی‌کند","؛ نام میزبان را به IP تبدیل نمی‌کند"];
+ if(/ntp|زمان نمایش|ساعت|هم‌زمان/.test(t))return ["؛ ساعت دستگاه‌ها را هم‌زمان نمی‌کند","؛ مشکل اختلاف زمان را رفع نمی‌کند"];
+ if(/دریافت ip|ip نمی‌گیرد|dhcp|آدرس‌دهی/.test(t))return ["؛ مشکل تخصیص IP را رفع نمی‌کند","؛ محدودهٔ آدرس‌دهی را بررسی نمی‌کند"];
+ if(/subnet|gateway|vlan|زیرشبکه|شبکه دیگر|مسیر شبکه|broadcast|link|لینک|ping|ارتباط/.test(t))return ["؛ مسیر شبکه را اصلاح نمی‌کند","؛ جداسازی شبکه را تنظیم نمی‌کند"];
+ if(/raid|backup|بازیابی|پشتیبان|rpo|rto|هارد|دیسک/.test(t))return ["؛ بازیابی مستقل را تأیید نمی‌کند","؛ خرابی منطقی داده را جبران نمی‌کند"];
+ if(/poe|توان|برق|وات/.test(t))return ["؛ بودجهٔ توان را نمی‌سنجد","؛ توان هر پورت را تأیید نمی‌کند"];
+ if(/امنیت|دسترسی|حساب|رمز|firewall|vpn|حمله|تهدید|رخداد|ریسک/.test(t))return ["؛ دسترسی غیرمجاز را محدود نمی‌کند","؛ کنترل امنیتی را تأیید نمی‌کند"];
+ if(/استاندارد|iso|nist|tia|ieee|سند|انطباق/.test(t))return ["؛ انطباق را ثابت نمی‌کند","؛ دامنهٔ استاندارد را مشخص نمی‌کند"];
+ if(/ظرفیت|ذخیره|bitrate|فشرده|داده|پهنای باند|نگهداری/.test(t))return ["؛ ظرفیت واقعی را مشخص نمی‌کند","؛ مدت نگهداری را تأیید نمی‌کند"];
+ if(/تصویر|رزولوشن|لنز|نور|wdr|hlc|چهره|پلاک|فریم|codec|دوربین/.test(t))return ["؛ کیفیت تصویر را تضمین نمی‌کند","؛ جزئیات هدف را تضمین نمی‌کند"];
+ return ["؛ این اقدام علت مسئله را روشن نمی‌کند","؛ نتیجه را با آزمون تأیید نمی‌کند"];
+}
 for(const chapterIndex of [0,1,2,8]){
-  for(const q of chapters[chapterIndex].quiz){
-    if(q.kind!=="تمرین مفهومی تکمیلی")continue;
-    const correct=String(q.o[q.a]||"");
-    const wrong=q.o.map((value,index)=>({value,index})).filter(item=>item.index!==q.a);
-    const longestWrong=wrong.reduce((best,item)=>item.value.length>best.value.length?item:best,wrong[0]);
-    if(correct.length<longestWrong.value.length)continue;
-    const minLength=Math.min(...q.o.map(value=>value.length));
-    const needed=correct.length-longestWrong.value.length+1;
-    const qualifier=optionQualifiers.filter(value=>value.length>=needed&&value.length<=needed+12).sort((a,b)=>a.length-b.length)[0];
-    if(!qualifier||correct.length+1-minLength>40)continue;
-    const revised=longestWrong.value+qualifier;
-    if(revised.length>correct.length&&revised.length-minLength<=40&&!q.o.some((value,index)=>index!==longestWrong.index&&value===revised)){
-      q.o[longestWrong.index]=revised;
-    }
-  }
+ for(const q of chapters[chapterIndex].quiz){
+  if(q.kind!=="تمرین مفهومی تکمیلی")continue;
+  const correct=String(q.o[q.a]||"");
+  const wrong=q.o.map((value,index)=>({value,index})).filter(item=>item.index!==q.a);
+  const longestWrong=wrong.reduce((best,item)=>item.value.length>best.value.length?item:best,wrong[0]);
+  if(correct.length<longestWrong.value.length)continue;
+  const minLength=Math.min(...q.o.map(value=>value.length));
+  const needed=correct.length-longestWrong.value.length+1;
+  const endings=contextualDistractorClarifier(q);
+  const qualifier=endings.filter(value=>value.length>=needed&&value.length<=needed+12).sort((a,b)=>a.length-b.length)[0];
+  if(!qualifier)continue;
+  const revised=longestWrong.value.replace(/[.!؟]+$/,"")+qualifier;
+  if(revised.length>correct.length&&revised.length<=110&&revised.length-minLength<=40&&!q.o.some((value,index)=>index!==longestWrong.index&&value===revised))q.o[longestWrong.index]=revised;
+ }
 }
 const repeatedOptionRewrites={
   "DHCP":["سرویس DHCP","پروتکل DHCP برای تخصیص آدرس","DHCP در پیکربندی آدرس‌دهی"],
