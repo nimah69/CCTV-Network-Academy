@@ -79,7 +79,7 @@
     <button data-view="tools"><span>⚙</span> ابزارهای تعاملی <span class="num">۵</span></button>
     <a class="nav-link" href="workshops.html"><span>🧪</span> کارگاه‌های تعاملی</a>
   </nav></div>
-  <div><div class="side-label">منبع آموزشی</div><div class="side-note"><b>جزوه جامع آمادگی آزمون و مصاحبه افتا</b>موضوع: پیاده‌سازی امنیت فیزیکی و محیط پیرامونی — نظارت تصویری. متن‌ها خلاصه و سازمان‌دهی شده‌اند؛ برای نقل دقیق به PDF اصلی مراجعه کنید.</div></div>
+  <div><div class="side-label">منبع آموزشی</div><div class="side-note"><b>جزوه جامع آمادگی آزمون و مصاحبه افتا</b>موضوع: پیاده‌سازی امنیت فیزیکی و محیط پیرامونی — نظارت تصویری. متن‌ها خلاصه و سازمان‌دهی شده‌اند؛ شماره صفحه PDF نیازمند تطبیق است. برای نقل دقیق به منبع اصلی مراجعه کن.</div></div>
 </aside>
 <main class="main">
 <header class="top"><button class="hamb" id="menuBtn" aria-label="بازکردن منو">☰</button><div class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="جست‌وجو در فصل‌ها و مفاهیم..." aria-label="جست‌وجو"></div><div class="top-right">مسیر آموزشی امنیت و CCTV</div></header>
@@ -227,7 +227,7 @@ return `<section class="welcome"><div class="eyebrow">مسیر یادگیری �
 <div class="section-head"><div><h2>${state.query?"نتایج جست‌وجو در ریزدرس‌ها":showAll?"فهرست همه فصل‌ها":"مسیر آموزشی"}</h2><p>${state.query?"جست‌وجو در عنوان، توضیح، مثال، اشتباه رایج و پرسش‌های ریزدرس‌ها انجام می‌شود.":"هر فصل شامل درس خلاصه و آزمون مخصوص همان فصل است."}</p></div><span class="pill">${faNum(filtered.length)} فصل</span></div>
 ${state.query?`<section class="micro-search-results" aria-label="نتایج جست‌وجو در متن ریزدرس‌ها"><div class="section-head"><div><h3>ریزدرس‌های مرتبط</h3><p>${microMatches.length?"برای بازکردن نتیجه روی آن بزن.":"در متن ریزدرس‌ها نتیجه‌ای پیدا نشد."}</p></div><span class="pill">${faNum(microMatches.length)} نتیجه</span></div><div class="course-grid">${microMatches.map(item=>`<button class="course" type="button" onclick="openSearchMicroLesson(${item.chapterIndex},${item.lessonIndex})"><div class="course-icon">⌕</div><div class="course-body"><h3>${esc(item.lesson.title)}</h3><p>${esc(item.chapter.title)} · ریزدرس ${faNum(item.lessonIndex+1)}</p><p>${esc(item.lesson.example)}</p><div class="course-foot"><span>بازکردن ریزدرس</span></div></div></button>`).join("")||`<div class="panel empty">عبارت دیگری را امتحان کن.</div>`}</div></section>`:""}
 <div class="course-grid">${filtered.map(c=>`<button class="course" onclick="go('lesson',${c.i})"><div class="course-icon">${c.icon}</div><div class="course-body"><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p><div class="course-foot"><span>مفاهیم آموزشی</span><div class="progress"><i style="width:${pct(c.i)}%"></i></div><span>${pct(c.i)?"تکمیل":"شروع درس"}</span></div></div></button>`).join("")||'<div class="empty">فصلی با این عبارت پیدا نشد.</div>'}</div>
-<div class="footer">محتوای فصل و توضیحات تکمیلی با برچسب جدا شده‌اند؛ شماره صفحه‌های PDF نیازمند تطبیق‌اند. پیشرفت فقط در حافظهٔ همین مرورگر ذخیره می‌شود.</div>`;
+<div class="footer">پیشرفت فقط در حافظهٔ همین مرورگر ذخیره می‌شود.</div>`;
 }
 function chapterLabAnswer(chapter,answer){
 const keys={0:1,4:1,5:1,7:0,8:0,9:1,10:0,12:0};
