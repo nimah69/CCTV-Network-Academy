@@ -355,8 +355,8 @@ document.querySelectorAll(context==="challenge"?'[data-cv-answer]:not([data-cv-q
 }
 function chapterVisualLearningHTML(c,chapterIndex){
 const sections=Array.isArray(c.sections)?c.sections:[];
-const challengeIndex=Math.max(0,(c.quiz||[]).length-1);
-const q=c.quiz&&c.quiz[challengeIndex];
+const challengeIndex=5;
+const q=c.quiz&&c.quiz[5];
 const lab=(window.CCTVChapterLabs&&window.CCTVChapterLabs[chapterIndex]||[])[0];
 state.chVisualStep=0;state.chVisualAnswer=null;
 return '<section class="chapter-visual" aria-labelledby="cv-title"><header class="cv-hero"><span class="cv-eyebrow">آزمایشگاه یادگیری تصویری · فصل '+faNum(chapterIndex+1)+'</span><h2 id="cv-title">'+esc(c.title)+'؛ از مفهوم تا اقدام</h2><p>مطالب این فصل به کارت‌های خوانا، مرور و تمرین تبدیل شده‌اند.</p><div class="cv-hero-meta"><span>'+faNum(sections.length)+' مفهوم اصلی</span><span>مرور مرحله‌ای</span><span>تمرین فوری</span></div></header>'+
