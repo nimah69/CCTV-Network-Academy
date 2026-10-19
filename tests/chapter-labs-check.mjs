@@ -33,7 +33,7 @@ for (const [title, expectedAction] of expectedCorrectActions) {
 groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter must have five scenarios");scenarios.forEach((s,i)=>{
  assert.ok(s.title.startsWith("تمرین"),"Every scenario needs a meaningful title");
  assert.ok(s.context&&s.check&&s.why&&s.clue,"Every scenario needs clear content");
- assert.equal(s.options.length,3);assert.ok(s.answer>=0&&s.answer<3);
+ assert.equal(s.options.length,4,"Every practical scenario must offer exactly four plausible actions");assert.ok(s.answer>=0&&s.answer<4);assert.equal(new Set(s.options).size,4,"Answer choices must be distinct");
  assert.equal(s.check,s.options[s.answer],`Scenario ${c+1}:${i+1} check text must match its keyed correct action`);
  const visibleText=[s.title,s.context,s.check,s.why,s.clue,...s.options,s.simulator.prompt,s.simulator.pass,s.simulator.fail,s.simulator.next].join(" ");
  assert.ok(!/…|\.{3,}|کدک(?:\s+کدک)+|پاسخ پاسخ شبکه|Fنور مادون‌قرمزmware/.test(visibleText),`Scenario ${c+1}:${i+1} contains truncated or corrupted text`);
@@ -71,7 +71,8 @@ assert.equal(scenarioCountChecked,70,"All 70 practical scenarios must be checked
 const inlineScripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.ok(inlineScripts.length>=2,"Expected both inline scripts in index.html");
 inlineScripts.forEach((match,index)=>new vm.Script(match[1],{filename:"index.html:inline-script-"+(index+1)}));
-console.log("Beginner labs checks passed: 14 chapters, 70 scenarios, single action exercise, answer saving and retry.");
+const answerPositionCounts=[0,0,0,0];groups.flat().forEach(s=>answerPositionCounts[s.answer]++);assert.ok(answerPositionCounts.every(n=>n>=10),"Correct answers must be distributed across all four positions");
+console.log("Beginner labs checks passed: 14 chapters, 70 scenarios, four distinct action choices, varied answer positions, answer saving and retry.");
 
 // UI regression: the shared "از صفر شروع کن" lab must keep Persian text RTL and wrap safely on mobile.
 const labUi = (await import("node:fs")).readFileSync("js/chapter-lab-ui.js", "utf8");
