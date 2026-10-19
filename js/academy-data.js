@@ -554,7 +554,7 @@ curatedQuestion("در گزارش عیب‌یابی حرفه‌ای، کدام ن
 };
 
 chapters.forEach((c,ci)=>{
-  const concepts=[...c.sections.map(x=>({title:x[0],summary:x[1]})),...c.supplemental.items.map(x=>({title:x[0],summary:x[1]}))];
+  const concepts=[...c.sections.map(x=>({title:x[0],summary:x[1]})),...c.supplemental.items.filter(x=>!/^مثال عملی\s*[:：]/.test(x[0])).map(x=>({title:x[0],summary:x[1]}))];
   if(targetedQuestionBanks[ci]){
     c.quiz.push(...targetedQuestionBanks[ci].slice(0,25-c.quiz.length));
   }else{
