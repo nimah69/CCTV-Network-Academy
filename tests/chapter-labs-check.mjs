@@ -42,6 +42,7 @@ groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter mus
 assert.ok(!uiSource.includes("chapterLabSimulatorHTML"),"The duplicate simulator UI must be removed");
 assert.ok(!uiSource.includes("chapterLabSimulatorChoices"),"The duplicate diagnostic-choice logic must be removed");
 assert.ok(!uiSource.includes("شبیه‌ساز تصمیم‌گیری"),"No duplicate simulator heading should remain in practical labs");
+assert.ok(!uiSource.includes("شبیه‌ساز بالا را مرور کن"),"Action feedback must not refer to the removed simulator");
 assert.ok(!uiSource.includes("runChapterLabSimulation"),"Removed simulator handlers must not remain");
 const context={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,labDraft:null,progress:{labs:{},done:[]}},chapters:[{title:"فصل آزمایشی"}],saveProgress(){},render(){},alert(){},console};
 vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
@@ -62,6 +63,7 @@ for(const [chapterIndex,scenarios] of groups.entries()){
   assert.ok(rendered.includes(context.chapterLabEsc(scenario.options[0])),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render the action choices`);
   assert.ok(!rendered.includes("cl-simulator"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not render the duplicate simulator`);
   assert.ok(!rendered.includes("بررسی تشخیصی و جمع‌آوری شواهد"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not show the removed section`);
+  assert.ok(!rendered.includes("شبیه‌ساز بالا را مرور کن"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} feedback must not reference the removed simulator`);
   scenarioCountChecked++;
  }
 }
