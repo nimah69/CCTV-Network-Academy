@@ -753,19 +753,30 @@ chapters.forEach((c,ci)=>{
     (t)=>"در انتخاب «"+t+"» شرایط محل و هدف پروژه اهمیتی ندارد.",
     (t)=>"«"+t+"» را می‌توان بدون معیار پذیرش تحویل داد."
   ];
-  const rationale=[
-    (t)=>"برای «"+t+"»، نتیجه را با نیاز پروژه و شواهد قابل مشاهده تطبیق بده.",
-    (t)=>"این پاسخ باید با مشخصات سازنده و شرایط واقعی محل سنجیده شود.",
-    (t)=>"برای جلوگیری از تعمیم، محدودیت‌ها و وابستگی‌های همین مورد را بررسی کن.",
-    (t)=>"آزمون مرتبط کمک می‌کند این گزاره از یک فرض صرف جدا شود.",
-    (t)=>"در تصمیم نهایی، نتیجهٔ قابل تکرار از ظاهر یا نام قابلیت معتبرتر است.",
-    (t)=>"این مفهوم را از ادعاهای مطلق جدا کن و دامنهٔ کاربردش را مشخص کن.",
-    (t)=>"برای تأیید پاسخ، وضعیت پایه و معیار پذیرش را از پیش ثبت کن.",
-    (t)=>"نتیجه را با یک آزمون متناسب با نقش «"+t+"» بررسی کن.",
-    (t)=>"شواهد باید نشان دهند این گزاره در همان شرایط پروژه برقرار است.",
-    (t)=>"در ارزیابی، فرض‌ها را از واقعیت مشاهده‌شده و نتیجهٔ آزمون جدا نگه دار.",
-    (t)=>"این پاسخ زمانی قابل دفاع است که با محدودیت‌های فنی مورد سازگار باشد.",
-    (t)=>"از نتیجه‌گیری کلی پرهیز کن و عملکرد موردنظر را جداگانه بیازمای."
+  const explanationPrinciples={
+    3:"در نصب فیزیکی، شرایط محیطی، روش نصب و مشخصات سازنده باید با هم سنجیده شوند.",
+    4:"در امنیت سایبری، حداقل دسترسی، نسخهٔ معتبر و ثبت رخدادها مکمل یکدیگرند.",
+    5:"در بازیابی، وجود نسخهٔ پشتیبان کافی نیست؛ آزمون عملی و زمان بازگشت را ثبت کن.",
+    6:"در ارزیابی ریسک، احتمال، پیامد و کنترل موجود را جداگانه بررسی کن.",
+    7:"برای ادعای انطباق، نسخه، دامنهٔ کاربرد و شواهد معتبر لازم‌اند.",
+    9:"در عیب‌یابی، نشانه را از علت جدا کن و فرضیه را با آزمون بسنج.",
+    10:"در تحلیل فنی، فرض‌های پنهان، محدودیت‌ها و وابستگی اجزا را بررسی کن.",
+    11:"در تحویل نهایی، معیار پذیرش، نتیجهٔ آزمون و مدارک نگهداری را ثبت کن.",
+    13:"در پاسخ مصاحبه، تصمیم، دلیل و روش راستی‌آزمایی را از هم جدا کن."
+  };
+  const rationaleShort=[
+    "شرایط واقعی محل و مشخصات سازنده را هم بسنج.",
+    "یک نشانه به‌تنهایی علت قطعی را ثابت نمی‌کند.",
+    "فرض‌ها را از نتیجهٔ مشاهده‌شده جدا نگه دار.",
+    "برای تأیید، معیار پذیرش و وضعیت پایه را ثبت کن.",
+    "سازگاری اجزا و اثر جانبی را نیز بررسی کن.",
+    "نتیجهٔ قابل تکرار از حدس معتبرتر است.",
+    "آزمون باید با هدف و شرایط پروژه هم‌خوان باشد.",
+    "اگر نتیجه متفاوت بود، پیش از تغییر بعدی شواهد را بازبینی کن.",
+    "نسخه و تنظیمات مؤثر را در گزارش ثبت کن.",
+    "از تعمیم نتیجه به شرایطی که آزمایش نشده‌اند پرهیز کن.",
+    "محدودیت‌ها را روشن بیان کن و ادعای مطلق نکن.",
+    "در گزارش، اقدام انجام‌شده و روش تأیید را مشخص کن."
   ];
   while(c.quiz.length<25){
     const concept=uniqueConcepts[n%uniqueConcepts.length];
@@ -803,7 +814,22 @@ chapters.forEach((c,ci)=>{
     const answerIndex=(n*7+ci)%4;
     const options=distractors.slice();
     options.splice(answerIndex,0,correct);
-    const explanation=concept.summary+" "+rationale[(n*5+ci)%rationale.length](concept.title);
+    const summaryText=String(concept.summary||"").replace(/\s+/g," ").trim();
+    let explanationLead=summaryText;
+    if(explanationLead.length>100){
+      const semicolon=[explanationLead.indexOf("؛"),explanationLead.indexOf(";")].filter(i=>i>=30&&i<=100).sort((a,b)=>a-b)[0];
+      if(semicolon!==undefined)explanationLead=explanationLead.slice(0,semicolon).trim().replace(/[،:]+$/,"")+".";
+      else {
+        const sentenceEnd=explanationLead.search(/[.!؟](?:\s|$)/);
+        if(sentenceEnd>=30&&sentenceEnd<=100)explanationLead=explanationLead.slice(0,sentenceEnd+1).trim();
+        else explanationLead=completeClaim(summaryText,concept.title,titleVariant+ci+1);
+      }
+    }
+    if(explanationLead.includes(correct)||explanationLead.length<25)explanationLead=completeClaim(summaryText,concept.title,titleVariant+ci+1);
+    if(explanationLead.includes(correct)||explanationLead.length<25)explanationLead=explanationPrinciples[ci]||"برای این مفهوم، شواهد و نتیجهٔ آزمون را از فرضیه جدا کن.";
+    if(!/[.!؟]$/.test(explanationLead))explanationLead+=".";
+    const rationaleText=rationaleShort[(titleVariant+ci)%rationaleShort.length];
+    const explanation=explanationLead+" برای «"+concept.title+"»، "+rationaleText;
     c.quiz.push({
       q:prompt,
       o:options,
