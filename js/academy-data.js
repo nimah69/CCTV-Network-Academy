@@ -456,7 +456,7 @@ function shortenOption(text){
   if(clauseEnd>=35)return clean.slice(0,clauseEnd).trim().replace(/[،:]+$/,"")+".";
   return clean;
 }
-function completeClaim(text,title){
+function completeClaim(text,title,variant=0){
   const clean=String(text||"").replace(/\s+/g," ").trim();
   if(clean.length<=88)return clean;
   const semicolons=[clean.indexOf("؛"),clean.indexOf(";")].filter(i=>i>=30&&i<=88).sort((a,b)=>a-b);
@@ -473,15 +473,60 @@ function completeClaim(text,title){
       return phrase.trim().replace(/[،,:]+$/,"")+" "+marker+".";
     }
   }
-  if(/Tamper Detection|کشف دست‌کاری/.test(String(title||"")))return "پایش دست‌کاری و تغییر وضعیت می‌تواند جابه‌جایی یا خرابی را آشکار کند.";
-  if(/واژگان کلیدی/.test(String(title||"")))return "Asset دارایی است؛ Threat تهدید و Vulnerability ضعف قابل سوءاستفاده است.";
-  if(/Tier و NIST/.test(String(title||"")))return "Tier سطح افزونگی زیرساخت را توصیف می‌کند؛ NIST چارچوب و راهنما منتشر می‌کند.";
-  if(/ONVIF|Profile/.test(String(title||"")))return "پیش از انتخاب، Profile پشتیبانی‌شده و نسخهٔ Firmware را در منبع رسمی بررسی کن.";
-  if(/رزولوشن بالا/.test(String(title||"")))return "رزولوشن بالاتر به‌تنهایی کیفیت شناسایی را تضمین نمی‌کند.";
-  if(/RAID/.test(String(title||"")))return "RAID تحمل برخی خرابی‌های دیسک را افزایش می‌دهد، اما جایگزین Backup نیست.";
-  if(/VLAN/.test(String(title||"")))return "VLAN جداسازی منطقی می‌دهد؛ کنترل ترافیک بین شبکه‌ها همچنان لازم است.";
-  if(/RPO|RTO/.test(String(title||"")))return "RPO حد مجاز ازدست‌رفتن داده است؛ RTO زمان هدف بازیابی سرویس است.";
-  return "«"+String(title||"این مفهوم")+"» را با هدف پروژه، شرایط واقعی و نتیجهٔ آزمون مرتبط بسنج.";
+  const titleText=String(title||"این مفهوم");
+  const source=clean;
+  if(/کشف دست‌کاری|Tamper Detection/.test(titleText)){
+    const variants=["Tamper Detection می‌تواند جابه‌جایی دوربین را آشکار کند.","پایش وضعیت به شناسایی قطع یا خرابی تجهیز کمک می‌کند.","دوربین مکمل می‌تواند پوشش نقاط حساس را بهبود دهد."];
+    return variants[variant%variants.length];
+  }
+  if(/واژگان کلیدی/.test(titleText)){
+    const variants=["Asset دارایی است؛ Threat عامل آسیب‌زا و Vulnerability ضعف قابل سوءاستفاده است.","Risk احتمال و پیامد رخداد نامطلوب را در بر می‌گیرد.","Asset، Threat، Vulnerability و Risk مفاهیم جداگانهٔ ارزیابی ریسک‌اند."];
+    return variants[variant%variants.length];
+  }
+  if(/Tier و NIST/.test(titleText)){
+    const variants=["Tier سطح افزونگی زیرساخت مرکز داده را توصیف می‌کند.","NIST چارچوب‌ها و راهنماهای فناوری و امنیت سایبری منتشر می‌کند.","Tier و NIST دو مرجع با نقش و دامنهٔ متفاوت‌اند."];
+    return variants[variant%variants.length];
+  }
+  if(/ONVIF|Profile/.test(titleText))return "پیش از انتخاب، Profile پشتیبانی‌شده و نسخهٔ Firmware را در منبع رسمی بررسی کن.";
+  if(/رزولوشن بالا/.test(titleText)){
+    const variants=["رزولوشن بالاتر به‌تنهایی کیفیت شناسایی را تضمین نمی‌کند.","لنز، نور، فاصله و حرکت نیز بر شناسایی اثر می‌گذارند.","کیفیت شناسایی را با هدف صحنه و آزمون واقعی بسنج."];
+    return variants[variant%variants.length];
+  }
+  if(/RAID/.test(titleText)){
+    const variants=["RAID تحمل برخی خرابی‌های دیسک را افزایش می‌دهد، اما جایگزین Backup نیست.","RAID حذف اشتباه یا باج‌افزار را به‌تنهایی جبران نمی‌کند.","برای حفاظت از داده، نسخهٔ پشتیبان مستقل نیز لازم است."];
+    return variants[variant%variants.length];
+  }
+  if(/VLAN/.test(titleText)){
+    const variants=["VLAN جداسازی منطقی می‌دهد؛ کنترل ترافیک بین شبکه‌ها همچنان لازم است.","برای محدودکردن ارتباط بین VLANها، ACL یا Firewall را بررسی کن.","VLAN به‌تنهایی سیاست امنیتی بین شبکه‌ها را اعمال نمی‌کند."];
+    return variants[variant%variants.length];
+  }
+  if(/RPO|RTO/.test(titleText)){
+    const variants=["RPO حد مجاز ازدست‌رفتن داده است؛ RTO زمان هدف بازیابی سرویس است.","RPO دربارهٔ دادهٔ قابل‌از‌دست‌رفتن و RTO دربارهٔ زمان بازیابی است.","هدف‌های RPO و RTO باید با نیاز کسب‌وکار تعیین شوند."];
+    return variants[variant%variants.length];
+  }
+  if(/ثبت رخداد|شواهد/.test(titleText)){
+    const variants=["لاگ‌ها، زمان و تجهیزات درگیر را حفظ کن.","تغییرات و اقدام اصلاحی را مستند کن.","شواهد را نگه دار و از حذف بی‌دلیل آن‌ها بپرهیز."];
+    return variants[variant%variants.length];
+  }
+  if(/عیب‌یابی|سناریوی چندمرحله‌ای/.test(titleText)){
+    const variants=["دامنه و اثر خرابی را مشخص و زمان شروع را ثبت کن.","تغییرات اخیر و تجهیزات درگیر را ثبت کن.","فرضیه‌ها را با آزمون کنترل‌شده بررسی کن."];
+    return variants[variant%variants.length];
+  }
+  if(/تأیید بازیابی|بازیابی/.test(titleText)){
+    const variants=["پس از رفع مشکل، ضبط و بازپخش را دوباره آزمایش کن.","شرایط رخداد و زمان تجهیزات را دوباره بررسی کن.","عملکرد اصلی را در شرایط مشابه رخداد تأیید کن."];
+    return variants[variant%variants.length];
+  }
+  const variants=[
+    "«"+titleText+"» را با هدف پروژه و معیار پذیرش بسنج.",
+    "برای «"+titleText+"»، شرایط واقعی و مشخصات سازنده را بررسی کن.",
+    "«"+titleText+"» را با آزمون قابل تکرار و نتیجهٔ ثبت‌شده ارزیابی کن.",
+    "در «"+titleText+"»، فرض‌ها و محدودیت‌ها را پیش از تصمیم مشخص کن.",
+    "«"+titleText+"» را در کنار وابستگی‌های شبکه، برق و ذخیره‌سازی بسنج.",
+    "برای «"+titleText+"»، شواهد مستقیم را از حدس و برداشت جدا کن.",
+    "«"+titleText+"» را در شرایط محل و با معیار ثابت مقایسه کن.",
+    "پیش از پذیرش «"+titleText+"»، نتیجهٔ آزمون و موارد آزمون‌نشده را ثبت کن."
+  ];
+  return variants[variant%variants.length];
 }
 const questionStems = [
   {build:(t)=>"هنگام بازبینی سامانه، کدام شاهد برای ارزیابی «"+t+"» مفیدتر است؟",difficulty:"پایه",explanation:"گزینه درست باید با رفتار قابل مشاهده یا مدرک فنی سنجیده شود، نه صرفاً با نام قابلیت."},
@@ -669,7 +714,7 @@ chapters.forEach((c,ci)=>{
     const round=Math.floor(n/uniqueConcepts.length);
     const stemIndex=(n*7+ci)%accurateStems.length;
     const prompt=accurateStems[stemIndex](concept.title);
-    const correct=completeClaim(concept.summary,concept.title);
+    const correct=completeClaim(concept.summary,concept.title,n);
     const distractors=[];
     const minLength=correct.length+1;
     const maxLength=correct.length+35;
