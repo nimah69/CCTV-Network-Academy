@@ -992,3 +992,14 @@ select:disabled {
   background-color: #123b4b;
   border-color: #38bdf8;
 }
+
+
+/* Deep-learning transfer challenges: attempt first, reveal rubric on demand. */
+.micro-transfer{margin:16px 0;padding:13px;border:1px solid var(--line,#cbd5e1);border-radius:14px;background:var(--panel,#fff)}
+.micro-transfer>summary,.micro-transfer-rubric>summary{cursor:pointer;font-weight:750;line-height:1.8}
+.micro-transfer[open]>summary{margin-bottom:10px}
+.micro-transfer-prompt{line-height:1.9}
+.micro-transfer-prompt p{margin:8px 0}
+.micro-transfer-rubric{margin-top:10px;padding:10px;border-radius:10px;background:var(--soft,#f1f5f9)}
+.micro-transfer-rubric p{margin-bottom:0}
+@media(prefers-reduced-motion:reduce){.micro-transfer *{scroll-behavior:auto!important;transition:none!important}}

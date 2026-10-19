@@ -12,6 +12,18 @@ const sandbox={window:{},console};vm.createContext(sandbox);vm.runInContext(bank
 const groups=sandbox.window.CCTVChapterLabs;
 assert.equal(groups.length,14,"14 chapters must exist");
 assert.equal(groups.flat().length,70,"All 70 scenarios must exist");
+const allLabScenarios=groups.flat();
+assert.equal(new Set(allLabScenarios.map(s=>s.simulator?.pass)).size,70,"Every practical scenario must have its own positive simulator outcome");
+assert.equal(new Set(allLabScenarios.map(s=>s.simulator?.fail)).size,70,"Every practical scenario must have its own negative simulator outcome");
+assert.ok(allLabScenarios.every(s=>s.simulator?.pass?.includes(s.check)&&s.simulator?.fail?.includes(s.check)&&s.simulator?.pass?.includes(s.why)&&s.simulator?.fail?.includes(s.why)&&s.simulator?.pass?.includes(s.clue)&&s.simulator?.fail?.includes(s.clue)),"Simulator outcomes must connect the tested action, technical reasoning and next step");
+assert.ok(allLabScenarios.every(s=>s.simulator.pass.includes("فرضی")&&s.simulator.fail.includes("فرضی")),"Simulator outcomes must remain clearly labeled as hypothetical");
+
+assert.ok(uiSource.includes("cl-option-analysis") && uiSource.includes("تحلیل گزینه‌ها و دلیل انتخاب"),"After submission, the lab must expose an option-analysis section");
+assert.ok(uiSource.includes("s.options.map(function(option,i)") && uiSource.includes("chapterLabDecisionFeedback(s,i)"),"The option analysis must explain all four choices, not only the selected answer");
+assert.ok(uiSource.includes('class="cl-simulator"')&&uiSource.includes("شبیه‌ساز تصمیم‌گیری"),"Every practical scenario must render its interactive decision simulator");
+assert.ok(uiSource.includes("function runChapterLabSimulator(outcome)")&&uiSource.includes("state.labSimulatorResults[state.chapter"),"Simulator result selection must update the displayed state");
+assert.ok(uiSource.includes("sim.pass")&&uiSource.includes("sim.fail")&&uiSource.includes("گام دوم انتخاب اقدام"),"Simulator must display scenario-specific outcomes and a second-step action");
+
 
 // Regression checks for answer keys in safety-, security-, and design-critical scenarios.
 const expectedCorrectActions = new Map([
@@ -39,15 +51,18 @@ groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter mus
  assert.ok(!/…|\.{3,}|کدک(?:\s+کدک)+|پاسخ پاسخ شبکه|Fنور مادون‌قرمزmware/.test(visibleText),`Scenario ${c+1}:${i+1} contains truncated or corrupted text`);
  assert.ok(s.options.every(option=>option.length>=8&&option.length<=180),`Scenario ${c+1}:${i+1} has an implausibly short or long answer option`);
  });});
-assert.ok(!uiSource.includes("chapterLabSimulatorHTML"),"The duplicate simulator UI must be removed");
-assert.ok(!uiSource.includes("chapterLabSimulatorChoices"),"The duplicate diagnostic-choice logic must be removed");
-assert.ok(!uiSource.includes("شبیه‌ساز تصمیم‌گیری"),"No duplicate simulator heading should remain in practical labs");
-assert.ok(!uiSource.includes("شبیه‌ساز بالا را مرور کن"),"Action feedback must not refer to the removed simulator");
-assert.ok(!uiSource.includes("runChapterLabSimulation"),"Removed simulator handlers must not remain");
+assert.ok(!uiSource.includes("chapterLabSimulatorHTML"),"The legacy duplicate simulator UI must stay removed");
+assert.ok(!uiSource.includes("chapterLabSimulatorChoices"),"The legacy duplicate diagnostic-choice logic must stay removed");
+assert.equal((uiSource.match(/شبیه‌ساز تصمیم‌گیری/g)||[]).length,1,"Exactly one integrated decision simulator heading should exist");
+assert.ok(!uiSource.includes("شبیه‌ساز بالا را مرور کن"),"Action feedback must not refer to a removed legacy simulator");
+assert.ok(!uiSource.includes("runChapterLabSimulation"),"Legacy simulator handlers must not remain");
 const context={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,labDraft:null,progress:{labs:{},done:[]}},chapters:[{title:"فصل آزمایشی"}],saveProgress(){},render(){},alert(){},console};
 vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
 context.window.CCTVChapterLabs=groups;
-assert.ok(!context.chapterLabHTML().includes("شبیه‌ساز تصمیم‌گیری"),"The duplicate simulator must not render");
+assert.ok(context.chapterLabHTML().includes("شبیه‌ساز تصمیم‌گیری"),"The integrated simulator must render in the practical lab");
+context.runChapterLabSimulator("pass");
+assert.equal(context.state.labSimulatorResults["0:0"],"pass","Simulator must store the selected hypothetical outcome");
+assert.ok(context.chapterLabHTML().includes(groups[0][0].simulator.pass),"Simulator must show the scenario-specific outcome");
 context.state.labDraft=groups[0][0].answer;context.runChapterLabScenario();assert.equal(context.state.progress.labs["0:0"].correct,true);
 context.retryChapterLabScenario(0);assert.equal(context.state.progress.labs["0:0"],undefined);
 
@@ -61,7 +76,8 @@ for(const [chapterIndex,scenarios] of groups.entries()){
   const rendered=context.chapterLabHTML();
   assert.ok(rendered.includes(context.chapterLabEsc(scenario.context)),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must show its own situation`);
   assert.ok(rendered.includes(context.chapterLabEsc(scenario.options[0])),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render the action choices`);
-  assert.ok(!rendered.includes("cl-simulator"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not render the duplicate simulator`);
+  assert.ok(rendered.includes('class="cl-simulator"')&&rendered.includes(context.chapterLabEsc(scenario.simulator.prompt)),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render its own decision simulator`);
+  assert.equal((rendered.match(/شبیه‌ساز تصمیم‌گیری/g)||[]).length,1,`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render exactly one simulator heading`);
   assert.ok(!rendered.includes("بررسی تشخیصی و جمع‌آوری شواهد"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not show the removed section`);
   assert.ok(!rendered.includes("شبیه‌ساز بالا را مرور کن"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} feedback must not reference the removed simulator`);
   scenarioCountChecked++;
