@@ -447,13 +447,24 @@ chapters.forEach((c,ci)=>{
 
 // بانک پرسش‌های تکمیلی: پرسش‌های دانشی، کاربردی و سناریویی از هم برچسب‌گذاری می‌شوند.
 function shortenOption(text){
-  const clean=String(text||"").replace(/\\s+/g," ").trim();
+  const clean=String(text||"").replace(/\s+/g," ").trim();
   if(clean.length<=110)return clean;
   const head=clean.slice(0,110);
-  const sentenceEnd=Math.max(head.lastIndexOf(". "),head.lastIndexOf("؟ "),head.lastIndexOf("؛ "));
+  const sentenceEnd=head.search(/[.!؟](?:\s|$)/);
   if(sentenceEnd>=28)return clean.slice(0,sentenceEnd+1).trim();
-  const boundary=head.lastIndexOf(" ");
-  return (boundary>=65?head.slice(0,boundary):head).replace(/[،؛:،-]+$/,"").trim()+".";
+  const clauseEnd=head.indexOf("؛");
+  if(clauseEnd>=35)return clean.slice(0,clauseEnd).trim().replace(/[،:]+$/,"")+".";
+  return clean;
+}
+function completeClaim(text){
+  const clean=String(text||"").replace(/\s+/g," ").trim();
+  if(clean.length<=110)return clean;
+  const firstSentence=clean.search(/[.!؟](?:\s|$)/);
+  if(firstSentence>=0)return clean.slice(0,firstSentence+1).trim();
+  const head=clean.slice(0,110);
+  const clauseEnd=head.lastIndexOf("؛");
+  if(clauseEnd>=35)return clean.slice(0,clauseEnd).trim().replace(/[،:]+$/,"")+".";
+  return clean;
 }
 const questionStems = [
   {build:(t)=>"هنگام بازبینی سامانه، کدام شاهد برای ارزیابی «"+t+"» مفیدتر است؟",difficulty:"پایه",explanation:"گزینه درست باید با رفتار قابل مشاهده یا مدرک فنی سنجیده شود، نه صرفاً با نام قابلیت."},
@@ -622,7 +633,7 @@ chapters.forEach((c,ci)=>{
     const round=Math.floor(n/uniqueConcepts.length);
     const stemIndex=(n*7+ci)%accurateStems.length;
     const prompt=accurateStems[stemIndex](concept.title);
-    const correct=shortenOption(concept.title+": "+concept.summary);
+    const correct=completeClaim(concept.summary);
     const distractors=[];
     let offset=0;
     while(distractors.length<3&&offset<falseClaims.length*2){
