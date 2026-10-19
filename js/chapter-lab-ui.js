@@ -39,7 +39,7 @@ function chapterLabHTML(){
 function openChapterLabScenario(index){state.labScenario=Math.max(0,Math.min(4,Number(index)||0));state.labDraft=null;render();if(typeof window!=="undefined"&&window.scrollTo)window.scrollTo({top:0,behavior:"smooth"});}
 function selectChapterLabAnswer(value){state.labDraft=Number(value);}
 function runChapterLabScenario(){
- if(!Number.isInteger(state.labDraft)||state.labDraft<0||state.labDraft>2){alert("اول یکی از سه گزینه را انتخاب کن.");return;}
+ if(!Number.isInteger(state.labDraft)||state.labDraft<0||state.labDraft>3){alert("اول یکی از چهار گزینه را انتخاب کن.");return;}
  var chapter=state.chapter,idx=state.labScenario,s=window.CCTVChapterLabs[chapter][idx],correct=state.labDraft===s.answer,key=chapter+":"+idx,old=state.progress.labs[key];
  state.progress.labs[key]={answer:state.labDraft,checked:true,correct:correct,attempts:(old&&old.attempts||0)+1,at:new Date().toISOString()};
  if(correct){var count=window.CCTVChapterLabs[chapter].filter(function(item,i){var r=state.progress.labs[chapter+":"+i];return(r&&r.checked&&r.correct)||i===idx;}).length;if(count===5&&state.progress.done.indexOf(chapter)===-1)state.progress.done.push(chapter);}
