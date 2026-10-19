@@ -21,6 +21,19 @@ const chapters = sandbox.window.CCTVAcademyData.chapters;
 assert.equal(chapters.length, 14, "Expected exactly 14 learning chapters");
 assert.equal(new Set(chapters.map(chapter=>chapter.id)).size,chapters.length,"Every chapter must have a stable unique ID");
 assert.ok(chapters.every(chapter=>Array.isArray(chapter.supplemental?.items)),"Every chapter must have a supplemental-content block");
+
+assert.ok(html.includes('<script src="js/micro-lessons.js"></script>'), "Micro-lesson module must remain loaded");
+const microSource = fs.readFileSync("js/micro-lessons.js", "utf8");
+new vm.Script(microSource, { filename: "js/micro-lessons.js" });
+const microSandbox = { window: { CCTVAcademyData: { chapters } } };
+vm.runInNewContext(microSource, microSandbox, { filename: "js/micro-lessons.js" });
+const transferLessons = chapters.map(chapter => microSandbox.window.CCTVMicroLessons.build(chapter));
+assert.equal(transferLessons.length, 14, "Every chapter must expose a transfer-learning challenge");
+assert.ok(transferLessons.every(lessons => lessons.length >= 3 && lessons.every(lesson => Array.isArray(lesson.transferChallenge) && lesson.transferChallenge.length === 3 && lesson.transferChallenge.every(part => typeof part === "string" && part.trim().length >= 30)), "Each lesson must include a scenario, prompt and evaluation rubric");
+assert.equal(new Set(transferLessons.map(lessons => lessons[0].transferChallenge[1])).size, 14, "Transfer-learning scenarios must be chapter-specific, not repeated");
+assert.ok(html.includes("micro-transfer-rubric") && html.includes("راهنمای ارزیابی پاسخ"), "Transfer challenge must hide the rubric until the learner requests it");
+assert.ok(academyCss.includes(".micro-transfer{") && academyCss.includes("@media(prefers-reduced-motion:reduce){.micro-transfer"), "Transfer challenge must have responsive styling and reduced-motion support");
+
 assert.match(chapters.find(chapter=>chapter.id==="backup-disaster-recovery").supplemental.items.flat().join(" "),/RPO|RTO|Backup|بازیابی/i,"Backup chapter must contain explicit recovery learning objectives");
 assert.match(chapters.find(chapter=>chapter.id==="final-design-checklist").sections.flat().join(" "),/مدارک تحویل|پس از نصب/,"Final design chapter must include acceptance and handover content");
 let total = 0;
