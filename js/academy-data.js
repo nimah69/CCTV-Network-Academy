@@ -791,7 +791,8 @@ chapters.forEach((c,ci)=>{
     }
     while(distractors.length<3){
       const variant=balancedClaims[(n+ci+distractors.length)%balancedClaims.length];
-      const option=shortenOption(variant(concept.title)+"؛ نیازی به آزمون مستقل و ثبت نتیجه نیست.");
+      const base=variant(concept.title).replace(/[.!؟]\s*$/,"");
+      const option=shortenOption(base+"؛ نیازی به آزمون مستقل و ثبت نتیجه نیست.");
       if(option!==correct&&!distractors.includes(option))distractors.push(option);
       else {
         const alternate=shortenOption("«"+concept.title+"» همیشه کافی است و بررسی سازگاری تجهیزات لازم نیست.");
