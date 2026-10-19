@@ -456,26 +456,32 @@ function shortenOption(text){
   if(clauseEnd>=35)return clean.slice(0,clauseEnd).trim().replace(/[،:]+$/,"")+".";
   return clean;
 }
-function completeClaim(text){
+function completeClaim(text,title){
   const clean=String(text||"").replace(/\s+/g," ").trim();
-  if(clean.length<=110)return clean;
-  const semicolon=[clean.indexOf("؛"),clean.indexOf(";")].filter(i=>i>=35&&i<=110).sort((a,b)=>a-b)[0];
-  if(semicolon!==undefined)return clean.slice(0,semicolon).trim().replace(/[،:]+$/,"")+".";
-  const actionMarkers=["را بررسی کنید","را بررسی کن","را آزمایش کنید","را آزمایش کن","را ثبت کنید","را ثبت کن","را ارزیابی کنید","را ارزیابی کن","را مشخص کنید","را مشخص کن","را کنترل کنید","را کنترل کن","را مقایسه کنید","را مقایسه کن","را بازبینی کنید","را بازبینی کن","را فعال کنید","را نگه دارید"];
-  for(const marker of actionMarkers){
+  if(clean.length<=88)return clean;
+  const semicolons=[clean.indexOf("؛"),clean.indexOf(";")].filter(i=>i>=30&&i<=88).sort((a,b)=>a-b);
+  if(semicolons.length)return clean.slice(0,semicolons[0]).trim().replace(/[،:]+$/,"")+".";
+  const sentenceEnd=clean.search(/[.!؟](?:\s|$)/);
+  if(sentenceEnd>=30&&sentenceEnd<=88)return clean.slice(0,sentenceEnd+1).trim();
+  const markers=["را بررسی کنید","را بررسی کن","را آزمایش کنید","را آزمایش کن","را ثبت کنید","را ثبت کن","را ارزیابی کنید","را ارزیابی کن","را مشخص کنید","را مشخص کن","را کنترل کنید","را کنترل کن","را مقایسه کنید","را مقایسه کن","را بازبینی کنید","را بازبینی کن","را فعال کنید","را نگه دارید","را مستند کنید","را مستند سازید"];
+  for(const marker of markers){
     const at=clean.indexOf(marker);
-    if(at>65&&at<clean.length){
+    if(at>55){
       const prefix=clean.slice(0,at);
-      const cutCandidates=[prefix.lastIndexOf("،",78),prefix.lastIndexOf(",",78)].filter(i=>i>=38);
-      const cut=cutCandidates.length?Math.max(...cutCandidates):Math.min(prefix.length,76);
-      return prefix.slice(0,cut).trim().replace(/[،,:]+$/,"")+" "+marker+".";
+      const cut=Math.max(prefix.lastIndexOf("،",68),prefix.lastIndexOf(",",68));
+      const phrase=cut>=30?prefix.slice(0,cut):prefix.slice(0,68);
+      return phrase.trim().replace(/[،,:]+$/,"")+" "+marker+".";
     }
   }
-  const firstSentence=clean.search(/[.!؟](?:\s|$)/);
-  if(firstSentence>=0&&firstSentence<110)return clean.slice(0,firstSentence+1).trim();
-  const predicate=clean.search(/(?: است| هستند| می‌شود| می‌کند| می‌کنند| محسوب می‌شود| به‌شمار می‌رود)/);
-  if(predicate>=35&&predicate<100)return clean.slice(0,predicate).trim()+clean.slice(predicate,predicate+(/(?: محسوب می‌شود| به‌شمار می‌رود)/.test(clean.slice(predicate))?14:clean.slice(predicate).startsWith(" است")?3:8)).trim()+".";
-  return clean;
+  if(/Tamper Detection|کشف دست‌کاری/.test(String(title||"")))return "پایش دست‌کاری و تغییر وضعیت می‌تواند جابه‌جایی یا خرابی را آشکار کند.";
+  if(/واژگان کلیدی/.test(String(title||"")))return "Asset دارایی است؛ Threat تهدید و Vulnerability ضعف قابل سوءاستفاده است.";
+  if(/Tier و NIST/.test(String(title||"")))return "Tier سطح افزونگی زیرساخت را توصیف می‌کند؛ NIST چارچوب و راهنما منتشر می‌کند.";
+  if(/ONVIF|Profile/.test(String(title||"")))return "پیش از انتخاب، Profile پشتیبانی‌شده و نسخهٔ Firmware را در منبع رسمی بررسی کن.";
+  if(/رزولوشن بالا/.test(String(title||"")))return "رزولوشن بالاتر به‌تنهایی کیفیت شناسایی را تضمین نمی‌کند.";
+  if(/RAID/.test(String(title||"")))return "RAID تحمل برخی خرابی‌های دیسک را افزایش می‌دهد، اما جایگزین Backup نیست.";
+  if(/VLAN/.test(String(title||"")))return "VLAN جداسازی منطقی می‌دهد؛ کنترل ترافیک بین شبکه‌ها همچنان لازم است.";
+  if(/RPO|RTO/.test(String(title||"")))return "RPO حد مجاز ازدست‌رفتن داده است؛ RTO زمان هدف بازیابی سرویس است.";
+  return "«"+String(title||"این مفهوم")+"» را با هدف پروژه، شرایط واقعی و نتیجهٔ آزمون مرتبط بسنج.";
 }
 const questionStems = [
   {build:(t)=>"هنگام بازبینی سامانه، کدام شاهد برای ارزیابی «"+t+"» مفیدتر است؟",difficulty:"پایه",explanation:"گزینه درست باید با رفتار قابل مشاهده یا مدرک فنی سنجیده شود، نه صرفاً با نام قابلیت."},
@@ -644,7 +650,7 @@ chapters.forEach((c,ci)=>{
     const round=Math.floor(n/uniqueConcepts.length);
     const stemIndex=(n*7+ci)%accurateStems.length;
     const prompt=accurateStems[stemIndex](concept.title);
-    const correct=completeClaim(concept.summary);
+    const correct=completeClaim(concept.summary,concept.title);
     const distractors=[];
     let offset=0;
     while(distractors.length<3&&offset<falseClaims.length*2){
