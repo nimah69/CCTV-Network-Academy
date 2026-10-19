@@ -76,7 +76,8 @@ for(const [chapterIndex,scenarios] of groups.entries()){
   const rendered=context.chapterLabHTML();
   assert.ok(rendered.includes(context.chapterLabEsc(scenario.context)),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must show its own situation`);
   assert.ok(rendered.includes(context.chapterLabEsc(scenario.options[0])),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render the action choices`);
-  assert.ok(!rendered.includes("cl-simulator"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not render the duplicate simulator`);
+  assert.ok(rendered.includes('class="cl-simulator"')&&rendered.includes(context.chapterLabEsc(scenario.simulator.prompt)),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render its own decision simulator`);
+  assert.equal((rendered.match(/شبیه‌ساز تصمیم‌گیری/g)||[]).length,1,`Scenario ${chapterIndex+1}:${scenarioIndex+1} must render exactly one simulator heading`);
   assert.ok(!rendered.includes("بررسی تشخیصی و جمع‌آوری شواهد"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} must not show the removed section`);
   assert.ok(!rendered.includes("شبیه‌ساز بالا را مرور کن"),`Scenario ${chapterIndex+1}:${scenarioIndex+1} feedback must not reference the removed simulator`);
   scenarioCountChecked++;
