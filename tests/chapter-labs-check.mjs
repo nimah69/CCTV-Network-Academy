@@ -51,15 +51,18 @@ groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter mus
  assert.ok(!/…|\.{3,}|کدک(?:\s+کدک)+|پاسخ پاسخ شبکه|Fنور مادون‌قرمزmware/.test(visibleText),`Scenario ${c+1}:${i+1} contains truncated or corrupted text`);
  assert.ok(s.options.every(option=>option.length>=8&&option.length<=180),`Scenario ${c+1}:${i+1} has an implausibly short or long answer option`);
  });});
-assert.ok(!uiSource.includes("chapterLabSimulatorHTML"),"The duplicate simulator UI must be removed");
-assert.ok(!uiSource.includes("chapterLabSimulatorChoices"),"The duplicate diagnostic-choice logic must be removed");
-assert.ok(!uiSource.includes("شبیه‌ساز تصمیم‌گیری"),"No duplicate simulator heading should remain in practical labs");
-assert.ok(!uiSource.includes("شبیه‌ساز بالا را مرور کن"),"Action feedback must not refer to the removed simulator");
-assert.ok(!uiSource.includes("runChapterLabSimulation"),"Removed simulator handlers must not remain");
+assert.ok(!uiSource.includes("chapterLabSimulatorHTML"),"The legacy duplicate simulator UI must stay removed");
+assert.ok(!uiSource.includes("chapterLabSimulatorChoices"),"The legacy duplicate diagnostic-choice logic must stay removed");
+assert.equal((uiSource.match(/شبیه‌ساز تصمیم‌گیری/g)||[]).length,1,"Exactly one integrated decision simulator heading should exist");
+assert.ok(!uiSource.includes("شبیه‌ساز بالا را مرور کن"),"Action feedback must not refer to a removed legacy simulator");
+assert.ok(!uiSource.includes("runChapterLabSimulation"),"Legacy simulator handlers must not remain");
 const context={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,labDraft:null,progress:{labs:{},done:[]}},chapters:[{title:"فصل آزمایشی"}],saveProgress(){},render(){},alert(){},console};
 vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
 context.window.CCTVChapterLabs=groups;
-assert.ok(!context.chapterLabHTML().includes("شبیه‌ساز تصمیم‌گیری"),"The duplicate simulator must not render");
+assert.ok(context.chapterLabHTML().includes("شبیه‌ساز تصمیم‌گیری"),"The integrated simulator must render in the practical lab");
+context.runChapterLabSimulator("pass");
+assert.equal(context.state.labSimulatorResults["0:0"],"pass","Simulator must store the selected hypothetical outcome");
+assert.ok(context.chapterLabHTML().includes(groups[0][0].simulator.pass),"Simulator must show the scenario-specific outcome");
 context.state.labDraft=groups[0][0].answer;context.runChapterLabScenario();assert.equal(context.state.progress.labs["0:0"].correct,true);
 context.retryChapterLabScenario(0);assert.equal(context.state.progress.labs["0:0"],undefined);
 
