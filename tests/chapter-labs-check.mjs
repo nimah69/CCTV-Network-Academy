@@ -59,6 +59,18 @@ assert.ok(!uiSource.includes("runChapterLabSimulation"),"Legacy simulator handle
 const context={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,labDraft:null,progress:{labs:{},done:[]}},chapters:[{title:"فصل آزمایشی"}],saveProgress(){},render(){},alert(){},console};
 vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
 context.window.CCTVChapterLabs=groups;
+// Regression: the three incorrect choices must each receive a distinct, option-specific analysis in every scenario.
+let incorrectAnalysisChecked=0;
+for(const [chapterIndex,scenarios] of groups.entries()){
+ for(const [scenarioIndex,scenario] of scenarios.entries()){
+  const explanations=scenario.options.map((_,optionIndex)=>context.chapterLabDecisionFeedback(scenario,optionIndex)).filter((_,optionIndex)=>optionIndex!==scenario.answer);
+  assert.equal(explanations.length,3, `Scenario ${chapterIndex+1}:${scenarioIndex+1} must explain exactly three incorrect choices`);
+  assert.equal(new Set(explanations).size,3, `Scenario ${chapterIndex+1}:${scenarioIndex+1} repeats an incorrect-choice explanation`);
+  assert.ok(explanations.every((value)=>value.length>80), `Scenario ${chapterIndex+1}:${scenarioIndex+1} needs substantive explanations for incorrect choices`);
+  incorrectAnalysisChecked++;
+ }
+}
+assert.equal(incorrectAnalysisChecked,70,"All 70 scenarios must have distinct incorrect-choice analyses");
 assert.ok(context.chapterLabHTML().includes("شبیه‌ساز تصمیم‌گیری"),"The integrated simulator must render in the practical lab");
 context.runChapterLabSimulator("pass");
 assert.equal(context.state.labSimulatorResults["0:0"],"pass","Simulator must store the selected hypothetical outcome");
