@@ -515,20 +515,6 @@ function completeClaim(text,title,variant=0){
   ];
   return fallbacks[variant%fallbacks.length];
 }
-const questionStems = [
-  {build:(t)=>"هنگام بازبینی سامانه، کدام شاهد برای ارزیابی «"+t+"» مفیدتر است؟",difficulty:"پایه",explanation:"گزینه درست باید با رفتار قابل مشاهده یا مدرک فنی سنجیده شود، نه صرفاً با نام قابلیت."},
-  {build:(t)=>"اگر «"+t+"» درست پیکربندی نشده باشد، کدام پیامد محتمل‌تر است؟",difficulty:"متوسط",explanation:"پیامد را با نقش واقعی این مؤلفه بسنج؛ وجود یک تنظیم یا تجهیز به‌تنهایی عملکرد کل سامانه را تضمین نمی‌کند."},
-  {build:(t)=>"پیش از انتخاب راهکار مرتبط با «"+t+"»، کدام داده را بررسی می‌کنی؟",difficulty:"متوسط",explanation:"انتخاب قابل اتکا به نیاز، شرایط محل و داده واقعی وابسته است؛ فرض اولیه را با آزمون یا مشخصات معتبر بررسی کن."},
-  {build:(t)=>"در آزمون تحویل، کدام نتیجه نشان می‌دهد «"+t+"» درست عمل می‌کند؟",difficulty:"پایه",explanation:"آزمون باید مستقیماً عملکرد مورد انتظار را بسنجد؛ روشن‌بودن تجهیز یا وجود گزینه در منو مدرک کافی نیست."},
-  {build:(t)=>"در این موقعیت، کدام اقدام درباره «"+t+"» اولویت دارد؟",difficulty:"متوسط",explanation:"اقدام درست باید با دامنه مسئله و خطرهای واقعی متناسب باشد و نتیجه آن قابل بررسی بماند."},
-  {build:(t)=>"کدام گزینه مرز کاربرد «"+t+"» را دقیق‌تر مشخص می‌کند؟",difficulty:"پیشرفته",explanation:"تعریف دقیق هم کاربرد و هم محدودیت را روشن می‌کند؛ از نتیجه‌گیری مطلق بر پایه یک کنترل پرهیز کن."},
-  {build:(t)=>"برای مستندسازی «"+t+"»، کدام اطلاعات را ثبت می‌کنی؟",difficulty:"متوسط",explanation:"ثبت شرایط، نتیجه آزمون و تغییرات انجام‌شده، تصمیم را قابل بازبینی و عیب‌یابی بعدی را آسان‌تر می‌کند."},
-  {build:(t)=>"کدام نشانه می‌تواند نیاز به بازبینی «"+t+"» را آشکار کند؟",difficulty:"متوسط",explanation:"نشانه باید با نقش فنی مفهوم ارتباط داشته باشد؛ علت را با بررسی مرحله‌ای تأیید کن."},
-  {build:(t)=>"اگر نتیجه آزمون با انتظار درباره «"+t+"» فرق داشت، گام بعدی چیست؟",difficulty:"پیشرفته",explanation:"پیش از تغییر گسترده، شرایط آزمون و شواهد را بازبینی کن و یک فرضیه را در هر مرحله بیازمای."},
-  {build:(t)=>"کدام تصمیم درباره «"+t+"» با محدودیت‌های واقعی نصب سازگارتر است؟",difficulty:"متوسط",explanation:"تصمیم فنی باید مشخصات سازنده، محیط، سازگاری اجزا و معیار پذیرش پروژه را هم‌زمان در نظر بگیرد."},
-  {build:(t)=>"برای مقایسه دو راهکار مرتبط با «"+t+"»، کدام معیار تعیین‌کننده‌تر است؟",difficulty:"پیشرفته",explanation:"معیار مقایسه باید با هدف پروژه مرتبط باشد و هزینه، ریسک و امکان آزمون را نیز در نظر بگیرد."},
-  {build:(t)=>"کدام توضیح به انتقال مفهوم «"+t+"» به یک پروژه واقعی کمک می‌کند؟",difficulty:"متوسط",explanation:"مفهوم زمانی قابل انتقال است که به یک نشانه، اقدام یا معیار آزمون مشخص در محل واقعی پیوند بخورد."}
-];
 function curatedQuestion(q,o,a,e){return {q,o,a,e,kind:"تمرین مفهومی تکمیلی",difficulty:"متوسط"}}
 const targetedQuestionBanks={
 0:[
@@ -625,6 +611,7 @@ chapters.forEach((c,ci)=>{
     if(!seenConcepts.has(key)){seenConcepts.add(key);uniqueConcepts.push(item);}
   }
   let n=0;
+  const titleVariantCounts={};
   const accurateStems=[
     (t)=>"کدام گزاره دربارهٔ «"+t+"» از نظر فنی دقیق‌تر است؟",
     (t)=>"برای توضیح «"+t+"» به همکار فنی، کدام بیان درست‌تر است؟",
@@ -698,10 +685,11 @@ chapters.forEach((c,ci)=>{
   ];
   while(c.quiz.length<25){
     const concept=uniqueConcepts[n%uniqueConcepts.length];
-    const round=Math.floor(n/uniqueConcepts.length);
+    const titleVariant=titleVariantCounts[concept.title]||0;
+    titleVariantCounts[concept.title]=titleVariant+1;
     const stemIndex=(n*7+ci)%accurateStems.length;
     const prompt=accurateStems[stemIndex](concept.title);
-    const correct=completeClaim(concept.summary,concept.title,n);
+    const correct=completeClaim(concept.summary,concept.title,titleVariant+ci*7);
     const distractors=[];
     const minLength=correct.length+1;
     const maxLength=correct.length+35;
