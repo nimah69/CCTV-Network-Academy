@@ -12,6 +12,12 @@ const sandbox={window:{},console};vm.createContext(sandbox);vm.runInContext(bank
 const groups=sandbox.window.CCTVChapterLabs;
 assert.equal(groups.length,14,"14 chapters must exist");
 assert.equal(groups.flat().length,70,"All 70 scenarios must exist");
+const allLabScenarios=groups.flat();
+assert.equal(new Set(allLabScenarios.map(s=>s.simulator?.pass)).size,70,"Every practical scenario must have its own positive simulator outcome");
+assert.equal(new Set(allLabScenarios.map(s=>s.simulator?.fail)).size,70,"Every practical scenario must have its own negative simulator outcome");
+assert.ok(allLabScenarios.every(s=>s.simulator?.pass?.includes(s.check)&&s.simulator?.fail?.includes(s.check)&&s.simulator?.pass?.includes(s.why)&&s.simulator?.fail?.includes(s.why)&&s.simulator?.pass?.includes(s.clue)&&s.simulator?.fail?.includes(s.clue)),"Simulator outcomes must connect the tested action, technical reasoning and next step");
+assert.ok(allLabScenarios.every(s=>s.simulator.pass.includes("فرضی")&&s.simulator.fail.includes("فرضی")),"Simulator outcomes must remain clearly labeled as hypothetical");
+
 assert.ok(uiSource.includes("cl-option-analysis") && uiSource.includes("تحلیل گزینه‌ها و دلیل انتخاب"),"After submission, the lab must expose an option-analysis section");
 assert.ok(uiSource.includes("s.options.map(function(option,i)") && uiSource.includes("chapterLabDecisionFeedback(s,i)"),"The option analysis must explain all four choices, not only the selected answer");
 
