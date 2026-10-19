@@ -7,6 +7,10 @@ targets.push(new URL("pwa-readiness-check.mjs", import.meta.url).pathname);
 targets.push(new URL("workshops-check.mjs", import.meta.url).pathname);
 targets.push(new URL("quality-check.mjs", import.meta.url).pathname);
 targets.push(new URL("dark-theme-check.mjs", import.meta.url).pathname);
+targets.push(new URL("chapter-labs-check.mjs", import.meta.url).pathname);
+targets.push(new URL("learning-quality-check.mjs", import.meta.url).pathname);
+targets.push(new URL("spaced-review-check.mjs", import.meta.url).pathname);
+targets.push(new URL("workshops-interaction-check.mjs", import.meta.url).pathname);
 let failed = false;
 for (const file of targets) {
   const result = spawnSync(process.execPath, ["--test", file], { stdio: "inherit" });
