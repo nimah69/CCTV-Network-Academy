@@ -34,6 +34,7 @@ groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter mus
  assert.ok(s.title.startsWith("تمرین"),"Every scenario needs a meaningful title");
  assert.ok(s.context&&s.check&&s.why&&s.clue,"Every scenario needs clear content");
  assert.equal(s.options.length,3);assert.ok(s.answer>=0&&s.answer<3);
+ assert.equal(s.check,s.options[s.answer],`Scenario ${c+1}:${i+1} check text must match its keyed correct action`);
  const visibleText=[s.title,s.context,s.check,s.why,s.clue,...s.options,s.simulator.prompt,s.simulator.pass,s.simulator.fail,s.simulator.next].join(" ");
  assert.ok(!/…|\.{3,}|کدک(?:\s+کدک)+|پاسخ پاسخ شبکه|Fنور مادون‌قرمزmware/.test(visibleText),`Scenario ${c+1}:${i+1} contains truncated or corrupted text`);
  assert.ok(s.options.every(option=>option.length>=8&&option.length<=180),`Scenario ${c+1}:${i+1} has an implausibly short or long answer option`);
