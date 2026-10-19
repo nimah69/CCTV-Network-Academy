@@ -115,7 +115,53 @@
     if(sections.length>5){const groups=[],size=Math.ceil(sections.length/5);for(let i=0;i<sections.length;i+=size){const part=sections.slice(i,i+size);groups.push({title:part.map(s=>s.title).join(" و "),body:part.map(s=>s.title+" — "+s.body).join("\n\n")})}sections=groups.slice(0,5)}
     while(sections.length<3){sections.push(sections.length===0?{title:"نقشه فصل",body:String(chapter.intro||"موضوع فصل و نقش آن در سامانه CCTV.")}:sections.length===1?{title:"نمونه کاربردی",body:String(chapter.tips||"مفهوم را در یک سناریوی نصب یا عیب‌یابی بررسی کن.")}:{title:"ارتباط با سامانه کامل",body:"این مفهوم را در کنار دوربین، شبکه، NVR، ضبط، امنیت و نگهداری ببین؛ نتیجه هر بخش می‌تواند بر بخش‌های دیگر اثر بگذارد."})}
     const bank=Array.isArray(chapter.quiz)?chapter.quiz:[];const chapterIndex=window.CCTVAcademyData.chapters.indexOf(chapter);const guide=guides[chapterIndex]||guides[0];
-    return sections.map((s,index)=>{const detail=(lessonDetails[chapterIndex]||[])[index];const safeQuestions=bank.filter((q,qi)=>qi!==5&&!/کدام توضیح برای تصمیم‌گیری درباره|کدام بیان، هم نقش و هم محدودیت|کدام گزاره با محدودیت‌های فنی|مثال عملی:/.test(String(q.q||""))&&Array.isArray(q.o)&&!q.o.some(o=>String(o).includes("…")));const lessonQuestion=safeQuestions.length?safeQuestions[index%safeQuestions.length]:null;const lessonTip="برای «"+s.title+"»، یک وضعیت پایه ثبت کن، یک متغیر را تغییر بده و نتیجه را با معیار مشخص مقایسه کن.";const wordCount=String(s.body||"").trim().split(/\s+/).filter(Boolean).length;return {index,title:s.title,definition:guide.definition,sourceLabel:"توضیح تکمیلی",expandedExplanation:detail?detail.explanation:guide.explanation+" در این ریزدرس، بخش «"+s.title+"» را با شرایط پروژه و شواهد واقعی تطبیق بده.",why:detail?detail.why:"این موضوع در فصل «"+chapter.title+"» به تصمیم درست هنگام طراحی، نصب یا عیب‌یابی کمک می‌کند.",example:detail?detail.example:guide.examples[index%guide.examples.length],commonMistake:detail?detail.commonMistake:guide.mistakes[index%guide.mistakes.length],systemConnection:detail?detail.systemConnection:guide.system,tip:lessonTip,transferChallenge:(transferChallenges[chapterIndex]||transferChallenges[0]),question:lessonQuestion,minutes:Math.max(2,Math.min(6,Math.ceil(wordCount/45)))};});
+    return sections.map((s,index)=>{
+      const detail=(lessonDetails[chapterIndex]||[])[index];
+      const safeQuestions=bank.filter((q,qi)=>qi!==5&&!/کدام توضیح برای تصمیم‌گیری درباره|کدام بیان، هم نقش و هم محدودیت|کدام گزاره با محدودیت‌های فنی|مثال عملی:/.test(String(q.q||""))&&Array.isArray(q.o)&&!q.o.some(o=>String(o).includes("…")));
+      const lessonQuestion=safeQuestions.length?safeQuestions[index%safeQuestions.length]:null;
+      const wordCount=String(s.body||"").trim().split(/\s+/).filter(Boolean).length;
+      const definition=String(s.body||"").trim();
+      const analysisNotes=[
+        "پیش از انتخاب، معیار پذیرش و شرایطی را که ممکن است نتیجه را تغییر دهد مشخص کن.",
+        "نشانهٔ مشاهده‌شده را از علت احتمالی جدا نگه دار و نتیجه را با آزمون تأیید کن.",
+        "محدودیت‌های سازنده، محیط نصب و سازگاری اجزا را کنار هم بررسی کن.",
+        "وضعیت پیش از تغییر را ثبت کن تا بتوانی نتیجهٔ اقدام را مقایسه کنی.",
+        "در گزارش، شواهد مستقیم را از فرضیه و برداشت شخصی جدا بنویس.",
+        "یک متغیر را در هر مرحله تغییر بده تا اثر آن قابل تشخیص بماند.",
+        "اگر نتیجه فقط در بخشی از شرایط رخ می‌دهد، همان شرایط را در آزمون بازسازی کن.",
+        "پذیرش نهایی را به معیار قابل مشاهده و نتیجهٔ ثبت‌شده وابسته کن.",
+        "وابستگی این بخش به برق، شبکه، ذخیره‌سازی یا تنظیمات مرتبط را بررسی کن.",
+        "راهکار را با هدف پروژه بسنج؛ بیشینه‌کردن یک عدد لزوماً بهترین نتیجه نیست.",
+        "پس از اصلاح، عملکرد مرتبط و یک حالت شکست محتمل را دوباره آزمایش کن.",
+        "هر ادعای فنی را به مشخصات معتبر یا نتیجهٔ آزمون قابل تکرار پیوند بده."
+      ];
+      const lessonTipTemplates=[
+        "برای «"+s.title+"»، پیش از اجرا معیار موفقیت را بنویس.",
+        "در «"+s.title+"»، وضعیت پایه را ثبت کن و تغییرها را جداگانه اعمال کن.",
+        "هنگام بررسی «"+s.title+"»، نتیجه را با یک آزمون قابل تکرار تأیید کن.",
+        "در مستندات «"+s.title+"»، فرض‌ها و محدودیت‌ها را نیز ثبت کن.",
+        "برای «"+s.title+"»، یک حالت شکست محتمل را هم در آزمون بگنجان.",
+        "در تصمیم مربوط به «"+s.title+"»، نیاز واقعی را از مشخصات اسمی جدا کن.",
+        "پس از تغییر «"+s.title+"»، عملکرد و اثر جانبی آن را دوباره بسنج.",
+        "برای نگهداری «"+s.title+"»، مسئول و زمان بازبینی را مشخص کن."
+      ];
+      const lessonExample=detail?detail.example:index<guide.examples.length?guide.examples[index]:"در فصل «"+chapter.title+"»، مورد «"+s.title+"» را روی یک تجهیز یا سناریوی نمونه بررسی کن؛ وضعیت اولیه را ثبت کن و نتیجه را با معیار پذیرش مقایسه کن.";
+      return {
+        index,
+        title:s.title,
+        definition,
+        sourceLabel:"توضیح تکمیلی",
+        expandedExplanation:detail?detail.explanation:analysisNotes[(index+chapterIndex)%analysisNotes.length],
+        why:detail?detail.why:"این موضوع در فصل «"+chapter.title+"» به تصمیم درست هنگام طراحی، نصب یا عیب‌یابی کمک می‌کند.",
+        example:lessonExample,
+        commonMistake:detail?detail.commonMistake:guide.mistakes[index%guide.mistakes.length],
+        systemConnection:detail?detail.systemConnection:guide.system,
+        tip:lessonTipTemplates[(index+chapterIndex)%lessonTipTemplates.length],
+        transferChallenge:(transferChallenges[chapterIndex]||transferChallenges[0]),
+        question:lessonQuestion,
+        minutes:Math.max(2,Math.min(6,Math.ceil(wordCount/45)))
+      };
+    });
   }
   window.CCTVMicroLessons={build};
 })();
