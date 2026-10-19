@@ -572,7 +572,7 @@ chapters.forEach((c,ci)=>{
   const uniqueConcepts=[];
   const seenConcepts=new Set();
   for(const item of concepts){
-    const key=String(item.title||"").trim()+"|"+String(item.summary||"").trim();
+    const key=String(item.summary||"").replace(/\s+/g," ").trim();
     if(!seenConcepts.has(key)){seenConcepts.add(key);uniqueConcepts.push(item);}
   }
   let n=0;
