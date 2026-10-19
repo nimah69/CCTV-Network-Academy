@@ -12,6 +12,24 @@ const sandbox={window:{},console};vm.createContext(sandbox);vm.runInContext(bank
 const groups=sandbox.window.CCTVChapterLabs;
 assert.equal(groups.length,14,"14 chapters must exist");
 assert.equal(groups.flat().length,70,"All 70 scenarios must exist");
+
+// Regression checks for answer keys in safety-, security-, and design-critical scenarios.
+const expectedCorrectActions = new Map([
+ ["تمرین ساده: دسترسی از بیرون شبکه لازم است","دسترسی غیرضروری را ببند و از VPN امن و احراز هویت چندمرحله‌ای استفاده کن"],
+ ["تمرین ساده: کاربران و دوربین‌ها در یک شبکه‌اند","دوربین‌ها را در VLAN جدا بگذار و فقط جریان‌های لازم را با دیواره آتش مجاز کن"],
+ ["تمرین ساده: خرابی دیسک دستگاه ضبط شبکه","خطاها را ثبت کن و طبق دستور سازنده، ضبط و بازپخش را پس از تعمیر آزمایش کن"],
+ ["تمرین ساده: میزان داده قابل از دست‌رفتن/زمان مجاز بازیابی نامشخص","زمان بازیابی و میزان داده قابل‌از‌دست‌رفتن را با مالک سامانه تعیین کن"],
+ ["تمرین ساده: «فضای کافی» معیار روشنی نیست","روز نگهداری، ساعت ضبط، نرخ بیت و ظرفیت قابل استفاده را مشخص کن"],
+ ["تمرین ساده: تصویر شب هاله دارد","بازتاب مادون‌قرمز، شیشه و لنز را بررسی کن و سپس تنظیمات تصویر را مرحله‌ای بسنج"],
+ ["تمرین ساده: ping موفق است؛ پس همه‌چیز سالم است؟","پورت، احراز هویت، جریان ویدئو و ضبط را جداگانه آزمایش کن"],
+ ["تمرین ساده: نرخ بیت با نرخ فریم فرق دارد","نرخ بیت را داده در ثانیه و نرخ فریم را تصویر در ثانیه تعریف کن"],
+ ["تمرین ساده: رمز را در گروه پیام‌رسان بفرستیم؟","برای هر فرد حساب جدا و دسترسی محدود تعریف کن و از روش امن مدیریت رمز استفاده کن"]
+]);
+for (const [title, expectedAction] of expectedCorrectActions) {
+ const scenario = groups.flat().find(item => item.title === title);
+ assert.ok(scenario, `Missing critical regression scenario: ${title}`);
+ assert.equal(scenario.options[scenario.answer], expectedAction, `Unsafe or mismatched answer key in: ${title}`);
+}
 groups.forEach((scenarios,c)=>{assert.equal(scenarios.length,5,"Each chapter must have five scenarios");scenarios.forEach((s,i)=>{
  assert.ok(s.title.startsWith("تمرین"),"Every scenario needs a meaningful title");
  assert.ok(s.context&&s.check&&s.why&&s.clue,"Every scenario needs clear content");
