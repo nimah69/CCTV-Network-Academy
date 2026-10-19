@@ -459,6 +459,7 @@ function shortenOption(text){
 function completeClaim(text,title,variant=0){
   const clean=String(text||"").replace(/\s+/g," ").trim();
   const titleText=String(title||"این مفهوم");
+  const variantIndex=variant+titleText.split("").reduce((sum,char)=>sum+char.charCodeAt(0),0);
   const variants=[
     [/موقعیت نصب|چک‌لیست نصب فیزیکی/,["محل نصب را از نظر ارتفاع، زاویه و دسترسی بسنج.","پیش از نصب، میدان دید، نقاط کور و امکان دست‌کاری را بررسی کن.","ارتفاع و زاویه را با هدف تصویر و شرایط محیطی تطبیق بده."]],
     [/حفاظت محیطی/,["درجهٔ حفاظت را با رطوبت، گردوغبار و احتمال ضربه تطبیق بده.","دما، آب‌بندی و مسیر کابل را با مشخصات سازنده بسنج.","برای محل بیرونی، آب‌بندی، ضربه و دسترسی سرویس را بررسی کن."]],
@@ -487,7 +488,7 @@ function completeClaim(text,title,variant=0){
     [/عیب‌یابی و حادثه/,["خرابی هم‌زمان را از برق و زیرساخت مشترک بررسی کن.","پیش از تغییر، وضعیت فعلی و شواهد رخداد را ثبت کن.","پس از اصلاح، عملکرد و شرایط رخداد را دوباره آزمایش کن."]],
     [/پاسخ روشن و مستدل|اعتبارسنجی پاسخ/,["پاسخ فنی باید تصمیم، دلیل و روش راستی‌آزمایی را جدا کند.","ادعا را با تعریف مفهوم، مشخصات سازنده و آزمون بسنج.","فرضیه را از شواهد مستقیم و نتیجهٔ آزمون جدا نگه دار."]]
   ];
-  for(const [pattern,options] of variants){if(pattern.test(titleText))return options[variant%options.length];}
+  for(const [pattern,options] of variants){if(pattern.test(titleText))return options[variantIndex%options.length];}
   if(clean.length<=88)return clean;
   const semicolons=[clean.indexOf("؛"),clean.indexOf(";")].filter(i=>i>=30&&i<=88).sort((a,b)=>a-b);
   if(semicolons.length)return clean.slice(0,semicolons[0]).trim().replace(/[،:]+$/,"")+".";
