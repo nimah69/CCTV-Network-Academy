@@ -530,7 +530,7 @@ function reviewCardHTML(q,i){
  '<p class="muted" style="font-size:11px">فصل: '+esc(q.tag||chapters[q.chapter]?.title||"نامشخص")+'</p>'+
  '<p><b>پاسخی که انتخاب شد:</b> '+esc(q.selectedAnswer||"بدون پاسخ")+'</p>'+
  '<p><b>پاسخ صحیح:</b> '+esc(q.correctAnswer||q.o?.[q.a]||"نامشخص")+'</p>'+
- '<p class="review-status '+(due?'is-due':'is-scheduled')+'" role="status">'+dueLabel+' · فاصله مرور: '+review.intervalDays+' روز</p>'+
+ '<p class="review-status '+(due?'is-due':'is-scheduled')+'" role="status">'+dueLabel+' · فاصله مرور: '+faNum(review.intervalDays)+' روز</p>'+
  '<details class="answer-explanation"><summary>توضیح پاسخ</summary><div class="explanation-body">'+esc(q.e||"توضیحی ذخیره نشده است.").replace(/\\r?\\n/g,"<br>")+'</div></details>'+
  '<div class="review-actions" aria-label="ارزیابی یادآوری">'+
  '<button type="button" class="secondary" onclick="gradeReviewQuestion('+i+',&#39;again&#39;)">فراموش کردم</button>'+
@@ -558,7 +558,7 @@ function savedHTML(){
  const dueCount=wrong.filter(q=>window.CCTVSpacedReview.isDue(q.review,q.savedAt)).length;
  const result=state.progress.comprehensive;
  const position=state.progress.studyPosition;return `${position?`<section class="panel resume-card"><div><span class="pill">آخرین موقعیت مطالعه</span><h2>${esc(chapters[position.chapter]?.title||"ادامه درس")}</h2><p class="muted">بازگشت به همان فصل و موقعیت ذخیره‌شده.</p></div><button class="primary" onclick="resumeStudy()">ادامه از همان‌جا ←</button></section>`:""}<div class="section-head"><div><h2>ادامه یادگیری</h2><p>پیشرفت ذخیره‌شده، نتیجه آزمون جامع و سؤال‌هایی که نیاز به مرور دارند.</p></div></div>\n <div class="section-head"><div><h2>نشان‌شده‌ها</h2><p>ریزدرس‌هایی که برای مراجعه دوباره ذخیره کرده‌ای.</p></div></div>${microBookmarksHTML()}
- ${result?`<section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">آخرین نتیجه آزمون جامع</h3><p>امتیاز: <b>${result.score} از ${result.total}</b> — ${result.percent}٪</p><p class="muted" style="font-size:11px">زمان ثبت: ${esc(result.at||"نامشخص")}</p></section>`:""}
+ ${result?`<section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">آخرین نتیجه آزمون جامع</h3><p>امتیاز: <b>${faNum(result.score)} از ${faNum(result.total)}</b> — ${faNum(result.percent)}٪</p><p class="muted" style="font-size:11px">زمان ثبت: ${esc(result.at||"نامشخص")}</p></section>`:""}
  <section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">پشتیبان‌گیری از پیشرفت</h3><p class="muted" style="font-size:12px">فایل JSON را برای نگهداری یا انتقال پیشرفت ذخیره کن. ورود فایل، داده‌های موجود را ادغام می‌کند و به‌طور پیش‌فرض آن‌ها را جایگزین نمی‌کند.</p><div class="lesson-actions"><button class="secondary" onclick="exportProgress()">خروجی پیشرفت (JSON)</button><button class="secondary" onclick="document.getElementById('progressImportInput').click()">ورود پیشرفت (JSON)</button><input id="progressImportInput" type="file" accept=".json,application/json" style="display:none" onchange="importProgressFile(this)"></div></section>
  <div class="section-head"><div><h2>سؤال‌های نیازمند مرور</h2><p>${faNum(wrong.length)} سؤال ثبت‌شده · ${faNum(dueCount)} مورد آماده مرور</p></div></div>
  ${wrong.length?wrong.map(reviewCardHTML).join(""):'<div class="panel empty">فعلاً سؤال اشتباهی برای مرور ثبت نشده است. پس از شرکت در آزمون، پاسخ‌های اشتباه اینجا نمایش داده می‌شوند.</div>'}
