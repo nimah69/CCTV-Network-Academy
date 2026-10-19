@@ -72,3 +72,9 @@ const inlineScripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.ok(inlineScripts.length>=2,"Expected both inline scripts in index.html");
 inlineScripts.forEach((match,index)=>new vm.Script(match[1],{filename:"index.html:inline-script-"+(index+1)}));
 console.log("Beginner labs checks passed: 14 chapters, 70 scenarios, single action exercise, answer saving and retry.");
+
+// UI regression: the shared "از صفر شروع کن" lab must keep Persian text RTL and wrap safely on mobile.
+const labUi = (await import("node:fs")).readFileSync("js/chapter-lab-ui.js", "utf8");
+assert.ok(labUi.includes("direction:rtl;text-align:right;unicode-bidi:plaintext"), "Chapter lab text must use explicit Persian RTL flow");
+assert.ok(labUi.includes("overflow-wrap:anywhere;word-break:normal"), "Chapter lab text must wrap without clipping or breaking Persian words arbitrarily");
+assert.ok(labUi.includes(".cl-lab *{box-sizing:border-box;min-width:0}"), "Chapter lab children must be constrained to prevent mobile overflow");
