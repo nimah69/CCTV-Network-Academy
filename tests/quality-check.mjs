@@ -29,7 +29,7 @@ const microSandbox = { window: { CCTVAcademyData: { chapters } } };
 vm.runInNewContext(microSource, microSandbox, { filename: "js/micro-lessons.js" });
 const transferLessons = chapters.map(chapter => microSandbox.window.CCTVMicroLessons.build(chapter));
 assert.equal(transferLessons.length, 14, "Every chapter must expose a transfer-learning challenge");
-const completeTransferLessons = transferLessons.every(lessons => lessons.length >= 3 && lessons.every(lesson => { const challenge = lesson.transferChallenge; return Array.isArray(challenge) && challenge.length === 3 && challenge.every(part => typeof part === "string" && part.trim().length >= 30); }));
+const completeTransferLessons = transferLessons.every(lessons => lessons.length >= 3 && lessons.every(lesson => { const challenge = lesson.transferChallenge; return Array.isArray(challenge) && challenge.length === 3 && typeof challenge[0] === "string" && challenge[0].trim().length >= 3 && typeof challenge[1] === "string" && challenge[1].trim().length >= 30 && typeof challenge[2] === "string" && challenge[2].trim().length >= 30; }));
 assert.ok(completeTransferLessons, "Each lesson must include a scenario, prompt and evaluation rubric");
 assert.equal(new Set(transferLessons.map(lessons => lessons[0].transferChallenge[1])).size, 14, "Transfer-learning scenarios must be chapter-specific, not repeated");
 assert.ok(html.includes("micro-transfer-rubric") && html.includes("راهنمای ارزیابی پاسخ"), "Transfer challenge must hide the rubric until the learner requests it");
