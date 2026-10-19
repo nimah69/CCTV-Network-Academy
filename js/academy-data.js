@@ -804,5 +804,30 @@ questionEntries.forEach((entry,index)=>{
  if(q.a!==target){const correct=q.o.splice(q.a,1)[0];q.o.splice(target,0,correct);q.a=target}
 });
 
+const optionQualifiers=[
+  "؛ بدون بررسی علت","؛ بدون آزمون واقعی","؛ بدون ثبت وضعیت اولیه",
+  "؛ بدون تطبیق با نیاز پروژه","؛ بدون بررسی محدودیت سازنده","؛ بدون بررسی سازگاری",
+  "؛ بدون سنجش شرایط شب","؛ بدون کنترل مسیر شبکه","؛ بدون محاسبه ظرفیت واقعی",
+  "؛ بدون ثبت نتیجه آزمون","؛ بدون بررسی برق و PoE","؛ بدون کنترل تنظیمات NVR",
+  "؛ بدون آزمون در شرایط محل","؛ بدون سنجش اثر جانبی","؛ بدون ثبت تغییرات",
+  "؛ بدون معیار پذیرش","؛ بدون بررسی نسخه و سازگاری","؛ بدون نگهداری شواهد"
+];
+for(const chapterIndex of [0,1,2,8]){
+  for(const q of chapters[chapterIndex].quiz){
+    if(q.kind!=="تمرین مفهومی تکمیلی")continue;
+    const correct=String(q.o[q.a]||"");
+    const wrong=q.o.map((value,index)=>({value,index})).filter(item=>item.index!==q.a);
+    const longestWrong=wrong.reduce((best,item)=>item.value.length>best.value.length?item:best,wrong[0]);
+    if(correct.length<longestWrong.value.length)continue;
+    const minLength=Math.min(...q.o.map(value=>value.length));
+    const needed=correct.length-longestWrong.value.length+1;
+    const qualifier=optionQualifiers.filter(value=>value.length>=needed&&value.length<=needed+12).sort((a,b)=>a.length-b.length)[0];
+    if(!qualifier||correct.length+1-minLength>40)continue;
+    const revised=longestWrong.value+qualifier;
+    if(revised.length>correct.length&&revised.length-minLength<=40&&!q.o.some((value,index)=>index!==longestWrong.index&&value===revised)){
+      q.o[longestWrong.index]=revised;
+    }
+  }
+}
 return { chapters };
 })();
