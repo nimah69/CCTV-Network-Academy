@@ -78,8 +78,8 @@ const labUi = (await import("node:fs")).readFileSync("js/chapter-lab-ui.js", "ut
 assert.ok(labUi.includes("direction:rtl;text-align:right;unicode-bidi:plaintext"), "Chapter lab text must use explicit Persian RTL flow");
 assert.ok(labUi.includes("overflow-wrap:anywhere;word-break:normal"), "Chapter lab text must wrap without clipping or breaking Persian words arbitrarily");
 assert.ok(labUi.includes(".cl-lab *{box-sizing:border-box;min-width:0}"), "Chapter lab children must be constrained to prevent mobile overflow");
-const embeddedStyle = labUi.match(/<style>([\\s\\S]*?)<\\/style>/)?.[1] || "";
+const embeddedStyle = labUi.match(/<style>([\s\S]*?)<\/style>/)?.[1] || "";
 assert.ok(embeddedStyle, "The beginner-lab embedded stylesheet must exist");
-assert.ok(!/\\.{3,}/.test(embeddedStyle), "The beginner-lab stylesheet must not contain malformed ellipsis selectors");
+assert.ok(!/\.{3,}/.test(embeddedStyle), "The beginner-lab stylesheet must not contain malformed ellipsis selectors");
 assert.ok(embeddedStyle.includes(".cl-answers{border:0;padding:0;margin:16px 0}"), "Answer fieldset styles must be a valid CSS rule");
 assert.ok(embeddedStyle.includes(".cl-progress-row{align-items:flex-start;flex-direction:column}"), "Mobile progress layout rule must be present and valid");
