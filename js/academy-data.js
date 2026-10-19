@@ -459,11 +459,22 @@ function shortenOption(text){
 function completeClaim(text){
   const clean=String(text||"").replace(/\s+/g," ").trim();
   if(clean.length<=110)return clean;
+  const semicolon=[clean.indexOf("؛"),clean.indexOf(";")].filter(i=>i>=35&&i<=110).sort((a,b)=>a-b)[0];
+  if(semicolon!==undefined)return clean.slice(0,semicolon).trim().replace(/[،:]+$/,"")+".";
+  const actionMarkers=["را بررسی کنید","را بررسی کن","را آزمایش کنید","را آزمایش کن","را ثبت کنید","را ثبت کن","را ارزیابی کنید","را ارزیابی کن","را مشخص کنید","را مشخص کن","را کنترل کنید","را کنترل کن","را مقایسه کنید","را مقایسه کن","را بازبینی کنید","را بازبینی کن","را فعال کنید","را نگه دارید"];
+  for(const marker of actionMarkers){
+    const at=clean.indexOf(marker);
+    if(at>65&&at<clean.length){
+      const prefix=clean.slice(0,at);
+      const cutCandidates=[prefix.lastIndexOf("،",78),prefix.lastIndexOf(",",78)].filter(i=>i>=38);
+      const cut=cutCandidates.length?Math.max(...cutCandidates):Math.min(prefix.length,76);
+      return prefix.slice(0,cut).trim().replace(/[،,:]+$/,"")+" "+marker+".";
+    }
+  }
   const firstSentence=clean.search(/[.!؟](?:\s|$)/);
-  if(firstSentence>=0)return clean.slice(0,firstSentence+1).trim();
-  const head=clean.slice(0,110);
-  const clauseEnd=head.lastIndexOf("؛");
-  if(clauseEnd>=35)return clean.slice(0,clauseEnd).trim().replace(/[،:]+$/,"")+".";
+  if(firstSentence>=0&&firstSentence<110)return clean.slice(0,firstSentence+1).trim();
+  const predicate=clean.search(/(?: است| هستند| می‌شود| می‌کند| می‌کنند| محسوب می‌شود| به‌شمار می‌رود)/);
+  if(predicate>=35&&predicate<100)return clean.slice(0,predicate).trim()+clean.slice(predicate,predicate+(/(?: محسوب می‌شود| به‌شمار می‌رود)/.test(clean.slice(predicate))?14:clean.slice(predicate).startsWith(" است")?3:8)).trim()+".";
   return clean;
 }
 const questionStems = [
