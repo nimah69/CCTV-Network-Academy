@@ -119,7 +119,6 @@
       const detail=(lessonDetails[chapterIndex]||[])[index];
       const safeQuestions=bank.filter((q,qi)=>qi!==5&&!/کدام توضیح برای تصمیم‌گیری درباره|کدام بیان، هم نقش و هم محدودیت|کدام گزاره با محدودیت‌های فنی|مثال عملی:/.test(String(q.q||""))&&Array.isArray(q.o)&&!q.o.some(o=>String(o).includes("…")));
       const lessonQuestion=safeQuestions.length?safeQuestions[index%safeQuestions.length]:null;
-      const wordCount=String(s.body||"").trim().split(/\s+/).filter(Boolean).length;
       const definition=String(s.body||"").trim();
       const analysisNotes=[
         "پیش از انتخاب، معیار پذیرش و شرایطی را که ممکن است نتیجه را تغییر دهد مشخص کن.",
@@ -159,7 +158,7 @@
         tip:lessonTipTemplates[(index+chapterIndex)%lessonTipTemplates.length],
         transferChallenge:(transferChallenges[chapterIndex]||transferChallenges[0]),
         question:lessonQuestion,
-        minutes:Math.max(2,Math.min(6,Math.ceil(wordCount/45)))
+        minutes:4
       };
     });
   }
