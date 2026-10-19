@@ -21,19 +21,43 @@ function chapterLabDecisionFeedback(s,index){
  else reason="این اقدام مستقیماً فرضیه اصلی سناریو را آزمایش نمی‌کند؛ پیش از اجرا باید رابطه آن با نشانه مشاهده‌شده را ثابت کنی.";
  return "در سناریوی «"+s.title+"»، انتخاب «"+option+"» قدم مناسبی نیست. "+reason+" شواهد کلیدی این مسئله: "+s.why;
 }
+function chapterLabSimulatorChoices(s){
+ var bank=window.CCTVChapterLabs||[],chapterScenarios=bank[state.chapter]||[],scenarioIndex=chapterScenarios.indexOf(s);
+ if(scenarioIndex<0)scenarioIndex=Number(state.labScenario)||0;
+ var options=[String(s.clue||"بررسی نشانه‌های اصلی را ثبت کن.")],seen={};
+ seen[options[0]]=true;
+ for(var offset=1;offset<chapterScenarios.length&&options.length<3;offset++){
+  var other=chapterScenarios[(scenarioIndex+offset)%chapterScenarios.length];
+  var candidate=String(other&&other.clue||"");
+  if(candidate&&candidate!==options[0]&&!seen[candidate]){options.push(candidate);seen[candidate]=true;}
+ }
+ for(var c=0;c<bank.length&&options.length<3;c++)for(var j=0;j<(bank[c]||[]).length&&options.length<3;j++){
+  var fallback=String(bank[c][j].clue||"");
+  if(fallback&&!seen[fallback]){options.push(fallback);seen[fallback]=true;}
+ }
+ while(options.length<3)options.push("ثبت شواهد مسئله «"+s.title+"» پیش از هر تغییر");
+ var answer=(scenarioIndex%3+3)%3;
+ if(answer!==0){var correct=options[0];options[0]=options[answer];options[answer]=correct;}
+ return {options:options,answer:answer,index:scenarioIndex};
+}
+function chapterLabSimulatorFeedback(s,index){
+ var choice=chapterLabSimulatorChoices(s),selected=choice.options[index]||"";
+ if(index===choice.answer)return "بررسی مناسبی انتخاب شد: «"+selected+"». "+s.why;
+ return "این بررسی برای مسئله «"+s.title+"» اولویت مناسبی نیست: «"+selected+"». ابتدا این بررسی را انجام بده: «"+choice.options[choice.answer]+"». "+s.why;
+}
 function chapterLabSimulatorHTML(s){
- var step=state.labSimStep||0,outcome=state.labSimOutcome||"",action=Number.isInteger(state.labSimAction)?state.labSimAction:null;
+ var step=state.labSimStep||0,outcome=state.labSimOutcome||"",action=Number.isInteger(state.labSimAction)?state.labSimAction:null,choices=chapterLabSimulatorChoices(s);
  var body="";
  if(step===0){
-  body='<div class="cl-sim-card"><span class="cl-step-no">۱</span><div><b>وضعیت مسئله</b><p>'+chapterLabEsc(s.context)+'</p><small>هنوز نتیجه‌گیری نکن؛ ابتدا نشانه‌ها را از اقدام پیشنهادی جدا کن.</small></div></div><button type="button" class="cl-btn cl-btn-primary cl-full" onclick="advanceLabSimulator(1)">رفتن به انتخاب اقدام</button>';
+  body='<div class="cl-sim-card"><span class="cl-step-no">۱</span><div><b>وضعیت مسئله</b><p>'+chapterLabEsc(s.context)+'</p><small>این مرحله درباره جمع‌آوری شواهد است؛ در تمرین «انتخاب اقدام» جداگانه، اقدام اصلاحی را انتخاب می‌کنی.</small></div></div><button type="button" class="cl-btn cl-btn-primary cl-full" onclick="advanceLabSimulator(1)">شروع بررسی تشخیصی</button>';
  }else if(step===1){
-  var actions=(s.options||[]).map(function(option,index){return '<button type="button" class="cl-btn" onclick="runChapterLabSimulation('+index+')"><b>اقدام '+(index+1).toLocaleString("fa-IR")+'</b><small>'+chapterLabEsc(option)+'</small></button>';}).join("");
-  body='<div class="cl-sim-card"><span class="cl-step-no">۲</span><div><b>گام دوم: انتخاب اقدام</b><p>اقدامی را انتخاب کن که با شواهد همین مسئله سازگارتر است. گزینه درست از قبل علامت‌گذاری نشده است.</p></div></div><div class="cl-sim-choices">'+actions+'</div>';
+  var actions=choices.options.map(function(option,index){return '<button type="button" class="cl-btn" onclick="runChapterLabSimulation('+index+')"><b>بررسی '+(index+1).toLocaleString("fa-IR")+'</b><small>'+chapterLabEsc(option)+'</small></button>';}).join("");
+  body='<div class="cl-sim-card"><span class="cl-step-no">۲</span><div><b>آزمون تشخیصی: '+chapterLabEsc(s.title)+'</b><p>با توجه به نشانه‌های همین وضعیت، کدام بررسی را برای محدودکردن علت مشکل اول انجام می‌دهی؟</p></div></div><div class="cl-sim-choices">'+actions+'</div>';
  }else{
   var passed=outcome==="pass";
-  body='<div class="cl-sim-result '+(passed?"is-pass":"is-fail")+'" role="status"><b>'+(passed?"تصمیم مناسب":"این اقدام برای شروع مناسب نیست")+'</b><p><b>اقدام انتخاب‌شده:</b> '+chapterLabEsc(action!==null?(s.options||[])[action]:"")+'</p><p>'+chapterLabEsc(chapterLabDecisionFeedback(s,action===null?-1:action))+'</p><div class="cl-next-step"><b>قدم بعدی</b><p>'+chapterLabEsc(s.clue)+'</p></div><button type="button" class="cl-btn cl-full" onclick="resetLabSimulator()">آزمایش دوباره از ابتدا</button></div>';
+  body='<div class="cl-sim-result '+(passed?"is-pass":"is-fail")+'" role="status"><b>'+(passed?"بررسی تشخیصی مناسب":"بررسی انتخاب‌شده اولویت مناسبی ندارد")+'</b><p><b>بررسی انتخاب‌شده:</b> '+chapterLabEsc(action!==null?choices.options[action]:"")+'</p><p>'+chapterLabEsc(chapterLabSimulatorFeedback(s,action===null?-1:action))+'</p><div class="cl-next-step"><b>اقدام بعدی پس از تشخیص</b><p>'+chapterLabEsc(s.check)+'</p><b>نکته آموزشی</b><p>'+chapterLabEsc(s.clue)+'</p></div><button type="button" class="cl-btn cl-full" onclick="resetLabSimulator()">آزمایش دوباره از ابتدا</button></div>';
  }
- return '<section class="cl-simulator" aria-labelledby="cl-sim-title"><div class="cl-sim-head"><div><span class="cl-kicker">شبیه‌ساز تصمیم‌گیری</span><h3 id="cl-sim-title">بررسی مسئله و انتخاب اقدام</h3><p>۱. وضعیت را بخوان؛ ۲. اقدام را انتخاب کن؛ ۳. دلیل و قدم بعدی را بررسی کن.</p></div><span class="cl-sim-badge">گام '+(step+1).toLocaleString("fa-IR")+' از ۳</span></div><div class="cl-sim-body">'+body+'<p class="cl-honesty">این شبیه‌ساز آموزشی است و به دوربین، سوئیچ یا NVR واقعی متصل نیست.</p></div></section>';
+ return '<section class="cl-simulator" aria-labelledby="cl-sim-title"><div class="cl-sim-head"><div><span class="cl-kicker">شبیه‌ساز تصمیم‌گیری</span><h3 id="cl-sim-title">بررسی تشخیصی و جمع‌آوری شواهد</h3><p>۱. وضعیت را بخوان؛ ۲. بررسی تشخیصی را انتخاب کن؛ ۳. بازخورد و اقدام بعدی را ببین.</p></div><span class="cl-sim-badge">گام '+(step+1).toLocaleString("fa-IR")+' از ۳</span></div><div class="cl-sim-body">'+body+'<p class="cl-honesty">این شبیه‌ساز آموزشی است و به دوربین، سوئیچ یا NVR واقعی متصل نیست.</p></div></section>';
 }
 function chapterLabHTML(){
  var chapter=state.chapter,bank=window.CCTVChapterLabs||[],scenarios=bank[chapter]||[],c=(typeof chapters!=="undefined"&&chapters[chapter])||{title:"فصل "+(chapter+1)};
@@ -61,5 +85,5 @@ function runChapterLabScenario(){
 }
 function retryChapterLabScenario(index){var key=state.chapter+":"+index;delete state.progress.labs[key];saveProgress();state.labScenario=index;state.labDraft=null;state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();}
 function advanceLabSimulator(step){state.labSimStep=Number(step)||0;state.labSimOutcome="";state.labSimAction=null;render();}
-function runChapterLabSimulation(actionIndex){var s=window.CCTVChapterLabs[state.chapter][state.labScenario];if(!Number.isInteger(actionIndex)||actionIndex<0||actionIndex>2)return;state.labSimAction=actionIndex;state.labSimOutcome=actionIndex===s.answer?"pass":"fail";state.labSimStep=2;render();}
+function runChapterLabSimulation(actionIndex){var s=window.CCTVChapterLabs[state.chapter][state.labScenario];if(!Number.isInteger(actionIndex)||actionIndex<0||actionIndex>2)return;var choices=chapterLabSimulatorChoices(s);state.labSimAction=actionIndex;state.labSimOutcome=actionIndex===choices.answer?"pass":"fail";state.labSimStep=2;render();}
 function resetLabSimulator(){state.labSimStep=0;state.labSimOutcome="";state.labSimAction=null;render();}
