@@ -382,7 +382,8 @@ function lessonHTML(){
 function explanationHTML(q){
   const answer=esc(q.o[q.a]);
   const detail=esc(q.e||"برای این سؤال هنوز توضیح تخصصی کافی ثبت نشده است؛ این مورد باید با منبع آموزشی تطبیق داده شود.");
-  const selectedIndex=state.quizAnswers&&state.quizAnswers[state.quizIndex]!==undefined?Number(state.quizAnswers[state.quizIndex]):-1;\n  const distractorIndex=selectedIndex>=0&&selectedIndex!==q.a?selectedIndex:q.o.findIndex((_,i)=>i!==q.a);
+  const selectedIndex=state.quizAnswers&&state.quizAnswers[state.quizIndex]!==undefined?Number(state.quizAnswers[state.quizIndex]):-1;
+  const distractorIndex=selectedIndex>=0&&selectedIndex!==q.a?selectedIndex:q.o.findIndex((_,i)=>i!==q.a);
   const distractor=esc(q.o[distractorIndex]||"یکی از گزینه‌های دیگر");
   return '<details class="answer-explanation"><summary>مشاهده پاسخ تشریحی و تمرین مفهومی</summary><div class="explanation-body"><p><b>پاسخ صحیح:</b> '+answer+'</p><p><b>مفهوم و دلیل پاسخ:</b></p><p>'+detail.replace(/\r?\n/g,"<br>").replace(/\\n/g,"<br>")+'</p><div class="practice-task"><p><b>تمرین همین سؤال:</b> فرض کن همکارت گزینه «'+distractor+'» را انتخاب کرده است. با زبان خودت توضیح بده چرا این گزینه پاسخ دقیق سؤال نیست و پاسخ «'+answer+'» چگونه به خواسته سؤال مربوط می‌شود.</p><label class="practice-label">پاسخت را قبل از دیدن راهنما بنویس:</label><textarea class="practice-input" rows="3" placeholder="دلیل خودت را بنویس…"></textarea><details class="practice-guide"><summary>راهنمای بررسی پاسخ من</summary><p>بررسی کن که آیا (۱) مفهوم اصلی را درست تعریف کرده‌ای، (۲) دلیل سازگاری پاسخ با صورت سؤال را توضیح داده‌ای، و (۳) تفاوت گزینهٔ دیگر را روشن کرده‌ای.</p></details></div></div></details>';
 }
