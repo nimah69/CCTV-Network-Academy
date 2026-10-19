@@ -109,7 +109,7 @@ const chapters = [
 
 /* محتوای تکمیلی و بانک پرسش‌های توسعه‌یافته؛ توضیحات عمومی از دانش فنی تکمیلی هستند و از متن PDF جدا نگه داشته شده‌اند. */
 const supplementalSource = [
-{title:"توضیحات تکمیلی هوش مصنوعی",items:[["مدل TCP/IP به زبان ساده","در عیب‌یابی، ارتباط را مرحله‌ای ببینید: رسانه و لینک، شبکه محلی و IP، مسیریابی و در نهایت سرویس کاربردی. برای مثال روشن بودن چراغ پورت فقط نشانه‌ای از لینک فیزیکی است و به‌تنهایی سلامت جریان ویدئو را ثابت نمی‌کند."],["Subnet Mask و Gateway","Subnet Mask تعیین می‌کند مقصد در همان شبکه محلی است یا خیر. Gateway معمولاً مسیر خروج به شبکه‌های دیگر است. IP تکراری، ماسک نادرست یا Gateway اشتباه می‌تواند باعث دسترسی ناپایدار شود."],["UDP و TCP","برخی جریان‌های رسانه‌ای از UDP برای تأخیر کم استفاده می‌کنند؛ TCP تحویل مرتب‌تر و قابل‌اعتمادتر داده را فراهم می‌کند، اما ممکن است در شبکه شلوغ تأخیر ایجاد شود. انتخاب دقیق به پروتکل و پیاده‌سازی دستگاه وابسته است."]]},
+{title:"توضیحات تکمیلی",items:[["مدل TCP/IP به زبان ساده","در عیب‌یابی، ارتباط را مرحله‌ای ببینید: رسانه و لینک، شبکه محلی و IP، مسیریابی و در نهایت سرویس کاربردی. برای مثال روشن بودن چراغ پورت فقط نشانه‌ای از لینک فیزیکی است و به‌تنهایی سلامت جریان ویدئو را ثابت نمی‌کند."],["Subnet Mask و Gateway","Subnet Mask تعیین می‌کند مقصد در همان شبکه محلی است یا خیر. Gateway معمولاً مسیر خروج به شبکه‌های دیگر است. IP تکراری، ماسک نادرست یا Gateway اشتباه می‌تواند باعث دسترسی ناپایدار شود."],["UDP و TCP","برخی جریان‌های رسانه‌ای از UDP برای تأخیر کم استفاده می‌کنند؛ TCP تحویل مرتب‌تر و قابل‌اعتمادتر داده را فراهم می‌کند، اما ممکن است در شبکه شلوغ تأخیر ایجاد شود. انتخاب دقیق به پروتکل و پیاده‌سازی دستگاه وابسته است."]]},
 {title:"توضیحات تکمیلی هوش مصنوعی",items:[["انتخاب لنز بر اساس هدف","زاویه دید باز، محدوده بیشتری را می‌پوشاند اما سوژه دورتر پیکسل کمتری خواهد داشت. لنز با فاصله کانونی بیشتر میدان دید باریک‌تری دارد و می‌تواند جزئیات سوژه دورتر را بهتر نشان دهد؛ انتخاب نهایی باید با نقشه و آزمایش میدانی انجام شود."],["نوردهی و حرکت","در نور کم، افزایش زمان نوردهی ممکن است تصویر را روشن‌تر کند ولی سوژه متحرک را محو می‌کند. افزایش Gain هم می‌تواند نویز را بیشتر کند. تنظیمات باید با سرعت حرکت سوژه و هدف مدرک تصویری متعادل شود."],["پهنای باند و فشرده‌سازی","Bitrate به صحنه، تعداد دوربین‌ها، وضوح، FPS، کدک و تنظیمات وابسته است. عددهای محاسباتی تخمین‌اند؛ برای طراحی نهایی، نرخ واقعی جریان و حاشیه ظرفیت شبکه را اندازه‌گیری کنید."]]},
 {title:"توضیحات تکمیلی هوش مصنوعی",items:[["DVR، NVR و XVR","DVR معمولاً برای ورودی‌های دوربین آنالوگ استفاده می‌شود؛ NVR برای جریان دوربین‌های IP طراحی شده است؛ XVR در بسیاری از محصولات از چند نوع سیگنال دوربین پشتیبانی می‌کند. سازگاری دقیق را از مشخصات همان مدل بررسی کنید."],["PoE و توان","PoE می‌تواند برق و داده را روی کابل اترنت منتقل کند. استاندارد، توان قابل ارائه پورت و بودجه توان کل سوئیچ را بررسی کنید؛ مجموع مصرف دوربین‌ها، به‌ویژه هنگام فعال شدن IR یا گرم‌کن، نباید از بودجه مجاز فراتر رود."],["ONVIF و سازگاری","وجود نشان ONVIF به معنی تضمین تمام قابلیت‌ها نیست. Profile، نسخه، قابلیت‌های پیاده‌سازی‌شده و سازگاری واقعی میان دوربین و NVR را پیش از خرید آزمایش کنید."]]},
 {title:"توضیحات تکمیلی هوش مصنوعی",items:[["بودجه ذخیره‌سازی","برآورد اولیه حجم ویدئو از جمع Bitrate دوربین‌ها، زمان ضبط و ضریب تبدیل بیت به بایت به دست می‌آید؛ سربار، تغییر نرخ بیت، RAID و فضای قابل استفاده باید جداگانه لحاظ شوند. ظرفیت تبلیغ‌شده هارد با ظرفیت قابل استفاده یکسان نیست."],["HDD نظارتی","در انتخاب هارد به کاربری نظارتی، بار نوشتن، تعداد جریان‌ها، سازگاری NVR و توصیه سازنده توجه کنید. سلامت دیسک و هشدارهای SMART را پایش کنید؛ RAID هم جای Backup را نمی‌گیرد."],["Retention و سیاست نگهداری","مدت نگهداری باید بر اساس نیاز عملیاتی، مقررات و سیاست سازمان تعیین شود. ضبط دائمی، تشخیص حرکت و نرخ فریم متغیر هرکدام بر ظرفیت و احتمال از دست رفتن لحظه‌های مهم اثر دارند."]]},
@@ -129,7 +129,7 @@ const extraQuestionsSource = [
 [
 {q:"اگر IP دوربین و رایانه در زیرشبکه‌های متفاوت باشند، چه چیزی باید بررسی شود؟",o:["فقط فوکوس لنز","ماسک شبکه و مسیر/دروازه ارتباطی","ظرفیت هارد","WDR"],a:1,e:"ماسک و مسیریابی تعیین می‌کنند ارتباط بین زیرشبکه‌ها چگونه برقرار شود."},
 {q:"روشن بودن Link LED چه چیزی را ثابت نمی‌کند؟",o:["وجود نوعی لینک فیزیکی","سلامت کامل سرویس ویدئو و ضبط","اتصال کابل به پورت","برقراری لینک لایه فیزیکی"],a:1,e:"لینک فیزیکی به‌تنهایی سلامت IP، سرویس و جریان تصویر را تضمین نمی‌کند."},
-{q:"کاربرد اصلی NTP چیست؟",o:["همگام‌سازی زمان تجهیزات","تخصیص خودکار IP","فشرده‌سازی تصویر","حماية هارد"],a:0,e:"زمان هماهنگ برای بررسی رویدادها و تطبیق لاگ‌ها ضروری است."}
+{q:"کاربرد اصلی NTP چیست؟",o:["همگام‌سازی زمان تجهیزات","تخصیص خودکار IP","فشرده‌سازی تصویر","حفاظت از هارد"],a:0,e:"زمان هماهنگ برای بررسی رویدادها و تطبیق لاگ‌ها ضروری است."}
 ],
 [
 {q:"کدام عامل می‌تواند با وجود رزولوشن بالا تصویر چهره را نامشخص کند؟",o:["نور و زاویه نامناسب","داشتن NTP","وجود VLAN","ثبت MAC"],a:0,e:"رزولوشن بالا ضعف نور، لنز، زاویه یا Motion Blur را جبران نمی‌کند."},
@@ -448,10 +448,12 @@ chapters.forEach((c,ci)=>{
 // بانک پرسش‌های تکمیلی: پرسش‌های دانشی، کاربردی و سناریویی از هم برچسب‌گذاری می‌شوند.
 function shortenOption(text){
   const clean=String(text||"").replace(/\\s+/g," ").trim();
-  if(clean.length<=145)return clean;
-  const cut=clean.slice(0,142);
-  const boundary=cut.lastIndexOf(" ");
-  return (boundary>95?cut.slice(0,boundary):cut)+"…";
+  if(clean.length<=110)return clean;
+  const head=clean.slice(0,110);
+  const sentenceEnd=Math.max(head.lastIndexOf(". "),head.lastIndexOf("؟ "),head.lastIndexOf("؛ "));
+  if(sentenceEnd>=28)return clean.slice(0,sentenceEnd+1).trim();
+  const boundary=head.lastIndexOf(" ");
+  return (boundary>=65?head.slice(0,boundary):head).replace(/[،؛:،-]+$/,"").trim()+".";
 }
 const questionStems = [
   {build:(t)=>"کدام توضیح درباره «"+t+"» از نظر فنی دقیق‌تر است؟",difficulty:"پایه",explanation:"این پرسش تعریف فنی مفهوم را می‌سنجد؛ گزینه‌های دیگر ممکن است به بخش‌های متفاوتی از سامانه اشاره کنند."},
@@ -569,18 +571,32 @@ chapters.forEach((c,ci)=>{
     }
     while(distractors.length<3)distractors.push(["این موضوع فقط به نام‌گذاری تجهیزات مربوط است.","این موضوع به‌تنهایی سلامت کل سامانه را تضمین می‌کند.","برای این موضوع نیازی به آزمون عملی نیست."][distractors.length]);
     const correct=shortenOption(concept.summary);
-    const answerIndex=(n*7+ci)%4;
-    const options=distractors.slice();
-    options.splice(answerIndex,0,correct);
-    c.quiz.push({
-      q:questionStems[(n+ci)%questionStems.length].build(concept.title),
-      o:options,
-      a:answerIndex,
-      e:"مفهوم اصلی: "+concept.summary+"\n\n"+questionStems[(n+ci)%questionStems.length].explanation,
-      difficulty:questionStems[(n+ci)%questionStems.length].difficulty,
-      kind:"تمرین مفهومی تکمیلی"
-    });
-    n++;
+     const answerIndex=(n*7+ci)%4;
+     const options=distractors.slice();
+     options.splice(answerIndex,0,correct);
+     const stemIndex=(n+ci)%questionStems.length;
+     const stem=questionStems[stemIndex];
+     const chapterFourStems=[
+       (t)=>"در نصب تجهیزات نظارتی، کدام تصمیم درباره «"+t+"» باید با شرایط واقعی محل تطبیق داده شود؟",
+       (t)=>"اگر در محل نصب با مسئله‌ای مرتبط با «"+t+"» روبه‌رو شوید، کدام اقدام فنی مناسب‌تر است؟",
+       (t)=>"برای کاهش خطر مرتبط با «"+t+"» در یک سامانه CCTV، کدام بررسی را انجام می‌دهید؟",
+       (t)=>"پیش از تحویل سامانه، کدام آزمون می‌تواند عملکرد «"+t+"» را بهتر تأیید کند؟",
+       (t)=>"در بازبینی محل نصب، کدام نشانه به ارزیابی درست «"+t+"» کمک می‌کند؟",
+       (t)=>"اگر شرایط محیطی تغییر کند، درباره «"+t+"» کدام تصمیم را دوباره ارزیابی می‌کنید؟"
+     ];
+     const isPhysicalChapter=ci===3;
+     const explanation=isPhysicalChapter
+       ? concept.summary+" برای تصمیم نهایی، شرایط محل، مشخصات سازنده و نتیجه آزمون واقعی را با هم بسنج؛ ظاهر تجهیز به‌تنهایی کافی نیست."
+       : concept.summary+" "+stem.explanation;
+     c.quiz.push({
+       q:isPhysicalChapter?chapterFourStems[n%chapterFourStems.length](concept.title):stem.build(concept.title),
+       o:options,
+       a:answerIndex,
+       e:explanation,
+       difficulty:stem.difficulty,
+       kind:isPhysicalChapter?(n%3===1?"سناریوی کاربردی":"پرسش تمرینی"):"تمرین مفهومی تکمیلی"
+     });
+     n++;
   }
   }
 });
@@ -628,18 +644,6 @@ questionEntries.forEach(({question})=>{
  else if(question.kind==="پرسش تمرینی")question.difficulty="پایه";
  else question.difficulty="متوسط";
 });
-const focusedChapters=new Set([0,1,2,8]);
-const longestCandidates=questionEntries.map(entry=>{
- const q=entry.question,lengths=q.o.map(option=>option.length),otherMax=Math.max(...lengths.filter((_,i)=>i!==q.a));
- return {...entry,gap:lengths[q.a]-otherMax,spread:Math.max(...lengths)-Math.min(...lengths)};
-}).filter(entry=>entry.gap>=0&&entry.gap<=10&&(!focusedChapters.has(entry.chapterIndex)||entry.spread<=27)).sort((a,b)=>a.gap-b.gap);
-if(longestCandidates.length<89)throw new Error("Not enough low-gap questions to balance option lengths safely: "+longestCandidates.length);
-for(const entry of longestCandidates.slice(0,100)){
- const q=entry.question,lengths=q.o.map(option=>option.length);
- let wrongIndex=-1,wrongLength=-1;
- for(let i=0;i<q.o.length;i++)if(i!==q.a&&lengths[i]>wrongLength){wrongLength=lengths[i];wrongIndex=i}
- q.o[wrongIndex]+=" در شرایط نصب";
-}
 questionEntries.forEach((entry,index)=>{
  const q=entry.question,target=index%4;
  if(q.a!==target){const correct=q.o.splice(q.a,1)[0];q.o.splice(target,0,correct);q.a=target}
