@@ -46,7 +46,7 @@ assert.ok(!uiSource.includes("شبیه‌ساز بالا را مرور کن"),"A
 assert.ok(!uiSource.includes("runChapterLabSimulation"),"Removed simulator handlers must not remain");
 const context={window:{CCTVChapterLabs:[]},state:{chapter:0,labScenario:0,labDraft:null,progress:{labs:{},done:[]}},chapters:[{title:"فصل آزمایشی"}],saveProgress(){},render(){},alert(){},console};
 vm.createContext(context);vm.runInContext(uiSource,context,{filename:"js/chapter-lab-ui.js"});
-context.window.CCTVChapterLabs=[groups[0]];
+context.window.CCTVChapterLabs=groups;
 assert.ok(!context.chapterLabHTML().includes("شبیه‌ساز تصمیم‌گیری"),"The duplicate simulator must not render");
 context.state.labDraft=groups[0][0].answer;context.runChapterLabScenario();assert.equal(context.state.progress.labs["0:0"].correct,true);
 context.retryChapterLabScenario(0);assert.equal(context.state.progress.labs["0:0"],undefined);
