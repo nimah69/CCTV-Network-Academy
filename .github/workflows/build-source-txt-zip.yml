@@ -1,0 +1,92 @@
+name: Build source TXT ZIP and manifest
+
+on:
+  push:
+    branches:
+      - export-source-txt-2026-10-20
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout export branch
+        uses: actions/checkout@v4
+        with:
+          ref: export-source-txt-2026-10-20
+
+      - name: Build manifest and ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, zipfile
+
+          root = Path(".")
+          output = Path("dist")
+          manifest = output / "MANIFEST.txt"
+          candidates = sorted(
+              p for p in root.rglob("*.txt")
+              if ".git" not in p.parts
+              and "dist" not in p.parts
+              and p != manifest
+              and "node_modules" not in p.parts
+          )
+          rows = []
+          total_bytes = 0
+          for p in candidates:
+              data = p.read_bytes()
+              total_bytes += len(data)
+              digest = hashlib.sha256(data).hexdigest()
+              rows.append((p.as_posix(), p.name, len(data), digest))
+          lines = [
+              "CCTV-Network-Academy source TXT export",
+              "Branch: export-source-txt-2026-10-20",
+              f"TXT file count: {len(rows)}",
+              f"Total TXT bytes: {total_bytes}",
+              "",
+              "Files (repository path | TXT filename | bytes | SHA-256):",
+          ]
+          lines.extend(f"{path} | {name} | {size} | {sha}" for path, name, size, sha in rows)
+          lines += [
+              "",
+              "Missing or incomplete files:",
+              "This manifest can report only files present in this branch; source coverage must be compared against the agreed export list.",
+              "Known limitation: any binary-only content (including font Base64) is not represented as text unless a source TXT file exists.",
+              "",
+              "Archive validation:",
+              "The workflow validates ZIP readability and checks that every listed TXT file is present with matching byte count and SHA-256.",
+          ]
+          manifest.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          archive = output / "cctv-source-txt.zip"
+          with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as z:
+              for p in candidates:
+                  z.write(p, arcname=p.as_posix())
+              z.write(manifest, arcname="MANIFEST.txt")
+          with zipfile.ZipFile(archive, "r") as z:
+              bad = z.testzip()
+              assert bad is None, f"Corrupt ZIP member: {bad}"
+              names = set(z.namelist())
+              assert "MANIFEST.txt" in names
+              for path, name, size, sha in rows:
+                  data = z.read(path)
+                  assert len(data) == size, f"Byte-count mismatch: {path}"
+                  assert hashlib.sha256(data).hexdigest() == sha, f"SHA-256 mismatch: {path}"
+              assert z.read("MANIFEST.txt") == manifest.read_bytes()
+          print(f"Validated {len(rows)} TXT files; total source bytes={total_bytes}; ZIP={archive.stat().st_size} bytes")
+          PY
+
+      - name: Upload ZIP and manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: cctv-source-txt-export
+          path: |
+            dist/cctv-source-txt.zip
+            dist/MANIFEST.txt
+          if-no-files-found: error
+          retention-days: 14
