@@ -1,0 +1,102 @@
+name: Build source TXT ZIP
+
+on:
+  push:
+    branches:
+      - export-source-txt-2026-10-20
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout export branch
+        uses: actions/checkout@v4
+        with:
+          ref: export-source-txt-2026-10-20
+      - name: Create manifest and ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          root = Path("exports/source-txt")
+          files = sorted(p for p in root.rglob("*.txt") if p.name != "MANIFEST.txt")
+          if not files:
+              raise SystemExit("No source TXT files found")
+          rows = []
+          for p in files:
+              n = p.name
+              # Export naming convention: path separators become __ and source extension dot becomes underscore.
+              encoded = n[:-4]
+              if encoded.endswith("_js"):
+                  original = encoded[:-3] + ".js"
+              elif encoded.endswith("_css"):
+                  original = encoded[:-4] + ".css"
+              elif encoded.endswith("_html"):
+                  original = encoded[:-5] + ".html"
+              else:
+                  original = encoded.replace("__", "/")
+              original = original.replace("__", "/")
+              data = p.read_bytes()
+              rows.append({
+                  "original_path": original,
+                  "txt_path": str(p),
+                  "bytes": len(data),
+                  "sha256": hashlib.sha256(data).hexdigest()
+              })
+          manifest = {
+              "repository": "nimah69/CCTV-Network-Academy",
+              "source_branch": "main",
+              "export_branch": "export-source-txt-2026-10-20",
+              "file_count": len(rows),
+              "files": rows
+          }
+          (root / "MANIFEST.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"Manifest created for {len(rows)} TXT files")
+          PY
+          if [ -f fonts/Vazirmatn-Variable.woff2 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          src = Path("fonts/Vazirmatn-Variable.woff2")
+          out = Path("exports/source-txt/fonts__Vazirmatn-Variable_woff2_base64.txt")
+          out.write_text(base64.b64encode(src.read_bytes()).decode("ascii") + "\n", encoding="ascii")
+          print("Font Base64 export created")
+          PY
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          root = Path("exports/source-txt")
+          z = Path("cctv-source-txt.zip")
+          import zipfile
+          with zipfile.ZipFile(z, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+              for p in sorted(root.rglob("*")):
+                  if p.is_file():
+                      archive.write(p, p.as_posix())
+          with zipfile.ZipFile(z) as archive:
+              bad = archive.testzip()
+              if bad:
+                  raise SystemExit(f"ZIP integrity check failed at {bad}")
+              print(f"ZIP verified: {len(archive.namelist())} entries, {z.stat().st_size} bytes")
+          print("ZIP SHA-256:", hashlib.sha256(z.read_bytes()).hexdigest())
+          PY
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cctv-source-txt
+          path: cctv-source-txt.zip
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload manifest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cctv-source-manifest
+          path: exports/source-txt/MANIFEST.json
+          if-no-files-found: error
+          retention-days: 30
