@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#081321"><link rel="manifest" href="./manifest.webmanifest"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>کارگاه‌های تعاملی | آکادمی شبکه و نظارت تصویری</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#0f1d30;--panel2:#142b43;--line:#263c56;--ink:#eaf2ff;--muted:#a7bad2;--cyan:#67e8f9;--blue:#38bdf8;--good:#53dfae;--warn:#ffca72;--bad:#ff8795}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -20%,#16385a 0,transparent 45%),var(--bg);color:var(--ink);font:15px/1.85 "Vazirmatn","Noto Sans Arabic","Noto Naskh Arabic",system-ui,Tahoma,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1180px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 0 22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(140deg,var(--blue),var(--cyan));color:#041522;font-size:23px;font-weight:bold}.brand h1{font-size:clamp(20px,3vw,28px);margin:0}.brand p{font-size:12px;color:var(--muted);margin:0}.toplinks{display:flex;gap:8px;flex-wrap:wrap}.btn,.toplinks a{border:1px solid var(--line);border-radius:11px;background:var(--panel2);color:var(--ink);padding:9px 13px;text-decoration:none;min-height:43px}.btn.primary{background:linear-gradient(110deg,#2879e8,#149db7);border:0;font-weight:bold}.btn:hover,.toplinks a:hover{border-color:var(--cyan)}.hero{padding:23px;border:1px solid #31516c;border-radius:20px;background:linear-gradient(110deg,#10243b,#123b53);margin-bottom:16px}.hero h2{margin:0 0 5px;font-size:clamp(20px,3vw,27px)}.hero p{margin:0;color:#c0d5e8;font-size:13px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}.metric,.card{background:#0e1b2c;border:1px solid var(--line);border-radius:15px;padding:15px}.metric small{display:block;color:var(--muted);font-size:11px}.metric strong{font-size:23px}.layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:15px;align-items:start}.tabs{position:sticky;top:12px;display:grid;gap:6px}.tab{display:flex;align-items:center;gap:10px;text-align:right;width:100%;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--muted);padding:10px 12px;min-height:46px}.tab.active,.tab:hover{background:var(--panel2);border-color:var(--line);color:var(--ink)}.tab.active{box-shadow:inset -3px 0 var(--cyan)}.tab span:first-child{font-size:18px}.workspace{min-width:0}.workshop{display:none}.workshop.active{display:block}.heading{margin:0 0 15px}.heading h2{font-size:22px;margin:0}.heading p{color:var(--muted);font-size:13px;margin:4px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:grid;gap:5px;margin:10px 0}.field label{font-size:12px;color:#c8d8ea}.field input,.field select,.field textarea{width:100%;min-width:0;background:#081524;border:1px solid #334a65;color:var(--ink);border-radius:9px;padding:10px 11px;min-height:44px}.field textarea{min-height:90px}.help{font-size:11px;color:var(--muted)}.output{margin-top:13px;padding:13px;border-radius:11px;background:#0a1727;border:1px solid var(--line);font-size:13px}.output.good{border-color:#286c59;background:#0c2828}.output.warn{border-color:#765b2c;background:#292315}.output.bad{border-color:#713947;background:#2b1722}.pill{display:inline-block;border-radius:99px;padding:2px 9px;font-size:10px;background:#17374c;color:#9beaf2;margin:2px}.scenario-list{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.scenario-pick{border:1px solid var(--line);background:#0b192a;color:var(--muted);border-radius:10px;padding:8px 10px;font-size:12px}.scenario-pick.active{border-color:var(--cyan);color:var(--ink);background:#123146}.choices{display:grid;gap:8px;margin-top:13px}.choice{display:flex;align-items:flex-start;gap:9px;padding:11px;border:1px solid var(--line);border-radius:10px;background:#0a1727;cursor:pointer;font-size:13px}.choice:has(input:checked){border-color:var(--blue);background:#122b43}.choice input{margin-top:6px;accent-color:var(--cyan)}.equipment{display:flex;flex-wrap:wrap;gap:8px}.equipment label{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;background:#0a1727}.equipment input{accent-color:var(--cyan)}.checklist{display:grid;gap:8px}.check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px;background:#0a1727;font-size:12px}.check input{margin-top:7px;accent-color:var(--cyan)}.diagram{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:17px;background:#091624;border:1px dashed #3b5671;border-radius:12px;margin-top:12px}.node{padding:10px 12px;border:1px solid #3e6984;border-radius:10px;background:#123149;text-align:center;font-size:12px}.arrow{color:var(--cyan);font-size:19px}.progress{height:7px;background:#22354a;border-radius:99px;overflow:hidden;margin:9px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));width:0}.footer{text-align:center;color:#7f95b1;font-size:11px;padding:24px 0}.hide{display:none!important}.section-label{font-size:11px;color:var(--cyan);font-weight:bold;margin-bottom:3px}.result-big{font-size:24px;font-weight:bold}.muted{color:var(--muted)}@media(max-width:800px){.layout{grid-template-columns:1fr}.tabs{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.tab{min-width:max-content;width:auto}.grid{grid-template-columns:1fr}.shell{padding:12px}.hero{padding:18px}.metrics{gap:7px}.metric{padding:10px}.metric strong{font-size:20px}}@media(max-width:420px){.metrics{grid-template-columns:1fr}.toplinks{width:100%}.toplinks a{flex:1;text-align:center}.btn{width:100%}.grid{gap:6px}}
+
+/* Audit 2026: prevent unintended overflow and keep controls touch-friendly. */
+html{max-width:100%;overflow-x:hidden}body{max-width:100%;overflow-x:hidden}.shell,.layout,.workspace,.card,.grid,.field,.heading{min-width:0;max-width:100%}.field input,.field select,.field textarea{max-width:100%;min-width:0}.btn,.tab,.scenario-pick,.toplinks a{min-height:44px;touch-action:manipulation}.output,.help,.heading p,.hero p,.brand p{overflow-wrap:anywhere;word-break:normal}.result-big{overflow-wrap:anywhere}
+@media(max-width:399px){.shell{padding:8px}.hero{padding:13px}.card,.metric{padding:10px}.brand{align-items:flex-start;gap:8px}.logo{width:38px;height:38px;flex:0 0 38px}.brand h1{font-size:19px}.toplinks{gap:6px}.toplinks a,.toplinks .btn{flex:1 1 100%;width:100%;text-align:center}.metrics{grid-template-columns:1fr}.tab{padding:9px 10px}.field input,.field select,.field textarea{font-size:16px}.diagram{justify-content:flex-start;gap:5px;padding:10px}.node{max-width:100%;min-width:0;overflow-wrap:anywhere;word-break:normal;line-height:1.65}.output{padding:10px}}
+
+/* Visual lab system: consistent schematic panels, calmer spacing, and touch-first controls. */
+.lab-schematic{margin:0 0 14px;padding:14px;border:1px solid #294760;border-radius:16px;background:linear-gradient(145deg,rgba(17,39,61,.96),rgba(8,22,37,.96));box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:0}
+.schematic-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-width:0}
+.schematic-top h3{font-size:16px;margin:0 0 3px}
+.schematic-top p{font-size:12px;line-height:1.8;color:var(--muted);margin:0;max-width:720px}
+.sim-toggle{flex:0 0 auto;border:1px solid #36758a;background:#0e2a3c;color:#b9f6fb;border-radius:10px;padding:8px 11px;min-height:42px;font-size:12px}
+.sim-toggle[aria-pressed="true"]{background:#174b4d;border-color:var(--good);color:#d5fff0}
+.sim-reset{flex:0 0 auto;border:1px solid #52748b;background:#13253a;color:#eaf4ff;border-radius:10px;padding:8px 11px;min-height:44px;font-size:12px;cursor:pointer}.sim-reset:hover{border-color:var(--cyan);background:#17334b}
+.schematic-canvas{margin-top:10px;border:1px solid #223b53;border-radius:12px;background:radial-gradient(ellipse at center,#10283b,#091725 75%);overflow:hidden}
+.schematic-canvas svg{display:block;width:100%;height:auto;min-height:112px;max-height:160px}
+.schematic-canvas .wire{stroke-width:3;stroke-linecap:round;opacity:.9}
+.schematic-node rect{fill:#122c42;stroke:#3b607b;stroke-width:1.3}
+.schematic-node .device-dot{fill:#42d9e8;stroke:#071522;stroke-width:2}
+.schematic-node .node-code{fill:#eaf7ff;font:700 30px Tahoma,sans-serif;text-anchor:middle}
+.schematic-node .node-label{fill:#a9c0d7;font:30px Tahoma,sans-serif;text-anchor:middle}
+.node-power .device-dot{fill:#ffca72}.node-shield .device-dot{fill:#53dfae}.node-disk .device-dot{fill:#b4a2ff}
+.lab-schematic.sim-running .wire{stroke-dasharray:8 8;animation:wire-flow 1s linear infinite}
+.lab-schematic.sim-running .schematic-node rect{stroke:#42d9e8;filter:drop-shadow(0 0 4px rgba(66,217,232,.25))}
+@keyframes wire-flow{to{stroke-dashoffset:-32}}
+/* Interactive simulator feedback: faults are explicit, not animation-only. */
+.schematic-node.fault-fail rect{fill:#3a1826!important;stroke:#ff8795!important;stroke-width:3!important;filter:drop-shadow(0 0 7px #ff879566)}
+.schematic-node.fault-fail .device-dot{fill:#ff8795!important}
+.schematic-node.fault-warn rect{fill:#342a16!important;stroke:#ffca72!important;stroke-width:2.5!important}
+.topology-nodes,.topology-edges{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;width:100%}
+.topology-nodes{padding-bottom:10px;border-bottom:1px solid var(--line)}
+.topology-device{flex:1 1 120px}
+.topology-edge{flex:1 1 170px;background:#102b3b;border-color:#28718a}
+#faultSimulator .toplinks{margin-top:10px}
+#faultResult{margin-top:12px}
+.schematic-foot{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;color:#93abc4;font-size:10px}
+.schematic-foot span{display:inline-flex;align-items:center;gap:5px}
+.legend-dot{width:7px;height:7px;display:inline-block;border-radius:50%}.legend-dot.data{background:var(--cyan)}.legend-dot.power{background:var(--warn)}
+.sim-note{margin-inline-start:auto;color:#748ba5}
+.workshop>.card{padding:clamp(12px,2.5vw,20px);border-radius:16px;background:linear-gradient(160deg,rgba(16,30,49,.98),rgba(10,23,39,.98))}
+.workshop .heading{margin-bottom:12px}
+.workshop .heading h2{display:flex;align-items:center;gap:8px}
+.workshop .heading h2:before{content:"";display:inline-block;width:4px;height:24px;border-radius:4px;background:linear-gradient(var(--cyan),var(--blue));flex:0 0 4px}
+.workshop .card h3{font-size:15px;margin:12px 0 7px}
+.workshop .field{margin:7px 0}
+.workshop .grid{gap:10px}
+.workshop .output{line-height:1.9;overflow-wrap:anywhere}
+.workshop .diagram{gap:10px}
+.workshop .node{max-width:100%}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:600px){.lab-schematic{padding:10px}.schematic-top{display:grid;grid-template-columns:minmax(0,1fr)}.sim-toggle{width:100%}.schematic-canvas svg{min-height:112px}.schematic-node .node-label{font-size:12px}.schematic-node .node-code{font-size:12px}.schematic-foot{gap:7px}.sim-note{margin-inline-start:0;width:100%}}
+@media(max-width:380px){.lab-schematic{padding:8px}.schematic-top h3{font-size:14px}.schematic-top p{font-size:11px}.schematic-canvas{margin-inline:-2px}.schematic-canvas svg{min-height:100px}.schematic-node rect{stroke-width:1}.schematic-node .node-label{font-size:12px}.schematic-foot{font-size:11px}.workshop .card{padding:10px}.workshop .grid{gap:4px}}
+@media(prefers-reduced-motion:reduce){.lab-schematic.sim-running .wire{animation:none;stroke-dasharray:5 5}}
+
+/* Mobile diagram and typography redesign: stack, wrap, and clarify labels. */
+:root{font-family:"Vazirmatn","Noto Sans Arabic","Noto Naskh Arabic",system-ui,Tahoma,sans-serif;font-synthesis:none;text-rendering:optimizeLegibility}
+body,button,input,select,textarea{font-family:"Vazirmatn","Noto Sans Arabic","Noto Naskh Arabic",system-ui,Tahoma,sans-serif}
+.diagram{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:12px}
+.node{width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:normal;font-size:15px;line-height:1.8;padding:12px 14px;border-radius:12px}
+.arrow{transform:rotate(90deg);justify-self:center;line-height:1}
+.heading p,.hero p,.help,.output{font-size:14px;line-height:1.9;overflow-wrap:anywhere}
+.card{min-width:0;overflow:hidden}
+@media(min-width:650px){.diagram{display:flex;flex-wrap:wrap}.arrow{transform:none}.node{width:auto;max-width:100%;flex:1 1 150px}}
+@media(max-width:420px){.shell{padding:10px}.hero{padding:15px}.heading h2{font-size:21px}.diagram{padding:10px}.node{font-size:15px}}
+@font-face{font-family:"Vazirmatn";src:url("./fonts/Vazirmatn-Variable.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
+
+/* Mobile readability floor: keep readable text at least 13px on narrow phones. */
+@media (max-width: 390px) {
+  body, body * { font-size: max(13px, 1em) !important; }
+  button, [role="button"], input, select, summary, .nav button, .btn, .toplinks a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  input, select, textarea, button { max-width: 100%; }
+  p, li, label, small, span, a, button, div { overflow-wrap: anywhere; }
+  html, body { max-width: 100%; overflow-x: clip; }
+}
+
+/* Respect Android/iOS display cutouts and gesture navigation safe area. */
+body{padding-bottom:env(safe-area-inset-bottom)}
+
+/* Stage 2: align the interactive workshop with the Dark Cyber Lab palette */
+.hero{background:linear-gradient(118deg,#0b192a 0%,#10304a 62%,#124a56 100%);border-color:#28516b;box-shadow:0 18px 42px #0003}
+.logo{background:linear-gradient(140deg,#38bdf8,#2dd4bf);color:#061522}
+.btn.primary{background:linear-gradient(110deg,#1689cf,#0faaa7);color:#041522}
+.card,.metric{background:linear-gradient(155deg,#102138,#0c192a);border-color:var(--line);box-shadow:0 12px 28px #00000030}
+.field input,.field select,.field textarea{background:#091726;color:var(--ink);border-color:#2a415c}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);outline-color:#67e8f966}
+.diagram,.schematic-canvas{background:linear-gradient(145deg,#091726,#0d2033);border-color:#36536e}
+.node,.schematic-node rect{fill:#10243a;stroke:#38bdf8}
+.schematic-node .node-label{fill:#eaf2ff}
+.schematic-node .node-code{fill:#67e8f9}
+.schematic-canvas .wire{stroke:#38bdf8}
+.schematic-canvas .wire.power,.legend-dot.power{stroke:#fbbf24;background:#fbbf24}
+.schematic-canvas .wire.data,.legend-dot.data{stroke:#2dd4bf;background:#2dd4bf}
+.schematic-top,.schematic-foot,.sim-note{border-color:#2a435d}
+.sim-toggle[aria-pressed="true"],.scenario-pick.active{background:#123b4b;border-color:#38bdf8;color:#eafcff}
+.output{background:#0a1a2b;border-color:#2a435d;color:var(--ink)}
+.output.good{background:#0e2a27;border-color:#286c59}
+.output.warn{background:#292315;border-color:#765b2c}
+.output.bad{background:#2b1722;border-color:#713947}
+.btn,.toplinks a,.tab,.choice,.check,.equipment label{border-color:#2a435d}
+.btn:hover,.toplinks a:hover,.tab:hover,.choice:hover,.check:hover{border-color:#38bdf8}
+:focus-visible{outline-color:#67e8f9}
+
+/* PoE simulator: explicit state for power and data paths. */
+#poe .schematic-node.sim-pass rect{fill:#10382f!important;stroke:#53dfae!important;stroke-width:2.5!important}
+#poe .schematic-node.sim-warn rect{fill:#3a2d17!important;stroke:#ffca72!important;stroke-width:2.5!important}
+#poe .schematic-node.sim-fail rect{fill:#3a1826!important;stroke:#ff8795!important;stroke-width:3!important}
+#poe .schematic-node.sim-pass .device-dot{fill:#53dfae!important}
+#poe .schematic-node.sim-warn .device-dot{fill:#ffca72!important}
+#poe .schematic-node.sim-fail .device-dot{fill:#ff8795!important}
+#poe .schematic-canvas .wire.sim-pass{stroke:#53dfae!important;opacity:1}
+#poe .schematic-canvas .wire.sim-warn{stroke:#ffca72!important;opacity:1;stroke-dasharray:5 5}
+#poe .schematic-canvas .wire.sim-fail{stroke:#ff8795!important;opacity:1;stroke-dasharray:4 7}
+#poeSimulationResult .sim-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#poeSimulationResult .sim-stat{border:1px solid var(--line);border-radius:10px;padding:10px;background:#091726;min-width:0}
+#poeSimulationResult .sim-stat b{display:block;font-size:17px}
+#poeSimulationResult .sim-state{font-weight:bold}
+@media(max-width:480px){#poeSimulationResult .sim-grid{grid-template-columns:1fr}}
+
+
+/* All workshop simulators: state reflects calculated outcomes, not animation alone. */
+.schematic-node.sim-pass rect{fill:#10382f!important;stroke:#53dfae!important;stroke-width:2.5!important}
+.schematic-node.sim-warn rect{fill:#3a2d17!important;stroke:#ffca72!important;stroke-width:2.5!important}
+.schematic-node.sim-fail rect{fill:#3a1826!important;stroke:#ff8795!important;stroke-width:3!important}
+.schematic-node.sim-pass .device-dot{fill:#53dfae!important}
+.schematic-node.sim-warn .device-dot{fill:#ffca72!important}
+.schematic-node.sim-fail .device-dot{fill:#ff8795!important}
+.schematic-canvas .wire.sim-pass{stroke:#53dfae!important;opacity:1}
+.schematic-canvas .wire.sim-warn{stroke:#ffca72!important;opacity:1;stroke-dasharray:5 5}
+.schematic-canvas .wire.sim-fail{stroke:#ff8795!important;opacity:1;stroke-dasharray:4 7}
+.sim-feedback{margin-top:12px}.sim-feedback details{margin-top:8px}.sim-feedback summary{cursor:pointer;font-weight:bold}
+
+/* State-based virtual troubleshooting room */
+.real-simulator{margin-top:16px;border-color:#36758a;background:linear-gradient(145deg,#0d1f32,#0a1727)}
+.real-simulator h3{margin-top:0}.real-simulator h4{margin-bottom:8px}
+.real-simulator .toplinks{margin:10px 0;display:flex;gap:8px;flex-wrap:wrap}
+.real-simulator .btn{min-height:44px}
+#realState .real-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.real-state-item{display:grid;gap:5px;padding:10px;border:1px solid var(--line);border-radius:10px;min-width:0}
+.real-state-item span,.real-state-item small{font-size:12px;overflow-wrap:anywhere}
+.real-state-item.is-ok{border-color:#286c59}.real-state-item.is-warn{border-color:#765b2c}.real-state-item.is-fail{border-color:#713947}
+@media(max-width:520px){.real-simulator{padding:11px}.real-simulator .grid,#realState .real-state-grid{grid-template-columns:1fr}.real-simulator .btn{width:100%}}
+
+.workshop-reset{display:block;min-height:44px;margin:10px 0 4px;border-color:#52748b;color:var(--text,#eaf4ff);cursor:pointer}
+@media(max-width:520px){.workshop-reset{width:100%}}
+
+
+
+/* ca-select-portal-v1: themed dropdown rendered in body to avoid clipping by cards/sections */
+select.ca-native-hidden{position:absolute!important;width:1px!important;height:1px!important;min-height:1px!important;padding:0!important;margin:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;opacity:0!important;pointer-events:none!important}
+.ca-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:9px 12px;border:1px solid #35516e;border-radius:10px;background:#0b192a;color:#eaf2ff;text-align:right;font:inherit;line-height:1.6;cursor:pointer}
+.ca-select-trigger:focus-visible{outline:2px solid #67e8f9;outline-offset:2px}
+.ca-select-trigger:disabled{opacity:.55;cursor:not-allowed}
+.ca-select-value{min-width:0;overflow-wrap:anywhere}
+.ca-select-chevron{flex:none;color:#67e8f9}
+.ca-select-portal{position:fixed;z-index:2147483000;display:none;max-height:min(340px,48vh);overflow:auto;overscroll-behavior:contain;padding:5px;border:1px solid #35516e;border-radius:11px;background:#0b192a;color:#eaf2ff;box-shadow:0 16px 38px #000b;isolation:isolate}
+.ca-select-portal.is-visible{display:block}
+.ca-select-option{display:block;width:100%;min-height:44px;padding:9px 11px;border:1px solid transparent;border-radius:7px;background:transparent;color:#eaf2ff;text-align:right;white-space:normal;overflow-wrap:anywhere;font:inherit;font-size:14px;line-height:1.65;cursor:pointer}
+.ca-select-option:hover,.ca-select-option:focus-visible{background:#142b43;border-color:#2c5571;outline:none}
+.ca-select-option[aria-selected=true]{background:#123b4b;border-color:#38bdf8;color:#effcff}
+.ca-select-option:disabled{opacity:.45;cursor:not-allowed}
+.ca-select-empty{padding:10px;color:#a7bad2}
+@media(max-width:520px){.ca-select-portal{max-height:min(45vh,300px)}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top"><div class="brand"><div class="logo">⌘</div><div><h1>کارگاه‌های تعاملی آکادمی</h1><p>تمرین عملی شبکه و سیستم‌های نظارت تصویری</p></div></div><div class="toplinks"><a href="./index.html">← بازگشت به آموزش‌ها</a><button class="btn" id="resetProgress">پاک‌کردن پیشرفت</button></div></header>
+<section class="hero"><div class="section-label">آزمایشگاه مجازی · نسخه ۱</div><h2>یاد بگیر، آزمایش کن، خطا را پیدا کن</h2><p>هشت کارگاه تعاملی با سناریو، محاسبه‌گر، بازخورد فوری و پروژهٔ نهایی. نتایج، برآورد آموزشی‌اند؛ برای اجرا در پروژه واقعی، دیتاشیت و شرایط نصب را بررسی کن.</p></section>
+<div class="metrics"><div class="metric"><small>کارگاه‌های تکمیل‌شده</small><strong id="completedMetric">۰ از ۸</strong></div><div class="metric"><small>امتیاز عیب‌یابی</small><strong id="scoreMetric">۰</strong></div><div class="metric"><small>پیشرفت کل</small><strong id="progressMetric">۰٪</strong><div class="progress"><i id="progressBar"></i></div></div></div>
+<div class="layout">
+<nav class="tabs" aria-label="کارگاه‌ها">
+<button class="tab active" data-tab="trouble"><span>🛠️</span> اتاق عیب‌یابی CCTV</button>
+<button class="tab" data-tab="topology"><span>🔌</span> طراح شبکه</button>
+<button class="tab" data-tab="poe"><span>⚡</span> PoE و کابل‌کشی</button>
+<button class="tab" data-tab="subnet"><span>🌐</span> IP و Subnet</button>
+<button class="tab" data-tab="storage"><span>💾</span> پهنای باند و ذخیره‌سازی</button>
+<button class="tab" data-tab="cable"><span>🧵</span> انتخاب کابل و انتقال</button>
+<button class="tab" data-tab="security"><span>🛡️</span> امنیت شبکه</button>
+<button class="tab" data-tab="capstone"><span>🏁</span> پروژه نهایی طراحی</button>
+</nav>
+<main class="workspace">
+<section class="workshop active" id="trouble"><div class="heading"><h2>اتاق عیب‌یابی CCTV</h2><p>برای هر رخداد، بهترین آزمون بعدی را انتخاب کن. امتیاز با پاسخ درست و حل مرحله‌ای ثبت می‌شود.</p><button type="button" class="btn workshop-reset" data-workshop-reset="trouble">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک مسیر پایه عیب‌یابی"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 01</span><h3>مسیر پایه عیب‌یابی</h3><p>جریان تصویر را از دوربین تا نمایشگر دنبال کن؛ در هر نقطه یک آزمون مستقل انجام بده.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="دوربین IP ← سوئیچ PoE ← دستگاه ضبط ← نمایشگر" focusable="false"><defs><linearGradient id="line-trouble" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-trouble)" x1="100" y1="63" x2="209.33333333333337" y2="63"/><line class="wire" stroke="url(#line-trouble)" x1="325.33333333333337" y1="63" x2="434.6666666666667" y2="63"/><line class="wire" stroke="url(#line-trouble)" x1="550.6666666666667" y1="63" x2="660" y2="63"/><g class="schematic-node node-cam"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">CAM</text><text x="42" y="88" class="node-label">دوربین IP</text></g><g class="schematic-node node-switch"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">SW</text><text x="267.33333333333337" y="88" class="node-label">سوئیچ PoE</text></g><g class="schematic-node node-server"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">NVR</text><text x="492.6666666666667" y="88" class="node-label">دستگاه ضبط</text></g><g class="schematic-node node-screen"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">MON</text><text x="718" y="88" class="node-label">نمایشگر</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card" id="faultSimulator"><h3>آزمایش خرابی شبکه</h3><p class="help">یک خطا را انتخاب کن و اجرای آزمون را بزن؛ وضعیت اجزای مسیر و گام عیب‌یابی پیشنهادی تغییر می‌کند.</p><div class="field"><label for="faultType">سناریوی خرابی</label><select id="faultType"><option value="camera-power">دوربین روشن نمی‌شود (PoE)</option><option value="camera-link">قطع کابل دوربین تا سوئیچ</option><option value="switch-nvr">قطع ارتباط سوئیچ و NVR</option><option value="nvr-monitor">NVR تصویر دارد اما مانیتور سیاه است</option><option value="ip-conflict">تداخل آدرس IP دوربین</option><option value="poe-budget">کمبود بودجه توان PoE</option></select></div><div class="toplinks"><button class="btn primary" id="runFaultSimulation">اجرای آزمون</button><button class="btn" id="resetFaultSimulation">بازنشانی مسیر</button></div><div id="faultResult" aria-live="polite"></div></div>
+<div id="scenarioPicks" class="scenario-list"></div><div class="card"><div class="section-label" id="scenarioCounter">سناریو ۱</div><h3 id="scenarioTitle"></h3><p id="scenarioText" class="muted"></p><div class="choices" id="scenarioChoices"></div><div id="scenarioFeedback" aria-live="polite"></div><div class="toplinks" style="margin-top:12px"><button class="btn primary" id="nextScenario">سناریوی بعدی</button><button class="btn" id="retryScenario">تلاش دوباره</button></div></div><section class="card real-simulator" id="realSimulator" aria-labelledby="realSimulatorTitle">
+<h3 id="realSimulatorTitle">اتاق عیب‌یابی واقعی‌نما · موتور وضعیت شبکه</h3>
+<p class="help">سناریو یک شبکه مجازی با تجهیزات، پورت‌ها، کابل، VLAN و عیب تزریق‌شده است. ابزارها از وضعیت همین شبکه خروجی می‌گیرند؛ به تجهیزات واقعی متصل نمی‌شوند.</p>
+<div class="grid">
+<div class="field"><label for="realScenario">سناریوی عیب‌یابی</label><select id="realScenario"></select></div>
+<div class="field"><label for="realSeed">بذر سناریو (برای بازتولید دقیق)</label><input id="realSeed" type="text" inputmode="decimal" min="0" value="1" inputmode="numeric"></div>
+</div>
+<div class="output"><b>شرح مشتری</b><p id="realCustomer"></p><small id="realMeta"></small></div>
+<div class="grid">
+<div class="field"><label for="realTool">ابزار عیب‌یابی</label><select id="realTool"></select></div>
+<div class="field"><label for="realTarget">نقطه اتصال ابزار / تجهیز هدف</label><select id="realTarget"></select></div>
+<div class="field"><label for="realSource">مبدأ آزمون شبکه (برای Ping)</label><select id="realSource"></select></div>
+<div class="field"><label for="realLink">کابل / لینک مورد آزمون</label><select id="realLink"></select></div>
+</div>
+<div class="toplinks">
+<button class="btn primary" id="runRealTool" type="button">اجرای ابزار روی وضعیت فعلی</button>
+<button class="btn" id="realHintButton" type="button">راهنمای مرحله‌ای</button>
+<button class="btn" id="retryRealScenario" type="button">تلاش دوباره با همین بذر</button>
+<button class="btn" id="nextRealScenario" type="button">سناریوی بعدی</button>
+</div>
+<div class="output" id="realToolResult" aria-live="polite">هنوز آزمونی اجرا نشده است.</div>
+<div class="output" id="realHint" aria-live="polite"></div>
+<h4>وضعیت محاسبه‌شده تجهیزات و لینک‌ها</h4><div id="realState" aria-live="polite"></div>
+<div class="grid">
+<div class="field"><label for="realAction">اقدام اصلاحی مجازی</label><select id="realAction"></select><span class="help">اقدام وضعیت شبکه را تغییر می‌دهد؛ پس از آن ابزار را دوباره اجرا کن.</span></div>
+<div class="field"><label for="realDiagnosis">تشخیص نهایی پس از بررسی</label><select id="realDiagnosis"><option value="">یک علت احتمالی انتخاب کن…</option></select></div>
+</div>
+<div class="toplinks">
+<button class="btn" id="applyRealAction" type="button">اجرای اقدام اصلاحی انتخاب‌شده</button>
+<button class="btn primary" id="submitRealDiagnosis" type="button">ثبت تشخیص و گزارش تحلیلی</button>
+</div>
+<div class="output" id="realReport" aria-live="polite"></div>
+</section>
+</section>
+<section class="workshop" id="topology"><div class="heading"><h2>طراح شبکه و توپولوژی</h2><p>تجهیزات را انتخاب و مسیرهای اتصال را مشخص کن. بررسی‌کننده، کمبود یا ریسک‌های طراحی را توضیح می‌دهد.</p><button type="button" class="btn workshop-reset" data-workshop-reset="topology">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک شماتیک توپولوژی انتخاب‌شده"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 02</span><h3>شماتیک توپولوژی انتخاب‌شده</h3><p>اتصال منطقی را از مسیر فیزیکی جدا بررسی کن؛ توپولوژی تعاملی پایین صفحه با انتخاب تجهیزات به‌روزرسانی می‌شود.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="شبکه بالادست ← روتر / فایروال ← سوئیچ PoE ← NVR ← دوربین‌ها" focusable="false"><defs><linearGradient id="line-topology" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-topology)" x1="100" y1="63" x2="153" y2="63"/><line class="wire" stroke="url(#line-topology)" x1="269" y1="63" x2="322" y2="63"/><line class="wire" stroke="url(#line-topology)" x1="438" y1="63" x2="491" y2="63"/><line class="wire" stroke="url(#line-topology)" x1="607" y1="63" x2="660" y2="63"/><g class="schematic-node node-cloud"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">WAN</text><text x="42" y="88" class="node-label">شبکه بالادست</text></g><g class="schematic-node node-router"><rect x="157" y="29" width="108" height="68" rx="13"/><circle cx="211" cy="48" r="8" class="device-dot"/><text x="211" y="72" class="node-code">RTR</text><text x="211" y="88" class="node-label">روتر / فایروال</text></g><g class="schematic-node node-switch"><rect x="326" y="29" width="108" height="68" rx="13"/><circle cx="380" cy="48" r="8" class="device-dot"/><text x="380" y="72" class="node-code">SW</text><text x="380" y="88" class="node-label">سوئیچ PoE</text></g><g class="schematic-node node-server"><rect x="495" y="29" width="108" height="68" rx="13"/><circle cx="549" cy="48" r="8" class="device-dot"/><text x="549" y="72" class="node-code">NVR</text><text x="549" y="88" class="node-label">NVR</text></g><g class="schematic-node node-cam"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">CAM</text><text x="718" y="88" class="node-label">دوربین‌ها</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><h3>۱) تجهیزات پروژه</h3><div class="equipment" id="equipmentChecks"><label><input type="checkbox" value="router" checked> روتر</label><label><input type="checkbox" value="switch" checked> سوئیچ PoE</label><label><input type="checkbox" value="camera" checked> دوربین IP</label><label><input type="checkbox" value="nvr" checked> NVR</label><label><input type="checkbox" value="monitor" checked> مانیتور</label><label><input type="checkbox" value="ups"> UPS</label><label><input type="checkbox" value="switch2"> سوئیچ دوم</label></div><h3>۲) اتصال‌ها</h3><div class="equipment" id="linkChecks"><label><input type="checkbox" value="router-switch" checked> روتر ↔ سوئیچ</label><label><input type="checkbox" value="switch-camera" checked> سوئیچ ↔ دوربین</label><label><input type="checkbox" value="switch2-camera"> سوئیچ دوم ↔ دوربین</label><label><input type="checkbox" value="switch-nvr" checked> سوئیچ ↔ NVR</label><label><input type="checkbox" value="switch2-nvr"> سوئیچ دوم ↔ NVR</label><label><input type="checkbox" value="nvr-monitor" checked> NVR ↔ مانیتور</label><label><input type="checkbox" value="router-camera"> روتر ↔ دوربین مستقیم</label><label><input type="checkbox" value="switch-switch"> سوئیچ PoE ↔ سوئیچ دوم</label></div><div class="field"><label for="camCount">تعداد دوربین‌ها</label><input id="camCount" type="number" min="1" max="256" value="8"></div><div class="field"><label for="switchPorts">تعداد پورت‌های قابل استفاده سوئیچ</label><select id="switchPorts"><option value="8">۸ پورت</option><option value="16" selected>۱۶ پورت</option><option value="24">۲۴ پورت</option><option value="48">۴۸ پورت</option></select></div><p class="help">نقشه زیر بر اساس اتصال‌هایی که انتخاب می‌کنی ساخته می‌شود؛ خطوط فرضی ثابت نیستند. می‌توانی سناریو را برای ادامه کار ذخیره یا از فایل JSON بازیابی کنی.</p><div class="toplinks" aria-label="مدیریت سناریوی توپولوژی"><button type="button" class="btn" id="exportTopologyScenario">ذخیره سناریو (JSON)</button><button type="button" class="btn" id="importTopologyScenario">بارگذاری سناریو (JSON)</button><input id="topologyScenarioFile" type="file" accept="application/json,.json" hidden><span id="topologyScenarioStatus" class="output" aria-live="polite" role="status">سناریو فقط شامل تنظیمات همین طراح آموزشی است.</span></div><button class="btn primary" id="checkTopology">بررسی طراحی</button><div id="topologyResult" aria-live="polite"></div><div id="topologyDiagram" class="diagram"><span class="muted">پس از بررسی، نمای اتصال اینجا نمایش داده می‌شود.</span></div></div></section>
+<section class="workshop" id="poe">
+<section class="card real-simulator" id="poeReferenceLab" aria-labelledby="poeReferenceTitle">
+<h3 id="refPoeReferenceTitle">محاسبه‌گر مرجع PoE — مدل بار توان ثابت</h3>
+<p class="help">مدل آموزشی با ولتاژ حداقل PSE، مقاومت حلقه کابل، افت توان، محدودیت جریان و بودجه سوئیچ. مصرف پیک دوربین را وارد کن.</p>
+<div class="grid">
+<div class="field"><label for="refPoeType">استاندارد / نوع PoE</label><select id="refPoeType"><option value="af">802.3af — 15.4 W PSE</option><option value="at" selected>802.3at — 30 W PSE</option><option value="bt3">802.3bt Type 3 — 60 W PSE</option><option value="bt4">802.3bt Type 4 — 90 W PSE</option></select></div>
+<div class="field"><label for="refPoeLoad">توان پیک در PD (W)</label><input id="refPoeLoad" inputmode="decimal" value="12" /></div>
+<div class="field"><label for="refPoeLength">طول کانال (متر)</label><input id="refPoeLength" inputmode="decimal" value="100" /></div>
+<div class="field"><label for="refPoeMaterial">جنس هادی</label><select id="refPoeMaterial"><option value="cu">مس تمام‌مس (CU)</option><option value="cca">CCA — آلومینیوم با روکش مس</option></select></div>
+<div class="field"><label for="refPoeTemp">دمای هادی (°C)</label><input id="refPoeTemp" inputmode="decimal" value="20" /></div>
+<div class="field"><label for="refPoeBudget">بودجه کل سوئیچ (W)</label><input id="refPoeBudget" inputmode="decimal" value="120" /></div>
+<div class="field"><label for="refPoeMargin">حاشیه بودجه (%)</label><input id="refPoeMargin" inputmode="decimal" value="20" /></div>
+<div class="field"><label for="refPoeCount">تعداد دوربین‌ها</label><input id="refPoeCount" inputmode="numeric" value="8" /></div>
+<div class="field"><label for="refPoeAllocation">روش تخصیص توان</label><select id="refPoeAllocation"><option value="class">ایستا بر اساس کلاس (بدبینانه)</option><option value="actual" selected>پویا بر اساس توان محاسبه‌شده سمت PSE</option></select></div>
+</div>
+<div class="toplinks"><button type="button" class="btn primary" id="refPoeRun">محاسبه و اجرای شبیه‌سازی</button><button type="button" class="btn" id="refPoeReset">بازنشانی ورودی‌ها</button></div>
+<div class="output" id="refPoeResult" aria-live="polite">مقادیر را بررسی و محاسبه را اجرا کن.</div>
+</section><div class="heading"><h2>محاسبه‌گر PoE و کابل‌کشی</h2><p>مصرف کل دوربین‌ها را با بودجه توان سوئیچ مقایسه کن؛ حاشیه اطمینان را فراموش نکن.</p><button type="button" class="btn workshop-reset" data-workshop-reset="poe">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک مسیر برق و داده PoE"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 03</span><h3>مسیر برق و داده PoE</h3><p>داده و توان از کابل مسی به دوربین می‌رسند؛ نتیجه این شبیه‌ساز نمایشی است و جایگزین بررسی کلاس PoE و دیتاشیت نیست.</p></div><button class="sim-toggle" type="button" id="runPoeSimulation">▶ اجرای شبیه‌سازی توان و داده</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="بودجه توان ← سوئیچ PoE ← کابل مسی ← دوربین IR" focusable="false"><defs><linearGradient id="line-poe" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire data" x1="100" y1="57" x2="209.33333333333337" y2="57"/><line class="wire power" x1="100" y1="69" x2="209.33333333333337" y2="69"/><line class="wire data" x1="325.33333333333337" y1="57" x2="434.6666666666667" y2="57"/><line class="wire power" x1="325.33333333333337" y1="69" x2="434.6666666666667" y2="69"/><line class="wire data" x1="550.6666666666667" y1="57" x2="660" y2="57"/><line class="wire power" x1="550.6666666666667" y1="69" x2="660" y2="69"/><g class="schematic-node node-power"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">PWR</text><text x="42" y="88" class="node-label">بودجه توان</text></g><g class="schematic-node node-switch"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">SW</text><text x="267.33333333333337" y="88" class="node-label">سوئیچ PoE</text></g><g class="schematic-node node-cable"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">CAT</text><text x="492.6666666666667" y="88" class="node-label">کابل مسی</text></g><g class="schematic-node node-cam"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">CAM</text><text x="718" y="88" class="node-label">دوربین IR</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><div class="grid"><div class="field"><label for="poeCams">تعداد دوربین‌ها</label><input id="poeCams" type="text" inputmode="decimal" min="1" value="12"></div><div class="field"><label for="poeWatts">مصرف هر دوربین (وات)</label><input id="poeWatts" type="text" inputmode="decimal" min="0.1" step=".5" value="9"></div><div class="field"><label for="poeBudget">بودجه PoE سوئیچ (وات)</label><input id="poeBudget" type="text" inputmode="decimal" min="1" value="120"></div><div class="field"><label for="poeReserve">حاشیه اطمینان (%)</label><input id="poeReserve" type="text" inputmode="decimal" min="0" max="100" value="25"></div><div class="field"><label for="poePortClass">حد توان تقریبی قابل دریافت در سمت دوربین (PD)</label><select id="poePortClass"><option value="12.95">802.3af · حدود ۱۲٫۹۵ وات در دستگاه</option><option value="25.5" selected>802.3at · حدود ۲۵٫۵ وات در دستگاه</option><option value="51">802.3bt نوع ۳ · حدود ۵۱ وات در دستگاه</option><option value="71.3">802.3bt نوع ۴ · حدود ۷۱٫۳ وات در دستگاه</option></select><span class="help">این مقادیر سقف استانداردی تقریبی‌اند؛ توان واقعی را با کلاس و دیتاشیت دوربین و سوئیچ تطبیق بده.</span></div><div class="field"><label for="cableLength">طول مسیر هر کابل (متر)</label><input id="cableLength" type="text" inputmode="decimal" min="1" value="65"></div><div class="field"><label for="cableType">نوع کابل مسی</label><select id="cableType"><option value="cat5e">Cat5e مس تمام‌مس</option><option value="cat6" selected>Cat6 مس تمام‌مس</option><option value="cca">CCA (مس‌پوش آلومینیوم)</option></select></div></div><div class="field"><label for="poePairs">زوج‌های مورد استفاده برای توان</label><select id="poePairs"><option value="2">۲ زوج</option><option value="4">۴ زوج</option></select></div>
+<div class="field"><label for="poeAllocation">حالت رزرو بودجه</label><select id="poeAllocation"><option value="actual">بر اساس مصرف واقعی/LLDP (تخمینی)</option><option value="class">رزرو بر اساس کلاس PSE</option></select></div>
+<button class="btn primary" id="calcPoe">محاسبه توان و مسیر</button><div id="poeResult" aria-live="polite"></div><div id="poeSimulationResult" class="output" aria-live="polite"><b>آمادهٔ شبیه‌سازی</b><p>مقادیر بالا را تغییر بده و «اجرای شبیه‌سازی توان و داده» را بزن تا مسیر برق و مسیر داده جداگانه بررسی شوند.</p></div></div></section>
+<section class="workshop" id="subnet"><div class="heading"><h2>آزمایشگاه IP و Subnet</h2><p>شبکه و پیشوند CIDR را وارد کن؛ آدرس شبکه، Broadcast، ماسک و بازه میزبان محاسبه می‌شود.</p><button type="button" class="btn workshop-reset" data-workshop-reset="subnet">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک نقشه منطقی زیرشبکه"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 04</span><h3>نقشه منطقی زیرشبکه</h3><p>IPها باید با ماسک و سیاست VLAN/Gateway سازگار باشند؛ اتصال فیزیکی به‌تنهایی هم‌شبکه بودن را تضمین نمی‌کند.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="Gateway ← شبکه / CIDR ← دوربین ۱ ← دوربین ۲" focusable="false"><defs><linearGradient id="line-subnet" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-subnet)" x1="100" y1="63" x2="209.33333333333337" y2="63"/><line class="wire" stroke="url(#line-subnet)" x1="325.33333333333337" y1="63" x2="434.6666666666667" y2="63"/><line class="wire" stroke="url(#line-subnet)" x1="550.6666666666667" y1="63" x2="660" y2="63"/><g class="schematic-node node-router"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">GW</text><text x="42" y="88" class="node-label">Gateway</text></g><g class="schematic-node node-network"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">VLAN</text><text x="267.33333333333337" y="88" class="node-label">شبکه / CIDR</text></g><g class="schematic-node node-cam"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">CAM1</text><text x="492.6666666666667" y="88" class="node-label">دوربین ۱</text></g><g class="schematic-node node-cam"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">CAM2</text><text x="718" y="88" class="node-label">دوربین ۲</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><div class="grid"><div class="field"><label for="ipAddress">آدرس IPv4</label><input id="ipAddress" value="192.168.10.25" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="cidr">پیشوند CIDR (۰ تا ۳۲)</label><input id="cidr" type="text" inputmode="decimal" min="0" max="32" value="24"></div><div class="field"><label for="gateway">Gateway (اختیاری)</label><input id="gateway" value="192.168.10.1" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="otherIp">IP دوربین دیگر (اختیاری)</label><input id="otherIp" value="192.168.10.30" inputmode="decimal" autocomplete="off"></div></div><button class="btn primary" id="calcSubnet">تحلیل Subnet</button><div id="subnetResult" aria-live="polite"></div></div><div class="card" id="vlsmPlanner"><h3>برنامه‌ریز VLSM برای VLANها</h3><p class="help">تعداد میزبان هر بخش را وارد کن؛ بلوک‌ها از بزرگ به کوچک در شبکه پایه تخصیص می‌یابند.</p><div class="grid">
+<div class="field"><label for="vlsmBase">آدرس پایه</label><input id="vlsmBase" value="192.168.20.1" inputmode="decimal"></div>
+<div class="field"><label for="vlsmPrefix">پیشوند پایه</label><input id="vlsmPrefix" type="text" inputmode="decimal" min="0" max="32" value="24"></div>
+<div class="field"><label for="vlsmCameras">میزبان VLAN دوربین</label><input id="vlsmCameras" type="text" inputmode="decimal" min="1" value="50"></div>
+<div class="field"><label for="vlsmNvr">میزبان VLAN ضبط</label><input id="vlsmNvr" type="text" inputmode="decimal" min="1" value="5"></div>
+<div class="field"><label for="vlsmManagement">میزبان VLAN مدیریت</label><input id="vlsmManagement" type="text" inputmode="decimal" min="1" value="10"></div>
+<div class="field"><label for="vlsmUsers">میزبان VLAN کاربران</label><input id="vlsmUsers" type="text" inputmode="decimal" min="1" value="20"></div>
+</div><button class="btn primary" id="planVlsm" type="button">محاسبه برنامه IP</button><div id="vlsmResult" class="output" aria-live="polite"></div></div>
+</section>
+<section class="workshop" id="storage"><div class="heading"><h2>پهنای باند و ذخیره‌سازی</h2><p>برآورد خام بر اساس bitrate ورودی است؛ نرخ متغیر تصویر، صدا، RAID و ظرفیت قابل استفاده را جداگانه لحاظ کن.</p><button type="button" class="btn workshop-reset" data-workshop-reset="storage">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک از تصویر تا ذخیره‌سازی"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 05</span><h3>از تصویر تا ذخیره‌سازی</h3><p>Bitrate تجمیعی به شبکه و فضای ضبط فشار می‌آورد؛ ظرفیت قابل استفاده RAID را جداگانه حساب کن.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="دوربین‌ها ← سوئیچ ← NVR / VMS ← آرایه دیسک" focusable="false"><defs><linearGradient id="line-storage" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-storage)" x1="100" y1="63" x2="209.33333333333337" y2="63"/><line class="wire" stroke="url(#line-storage)" x1="325.33333333333337" y1="63" x2="434.6666666666667" y2="63"/><line class="wire" stroke="url(#line-storage)" x1="550.6666666666667" y1="63" x2="660" y2="63"/><g class="schematic-node node-cam"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">CAM</text><text x="42" y="88" class="node-label">دوربین‌ها</text></g><g class="schematic-node node-switch"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">SW</text><text x="267.33333333333337" y="88" class="node-label">سوئیچ</text></g><g class="schematic-node node-server"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">NVR</text><text x="492.6666666666667" y="88" class="node-label">NVR / VMS</text></g><g class="schematic-node node-disk"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">HDD</text><text x="718" y="88" class="node-label">آرایه دیسک</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><div class="grid"><div class="field"><label for="storageCams">تعداد دوربین</label><input id="storageCams" type="text" inputmode="decimal" min="1" value="16"></div><div class="field"><label for="bitrate">Bitrate هر دوربین (Mbps)</label><input id="bitrate" type="text" inputmode="decimal" min=".1" step=".1" value="4"></div><div class="field"><label for="recordDays">روزهای نگهداری</label><input id="recordDays" type="text" inputmode="decimal" min="1" value="30"></div><div class="field"><label for="recordHours">ساعت ضبط در روز</label><input id="recordHours" type="text" inputmode="decimal" min="1" max="24" value="24"></div><div class="field"><label for="headroom">حاشیه ذخیره‌سازی (%)</label><input id="headroom" type="text" inputmode="decimal" min="0" max="100" value="15"></div><div class="field"><label for="networkHeadroom">حاشیه شبکه (%)</label><input id="networkHeadroom" type="text" inputmode="decimal" min="0" max="100" value="25"></div></div><div class="grid">
+<div class="field"><label for="storageMode">پروفایل ضبط</label><select id="storageMode"><option value="continuous">پیوسته</option><option value="motion">حرکت (با درصد فعالیت)</option></select></div>
+<div class="field"><label for="storageActivity">درصد فعالیت صحنه (%)</label><input id="storageActivity" type="text" inputmode="decimal" min="0" max="100" value="35"></div>
+<div class="field"><label for="storagePrePost">سربار Pre/Post-record (%)</label><input id="storagePrePost" type="text" inputmode="decimal" min="0" max="100" value="5"></div>
+<div class="field"><label for="storageAudio">صدا به ازای هر دوربین (Mbps)</label><input id="storageAudio" type="text" inputmode="decimal" min="0" step="0.01" value="0"></div>
+<div class="field"><label for="storageSubstream">Substream به ازای هر دوربین (Mbps)</label><input id="storageSubstream" type="text" inputmode="decimal" min="0" step="0.1" value="0"></div>
+<div class="field"><label for="storageOverhead">سربار فایل‌سیستم/فراداده (%)</label><input id="storageOverhead" type="text" inputmode="decimal" min="0" max="100" value="7"></div>
+<div class="field"><label for="storageRaid">RAID</label><select id="storageRaid"><option value="raid5">RAID 5</option><option value="raid6">RAID 6</option><option value="raid1">RAID 1</option><option value="raid10">RAID 10</option><option value="raid0">RAID 0</option><option value="none">بدون RAID</option></select></div>
+<div class="field"><label for="storageDiskCount">تعداد دیسک</label><input id="storageDiskCount" type="text" inputmode="decimal" min="1" value="4"></div>
+<div class="field"><label for="storageDiskSize">ظرفیت هر دیسک (TB)</label><input id="storageDiskSize" type="text" inputmode="decimal" min="0.1" value="8"></div>\n<div class="field"><label for="storageHotSpare">Hot spare</label><input id="storageHotSpare" type="text" inputmode="decimal" min="0" value="0"></div>
+<div class="field"><label for="storageNvrInput">حد ورودی NVR (Mbps)</label><input id="storageNvrInput" type="text" inputmode="decimal" min="1" value="160"></div>
+<div class="field"><label for="storageUplink">سرعت Uplink (Mbps)</label><input id="storageUplink" type="text" inputmode="decimal" min="1" value="1000"></div>
+<div class="field"><label for="storagePlayback">ترافیک پخش/مشاهده هم‌زمان (Mbps)</label><input id="storagePlayback" type="text" inputmode="decimal" min="0" value="0"></div>
+</div>
+<button class="btn primary" id="calcStorage">محاسبه ظرفیت</button><div id="storageResult" aria-live="polite"></div></div></section>
+<section class="workshop" id="cable"><div class="heading"><h2>انتخاب کابل و تجهیزات انتقال</h2><p>با توجه به فاصله، محیط، تداخل و نیاز پهنای باند گزینه مناسب‌تر را انتخاب کن.</p><button type="button" class="btn workshop-reset" data-workshop-reset="cable">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک انتخاب رسانه انتقال"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 06</span><h3>انتخاب رسانه انتقال</h3><p>مسیر کوتاه: مس؛ مسیر طولانی یا پرنویز: فیبر و uplink مناسب. فیبر به‌تنهایی برق PoE منتقل نمی‌کند.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="دوربین ← مسی ≤ ۱۰۰م ← SFP / فیبر ← سوئیچ مقصد" focusable="false"><defs><linearGradient id="line-cable" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-cable)" x1="100" y1="63" x2="209.33333333333337" y2="63"/><line class="wire" stroke="url(#line-cable)" x1="325.33333333333337" y1="63" x2="434.6666666666667" y2="63"/><line class="wire" stroke="url(#line-cable)" x1="550.6666666666667" y1="63" x2="660" y2="63"/><g class="schematic-node node-cam"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">CAM</text><text x="42" y="88" class="node-label">دوربین</text></g><g class="schematic-node node-cable"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">CU</text><text x="267.33333333333337" y="88" class="node-label">مسی ≤ ۱۰۰م</text></g><g class="schematic-node node-fiber"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">SFP</text><text x="492.6666666666667" y="88" class="node-label">SFP / فیبر</text></g><g class="schematic-node node-switch"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">SW</text><text x="718" y="88" class="node-label">سوئیچ مقصد</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><div class="grid"><div class="field"><label for="distance">فاصله مسیر (متر)</label><input id="distance" type="text" inputmode="decimal" min="1" value="180"></div><div class="field"><label for="environment">محیط مسیر</label><select id="environment"><option value="indoor">داخل ساختمان</option><option value="outdoor" selected>فضای باز / بین ساختمان‌ها</option><option value="emi">محیط با تداخل الکترومغناطیسی</option></select></div><div class="field"><label for="bandwidthNeed">نیاز لینک</label><select id="bandwidthNeed"><option value="100">تا 100 Mbps</option><option value="1000" selected>تا 1 Gbps</option><option value="10000">بیش از 1 Gbps / تجمیع</option></select></div><div class="field"><label for="powerNeed">انتقال PoE روی همان مسیر لازم است؟</label><select id="powerNeed"><option value="yes">بله</option><option value="no" selected>خیر</option></select></div></div><button class="btn primary" id="recommendCable">پیشنهاد مسیر</button><div id="cableResult" aria-live="polite"></div></div></section>
+<section class="workshop" id="security"><div class="heading"><h2>کارگاه امنیت شبکه دوربین‌ها</h2><p>کنترل‌های اجراشده را علامت بزن. امتیاز، شکاف‌های امنیتی مهم‌تر را برجسته می‌کند.</p><button type="button" class="btn workshop-reset" data-workshop-reset="security">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک تفکیک امن شبکه"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 07</span><h3>تفکیک امن شبکه</h3><p>دسترسی مدیریت را محدود کن و ارتباط بین VLAN دوربین، کاربران و مدیریت را با Firewall/ACL کنترل کن.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="VLAN دوربین ← Firewall / ACL ← VLAN ضبط ← مدیریت مجاز" focusable="false"><defs><linearGradient id="line-security" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-security)" x1="100" y1="63" x2="209.33333333333337" y2="63"/><line class="wire" stroke="url(#line-security)" x1="325.33333333333337" y1="63" x2="434.6666666666667" y2="63"/><line class="wire" stroke="url(#line-security)" x1="550.6666666666667" y1="63" x2="660" y2="63"/><g class="schematic-node node-cam"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">CAM</text><text x="42" y="88" class="node-label">VLAN دوربین</text></g><g class="schematic-node node-shield"><rect x="213.33333333333337" y="29" width="108" height="68" rx="13"/><circle cx="267.33333333333337" cy="48" r="8" class="device-dot"/><text x="267.33333333333337" y="72" class="node-code">FW</text><text x="267.33333333333337" y="88" class="node-label">Firewall / ACL</text></g><g class="schematic-node node-server"><rect x="438.6666666666667" y="29" width="108" height="68" rx="13"/><circle cx="492.6666666666667" cy="48" r="8" class="device-dot"/><text x="492.6666666666667" y="72" class="node-code">NVR</text><text x="492.6666666666667" y="88" class="node-label">VLAN ضبط</text></g><g class="schematic-node node-screen"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">ADMIN</text><text x="718" y="88" class="node-label">مدیریت مجاز</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><div class="checklist" id="securityChecks"><label class="check"><input type="checkbox" data-weight="3" data-security-control="default-password"> رمز پیش‌فرض همه تجهیزات تغییر کرده و رمزها یکتا هستند.</label><label class="check"><input type="checkbox" data-weight="3" data-security-control="management-access"> دسترسی مدیریت فقط از شبکه/دستگاه‌های مجاز ممکن است.</label><label class="check"><input type="checkbox" data-weight="2" data-security-control="segmentation"> شبکه دوربین‌ها از شبکه کاربران با VLAN یا مرزبندی مناسب جداست.</label><label class="check"><input type="checkbox" data-weight="3" data-security-control="firewall-acl"> دسترسی بین VLANها با Firewall/ACL محدود شده است.</label><label class="check"><input type="checkbox" data-weight="2" data-security-control="patching"> Firmware از منبع رسمی و با برنامه نگهداری کنترل می‌شود.</label><label class="check"><input type="checkbox" data-weight="2" data-security-control="remote-cloud"> دسترسی راه دور از VPN امن استفاده می‌کند؛ پورت‌های غیرضروری باز نیستند.</label><label class="check"><input type="checkbox" data-weight="1" data-security-control="audit-logging"> NTP، لاگ‌ها و ثبت رویدادهای مهم فعال‌اند.</label><label class="check"><input type="checkbox" data-weight="2" data-security-control="backup-restore"> ضبط و تنظیمات مهم Backup/Export دوره‌ای دارند و بازیابی آزموده شده است.</label><label class="check"><input type="checkbox" data-weight="1" data-security-control="ports"> سرویس‌های ناامن و حساب‌های غیرفعال حذف یا غیرفعال شده‌اند.</label></div><button class="btn primary" id="scoreSecurity" style="margin-top:13px">ارزیابی وضعیت</button><div id="securityResult" aria-live="polite"></div></div><div class="card" id="securityAdvancedWorkshop"><h3>ارزیابی وزنی کنترل‌های امنیتی</h3><p class="help">کنترل‌ها را بر اساس قابلیت واقعی دستگاه انتخاب کن؛ امتیاز صرفاً آموزشی است.</p><div class="checklist" id="advancedSecurityChecks">
+<label class="check"><input type="checkbox" data-security-control="default-password"> حذف رمز پیش‌فرض</label>
+<label class="check"><input type="checkbox" data-security-control="remote-cloud"> غیرفعال‌سازی UPnP/P2P/Cloud غیرضروری</label>
+<label class="check"><input type="checkbox" data-security-control="https"> HTTPS و گواهی معتبر</label>
+<label class="check"><input type="checkbox" data-security-control="rtsp-auth"> احراز هویت RTSP</label>
+<label class="check"><input type="checkbox" data-security-control="rbac"> نقش‌های مجزا و حداقل دسترسی</label>
+<label class="check"><input type="checkbox" data-security-control="lockout"> محدودیت تلاش ورود</label>
+<label class="check"><input type="checkbox" data-security-control="segmentation"> VLAN/ACL و جداسازی مدیریت</label>
+<label class="check"><input type="checkbox" data-security-control="firewall-acl"> قواعد Firewall/ACL بین شبکه‌ها</label>
+<label class="check"><input type="checkbox" data-security-control="port-security"> 802.1X / Port Security</label>
+<label class="check"><input type="checkbox" data-security-control="physical"> امنیت فیزیکی پورت‌ها</label>
+<label class="check"><input type="checkbox" data-security-control="patching"> مدیریت Firmware/CVE</label>
+<label class="check"><input type="checkbox" data-security-control="audit-logging"> NTP، لاگ و ثبت رویداد</label>
+<label class="check"><input type="checkbox" data-security-control="backup-restore"> پشتیبان‌گیری و آزمون بازیابی</label>
+<label class="check"><input type="checkbox" data-security-control="ports"> حداقل پورت‌های باز</label>
+</div><button class="btn primary" id="calcAdvancedSecurity" type="button">محاسبه امتیاز و زنجیره حمله</button><div id="advancedSecurityResult" class="output" aria-live="polite"></div></div>
+</section>
+<section class="workshop" id="capstone"><div class="heading"><h2>پروژه نهایی: طراحی سامانه CCTV</h2><p>مشخصات پروژه را وارد کن؛ گزارش طراحی و فهرست اولیه تجهیزات برای ذخیره، چاپ یا تحویل تولید می‌شود.</p><button type="button" class="btn workshop-reset" data-workshop-reset="capstone">↺ بازنشانی مقادیر و نتیجه‌ها</button></div>
+<section class="lab-schematic" aria-label="شماتیک شماتیک یکپارچه پروژه"><div class="schematic-top"><div><span class="section-label">نقشه فنی / 08</span><h3>شماتیک یکپارچه پروژه</h3><p>طراحی نهایی باید مسیر شبکه، توان، ذخیره‌سازی، دسترسی امن و برق پشتیبان را کنار هم ببیند.</p></div><button class="sim-toggle" type="button" data-sim-toggle aria-pressed="false">▶ اجرای شبیه‌سازی تعاملی</button><button class="sim-reset" type="button" data-sim-reset>↺ بازنشانی ورودی‌ها و نتیجه‌ها</button></div><div class="schematic-canvas"><svg viewBox="-20 0 800 126" role="img" aria-label="دوربین‌ها ← PoE + VLAN ← Router / FW ← NVR + HDD ← نمایشگر مجاز" focusable="false"><defs><linearGradient id="line-capstone" x1="0" x2="1"><stop offset="0" stop-color="#4c94ff"/><stop offset="1" stop-color="#42d9e8"/></linearGradient></defs><line class="wire" stroke="url(#line-capstone)" x1="100" y1="63" x2="153" y2="63"/><line class="wire" stroke="url(#line-capstone)" x1="269" y1="63" x2="322" y2="63"/><line class="wire" stroke="url(#line-capstone)" x1="438" y1="63" x2="491" y2="63"/><line class="wire" stroke="url(#line-capstone)" x1="607" y1="63" x2="660" y2="63"/><g class="schematic-node node-cam"><rect x="-12" y="29" width="108" height="68" rx="13"/><circle cx="42" cy="48" r="8" class="device-dot"/><text x="42" y="72" class="node-code">CAM</text><text x="42" y="88" class="node-label">دوربین‌ها</text></g><g class="schematic-node node-switch"><rect x="157" y="29" width="108" height="68" rx="13"/><circle cx="211" cy="48" r="8" class="device-dot"/><text x="211" y="72" class="node-code">SW</text><text x="211" y="88" class="node-label">PoE + VLAN</text></g><g class="schematic-node node-router"><rect x="326" y="29" width="108" height="68" rx="13"/><circle cx="380" cy="48" r="8" class="device-dot"/><text x="380" y="72" class="node-code">FW</text><text x="380" y="88" class="node-label">Router / FW</text></g><g class="schematic-node node-server"><rect x="495" y="29" width="108" height="68" rx="13"/><circle cx="549" cy="48" r="8" class="device-dot"/><text x="549" y="72" class="node-code">NVR</text><text x="549" y="88" class="node-label">NVR + HDD</text></g><g class="schematic-node node-screen"><rect x="664" y="29" width="108" height="68" rx="13"/><circle cx="718" cy="48" r="8" class="device-dot"/><text x="718" y="72" class="node-code">VIEW</text><text x="718" y="88" class="node-label">نمایشگر مجاز</text></g></svg></div><div class="schematic-foot"><span><i class="legend-dot data"></i> مسیر داده</span><span><i class="legend-dot power"></i> توان/PoE در مسیرهای سازگار</span><span class="sim-note">نمایش آموزشی؛ بدون اتصال به تجهیزات واقعی</span></div></section>
+<div class="card"><div class="grid"><div class="field"><label for="projectName">نام پروژه</label><input id="projectName" value="سامانه نظارت فروشگاه"></div><div class="field"><label for="projectCams">تعداد دوربین</label><input id="projectCams" type="text" inputmode="decimal" min="1" value="12"></div><div class="field"><label for="projectRate">Bitrate هر دوربین (Mbps)</label><input id="projectRate" type="text" inputmode="decimal" min=".1" step=".1" value="4"></div><div class="field"><label for="projectDays">روزهای نگهداری</label><input id="projectDays" type="text" inputmode="decimal" min="1" value="30"></div><div class="field"><label for="projectWatts">توان هر دوربین (وات)</label><input id="projectWatts" type="text" inputmode="decimal" min=".1" value="9"></div><div class="field"><label for="projectCable">میانگین طول کابل (متر)</label><input id="projectCable" type="text" inputmode="decimal" min="1" value="55"></div><div class="field"><label for="projectStorage">ضبط</label><select id="projectStorage"><option value="continuous">پیوسته ۲۴ ساعته</option><option value="motion">تشخیص حرکت (برآورد ۵۰٪ زمان)</option></select></div><div class="field"><label for="projectSecurity">سطح امنیت هدف</label><select id="projectSecurity"><option>پایه</option><option selected>استاندارد</option><option>بالا</option></select></div><div class="field"><label for="projectActivity">درصد فعالیت صحنه هنگام ضبط حرکت (%)</label><input id="projectActivity" type="text" inputmode="decimal" min="0" max="100" value="35"><span class="help">پیش‌فرض ۳۵٪ صرفاً فرض اولیه است؛ با شرایط واقعی صحنه تنظیم کن.</span></div>
+<div class="field"><label for="projectCodec">کدک</label><select id="projectCodec"><option value="H.264">H.264</option><option value="H.265">H.265</option></select></div>
+<div class="field"><label for="projectResolution">رزولوشن معمول</label><select id="projectResolution"><option value="1080p">1080p</option><option value="4MP">4MP</option><option value="4K">4K</option></select></div>
+<div class="field"><label for="projectBuildings">تعداد ساختمان / طبقه</label><input id="projectBuildings" type="text" inputmode="decimal" min="1" value="1"></div>
+<div class="field"><label for="projectUps">هدف پشتیبانی UPS (دقیقه)</label><input id="projectUps" type="text" inputmode="decimal" min="1" value="30"></div>
+<div class="field"><label for="projectEnvironment">محیط نصب</label><select id="projectEnvironment"><option value="indoor">داخل ساختمان</option><option value="outdoor">فضای باز</option></select></div>
+<div class="field"><label for="projectPtz">دوربین PTZ</label><select id="projectPtz"><option value="no">خیر</option><option value="yes">بله</option></select></div>
+<div class="field"><label for="projectAudio">ضبط صدا</label><select id="projectAudio"><option value="no">خیر</option><option value="yes">بله</option></select></div>
+<div class="field"><label for="projectRemote">مشاهده از راه دور هم‌زمان</label><select id="projectRemote"><option value="no">خیر</option><option value="yes">بله</option></select></div>
+<div class="field"><label for="projectRedundantUplink">Uplink پشتیبان</label><select id="projectRedundantUplink"><option value="no">خیر</option><option value="yes">بله</option></select></div>
+<div class="field"><label for="projectBudget">بودجه تقریبی (اختیاری)</label><input id="projectBudget" type="text" inputmode="decimal" min="0" value="0"></div>
+</div><button class="btn primary" id="buildReport">ساخت گزارش پروژه</button><button class="btn" id="downloadReport">ذخیره گزارش TXT</button><button class="btn" id="downloadJsonReport" type="button">ذخیره گزارش JSON</button><button class="btn" id="printReport">چاپ / ذخیره PDF</button><div id="capstoneResult" aria-live="polite"></div></div><section class="card" id="upsWorkshop"><h3>کارگاه تخصصی UPS و برق پشتیبان</h3><div class="grid">
+<div class="field"><label for="upsLoad">بار کل (وات)</label><input id="upsLoad" type="text" inputmode="decimal" min="1" value="180"></div>
+<div class="field"><label for="upsCapacityW">توان پیوسته خروجی UPS (W)</label><input id="upsCapacityW" type="text" inputmode="decimal" min="1" value="600"></div>
+<div class="field"><label for="upsCapacityVA">ظرفیت ظاهری خروجی UPS (VA)</label><input id="upsCapacityVA" type="text" inputmode="decimal" min="1" value="1000"></div>
+<div class="field"><label for="upsPf">ضریب توان</label><input id="upsPf" type="text" inputmode="decimal" min="0.1" max="1" step="0.05" value="0.8"></div>
+<div class="field"><label for="upsBattery">ظرفیت باتری (Wh)</label><input id="upsBattery" type="text" inputmode="decimal" min="1" value="600"></div>
+<div class="field"><label for="upsEfficiency">بازده اینورتر (%)</label><input id="upsEfficiency" type="text" inputmode="decimal" min="1" max="100" value="85"></div>
+<div class="field"><label for="upsDod">عمق تخلیه مجاز (%)</label><input id="upsDod" type="text" inputmode="decimal" min="1" max="100" value="80"></div>
+<div class="field"><label for="upsAge">سلامت باتری پس از فرسودگی (%)</label><input id="upsAge" type="text" inputmode="decimal" min="1" max="100" value="80"></div>
+</div><button class="btn primary" id="calcUps" type="button">محاسبه زمان پشتیبانی</button><div id="upsResult" class="output" aria-live="polite"></div></section>
+<section class="card" id="lensWorkshop"><h3>کارگاه لنز، پوشش و DORI</h3><div class="grid">
+<div class="field"><label for="lensSensorW">عرض سنسور (mm)</label><input id="lensSensorW" type="text" inputmode="decimal" min="0.1" value="5.6"></div>
+<div class="field"><label for="lensSensorH">ارتفاع سنسور (mm)</label><input id="lensSensorH" type="text" inputmode="decimal" min="0.1" value="3.15"></div>
+<div class="field"><label for="lensFocal">فاصله کانونی (mm)</label><input id="lensFocal" type="text" inputmode="decimal" min="0.1" value="4"></div>
+<div class="field"><label for="lensDistance">فاصله سوژه (m)</label><input id="lensDistance" type="text" inputmode="decimal" min="0.1" value="10"></div>
+<div class="field"><label for="lensPixelsX">رزولوشن افقی (px)</label><input id="lensPixelsX" type="text" inputmode="decimal" min="1" value="1920"></div>
+<div class="field"><label for="lensPixelsY">رزولوشن عمودی (px)</label><input id="lensPixelsY" type="text" inputmode="decimal" min="1" value="1080"></div>
+<div class="field"><label for="lensSceneW">عرض فضای هدف (m)</label><input id="lensSceneW" type="text" inputmode="decimal" min="0.1" value="20"></div>
+<div class="field"><label for="lensSceneH">عمق فضای هدف (m)</label><input id="lensSceneH" type="text" inputmode="decimal" min="0.1" value="10"></div>
+<div class="field"><label for="lensTargetDensity">هدف تراکم پیکسل (px/m)</label><select id="lensTargetDensity"><option value="20">کشف — ۲۰</option><option value="40">مشاهده — ۴۰</option><option value="80">تشخیص — ۸۰</option><option value="125" selected>بازرسی/بررسی — ۱۲۵</option><option value="250">شناسایی — ۲۵۰</option><option value="500">جزئیات بالا — ۵۰۰</option><option value="1500">جزئیات بسیار بالا — ۱۵۰۰</option></select></div>
+</div><button class="btn primary" id="calcLens" type="button">محاسبه پوشش تصویر</button><div id="lensResult" class="output" aria-live="polite"></div><svg id="lensCoverageSvg" viewBox="0 0 320 140" role="img" aria-label="نمای هندسی تخمینی پوشش دوربین" style="width:100%;max-width:420px;height:auto"></svg></section>
+<section class="card" id="commissioningWorkshop"><h3>کارگاه راه‌اندازی و تحویل (Commissioning)</h3><p class="help">وضعیت چک‌لیست در همین مرورگر ذخیره می‌شود.</p><div class="checklist" id="commissioningChecks">
+<label class="check"><input type="checkbox" data-commission="cable"> تست Wiremap و طول کابل ثبت شد.</label>
+<label class="check"><input type="checkbox" data-commission="poe"> توان PoE زیر بار و هنگام روشن‌شدن IR بررسی شد.</label>
+<label class="check"><input type="checkbox" data-commission="ip"> IP، ماسک، Gateway، VLAN و IP تکراری بررسی شد.</label>
+<label class="check"><input type="checkbox" data-commission="time"> NTP، منطقه زمانی و زمان NVR بررسی شد.</label>
+<label class="check"><input type="checkbox" data-commission="record"> ضبط پیوسته/حرکتی و فضای ذخیره‌سازی آزمایش شد.</label>
+<label class="check"><input type="checkbox" data-commission="playback"> بازپخش، خروجی HDMI و مشاهده هم‌زمان آزمایش شد.</label>
+<label class="check"><input type="checkbox" data-commission="backup"> پشتیبان تنظیمات و آزمون بازیابی ثبت شد.</label>
+<label class="check"><input type="checkbox" data-commission="docs"> نقشه IP، VLAN، کابل و BOM مستندسازی شد.</label>
+</div><p id="commissioningProgress" aria-live="polite"></p><button class="btn" id="exportCommissioning" type="button">گزارش چک‌لیست تحویل</button><div id="commissioningResult" class="output" aria-live="polite"></div></section>
+<section class="card" id="switchFeaturesWorkshop"><h3>ویژگی‌های مدیریتی سوئیچ: Loop، IGMP، QoS</h3><div class="checklist">
+<label class="check"><input type="checkbox" id="swRstp" checked> RSTP فعال است.</label>
+<label class="check"><input type="checkbox" id="swIgmp"> IGMP snooping فعال است.</label>
+<label class="check"><input type="checkbox" id="swQos"> QoS برای ترافیک حساس تنظیم شده است.</label>
+<label class="check"><input type="checkbox" id="swIsolation"> Port isolation برای پورت‌های لازم فعال است.</label>
+<label class="check"><input type="checkbox" id="swStorm"> Storm control فعال است.</label>
+<label class="check"><input type="checkbox" id="swLoopInjected"> در شبکه آزمایشی، یک حلقه لایه دوم تزریق کن.</label>
+<label class="check"><input type="checkbox" id="swMulticast"> چند جریان Multicast از دوربین‌ها فعال‌اند.</label>
+</div><button class="btn primary" id="runSwitchFeatureSim" type="button">شبیه‌سازی رفتار سوئیچ</button><div id="switchFeaturesResult" class="output" aria-live="polite"></div></section>
+</section>
+</main></div><footer class="footer">این آزمایشگاه آموزشی است؛ نتایج محاسبات برآورد اولیه‌اند و جایگزین دیتاشیت، استاندارد لازم‌الاجرا، اندازه‌گیری یا آزمون میدانی نیستند.</footer>
+</div>
+<script src="./js/calculations.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const persian=n=>Number(n).toLocaleString("fa-IR",{maximumFractionDigits:2});
+const latinDigits=s=>String(s??"").replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
+function readStorage(key,fallback=""){try{return localStorage.getItem(key)??fallback}catch{return fallback}}
+function writeStorage(key,value){try{localStorage.setItem(key,value);return true}catch{return false}}
+function removeStorage(key){try{localStorage.removeItem(key)}catch{}}
+function readStoredArray(key){try{const value=JSON.parse(readStorage(key,"[]"));return Array.isArray(value)?value.filter(item=>typeof item==="string"):[]}catch{return []}}
+const storedScore=Number(readStorage("cctv-workshops-score","0"));
+const state={completed:new Set(readStoredArray("cctv-workshops-completed")),score:Number.isFinite(storedScore)&&storedScore>=0?storedScore:0,scenario:0,answered:{}};
+function save(){writeStorage("cctv-workshops-completed",JSON.stringify([...state.completed]));writeStorage("cctv-workshops-score",String(state.score));updateMetrics()}
+function complete(id){state.completed.add(id);save()}
+function updateMetrics(){ $("completedMetric").textContent=persian(state.completed.size)+" از ۸";$("scoreMetric").textContent=persian(state.score);$("progressMetric").textContent=persian(Math.round(state.completed.size/8*100))+"٪";$("progressBar").style.width=(state.completed.size/8*100)+"%";document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("done",state.completed.has(t.dataset.tab)))}
+function output(id,html,kind=""){const el=$(id);el.className="output "+kind;el.innerHTML=html}
+function escapeHTML(value){return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
+function requiredNumber(id,label,options={}){const raw=$(id).value;if(raw.trim()==="")throw Error(label+" را وارد کن.");const value=Number(raw);if(!Number.isFinite(value))throw Error(label+" باید عدد معتبر باشد.");if(options.integer&&!Number.isInteger(value))throw Error(label+" باید عدد صحیح باشد.");if(options.min!==undefined&&value<options.min)throw Error(label+" نباید کمتر از "+options.min+" باشد.");if(options.max!==undefined&&value>options.max)throw Error(label+" نباید بیشتر از "+options.max+" باشد.");return value}
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===btn));document.querySelectorAll(".workshop").forEach(x=>x.classList.toggle("active",x.id===btn.dataset.tab));window.scrollTo({top:0,behavior:"smooth"})}));
+const scenarios=[
+{title:"دوربین شب‌ها ریست می‌شود",text:"تصویر در روز پایدار است؛ بعد از روشن شدن IR در شب دوربین ریست می‌شود. بهترین آزمون بعدی چیست؟",opts:["تعویض NVR بدون بررسی علت","توان PoE و کابل را زیر بار شب بررسی کن","تغییر DNS و تنظیمات نام دستگاه","افزایش وضوح تصویر و بررسی تنظیمات نمایشگر"],a:1,why:"فعال شدن IR مصرف دوربین را بالا می‌برد. بودجه واقعی PoE و افت مسیر را در شرایط شب بررسی کن."},
+{title:"تصویر زنده هست، بازپخش نیست",text:"اپراتور تصویر زنده را می‌بیند اما بازپخش ساعات قبل خالی است. از کجا شروع می‌کنی؟",opts:["برنامه ضبط و سلامت HDD را بررسی کن","تعویض لنز و تنظیم دوباره فوکوس","تغییر VLAN و تنظیمات شبکه بدون بررسی لاگ‌ها","بالا بردن FPS برای همه دوربین‌ها"],a:0,why:"مسیر زنده و ضبط یکسان نیستند؛ زمان‌بندی ضبط، دیسک، زمان سیستم و لاگ‌ها را جداگانه بررسی کن."},
+{title:"دو دستگاه یک IP دارند",text:"دوربین گاهی پاسخ می‌دهد و گاهی ارتباط به دستگاه دیگری می‌رسد. کدام فرضیه مهم‌تر است؟",opts:["بررسی کدک H.265 و پروفایل جریان ویدئو","ظرفیت هارد برای نگهداری ضبط کافی نیست","تداخل IP یا تغییر آدرس DHCP","فوکوس لنز و زاویه دید را دوباره تنظیم کن"],a:2,why:"جدول DHCP و ARP و آدرس‌دهی ثابت/رزروشده را بررسی کن؛ آدرس‌های تکراری باعث رفتار متناوب می‌شوند."},
+{title:"از یک VLAN دسترسی نیست",text:"دوربین از شبکه مدیریت در دسترس است اما از شبکه اپراتور نه. چه چیزی بررسی شود؟",opts:["زاویه دید و محل نصب را بررسی کن","ظرفیت HDD و سلامت ضبط را بررسی کن","WDR و تنظیمات نوردهی دوربین را تغییر بده","مسیر و ACL بین دو شبکه را بررسی کن"],a:3,why:"اگر دسترسی به مبدأ وابسته است، مسیر و سیاست‌های بین شبکه‌ها از اولویت‌های تشخیص‌اند."},
+{title:"لینک شبکه ۱۰۰ مگابیت است",text:"دوربین و سوئیچ گیگابیتی‌اند اما لینک روی 100 Mbps مذاکره می‌شود. قدم بعدی چیست؟",opts:["کابل، سوکت و مذاکره سرعت را تست کن","تغییر رمز NVR و راه‌اندازی مجدد","برنامه ضبط و سلامت هارد NVR را بررسی کن","تغییر ساعت و منطقه زمانی دستگاه"],a:0,why:"کابل یا کانکتور ناقص می‌تواند مانع لینک گیگابیتی شود؛ یک متغیر را در هر آزمون تغییر بده."},
+{title:"تصویر پرش دارد",text:"در ساعات شلوغی، تصویر چند دوربین قطع و وصل می‌شود. کدام بررسی مناسب‌تر است؟",opts:["تعویض همه دوربین‌ها بدون بررسی علت","ترافیک لینک و خطاهای پورت را بسنج","تعویض مانیتور و کابل نمایشگر","تغییر کیفیت تصویر همه دوربین‌ها"],a:1,why:"ترافیک تجمعی و خطاهای پورت را با ظرفیت واقعی لینک مقایسه کن؛ صرفاً bitrate اسمی کافی نیست."},
+{title:"ضبط با ساعت نگهبانی نمی‌خواند",text:"تصویر ضبط شده هست اما زمان رخداد با گزارش نگهبانی اختلاف دارد.",opts:["تغییر رزولوشن و نرخ فریم دوربین‌ها","افزایش توان PoE بدون اندازه‌گیری","ساعت و NTP دوربین و NVR را بررسی کن","تعویض کابل تصویر بدون تست"],a:2,why:"زمان ناهماهنگ، بازیابی رخداد را دشوار می‌کند. زمان و منطقه زمانی تجهیزات را یکسان و NTP را بررسی کن."},
+{title:"اتصال RTSP هست، تصویر نیست",text:"کلاینت به جریان RTSP وصل می‌شود اما تصویر نمایش داده نمی‌شود.",opts:["افزایش ظرفیت هارد بدون بررسی","تعویض روتر فوراً و بدون تست","تغییر IP همه دستگاه‌ها","codec و سازگاری جریان را بررسی کن"],a:3,why:"برقراری اتصال به معنی سازگاری codec، جریان اصلی/فرعی و رمزگشایی نیست."},
+{title:"دو دوربین هم‌زمان خراب‌اند",text:"دو دوربین متصل به یک مسیر مشترک از کار افتاده‌اند؛ بقیه سالم‌اند.",opts:["بخش مشترک کابل و پورت را بررسی کن","تعویض NVR پیش از بررسی مسیر","تغییر تنظیمات همه دوربین‌ها و بازنشانی NVR","حذف VLANهای دیگر بدون آزمون"],a:0,why:"الگوی خرابی مشترک به دنبال علت مشترک است. با جابه‌جایی کنترل‌شده یا تست کابل، محدوده را محدود کن."},
+{title:"تصویر در روز خوب، شب تاریک",text:"دوربین در روز درست است اما شب سوژه تاریک یا سفید و کم‌جزئیات می‌شود.",opts:["تغییر DHCP و Gateway هم‌زمان","IR، نوردهی و بازتاب را بررسی کن","تعویض HDD بدون بررسی ضبط","تغییر Gateway همه دوربین‌ها"],a:1,why:"بررسی صحنه و بازتاب IR، نوردهی و دامنه دینامیکی را در محل واقعی انجام بده."},
+{title:"دسترسی راه دور ناامن",text:"برای مشاهده بیرون از محل، چند پورت مدیریتی مستقیماً روی اینترنت باز شده است.",opts:["باز کردن پورت‌های مدیریتی بیشتر","استفاده از رمز مشترک ساده","دسترسی مستقیم را ببند و VPN امن بساز","غیرفعال کردن NTP بدون بررسی"],a:2,why:"سطح حمله را کم کن؛ دسترسی راه دور باید محدود، ثبت‌شده و با روش امن طراحی شود."},
+{title:"بعد از ریستارت درست شد",text:"راه‌اندازی مجدد تصویر را برگرداند. قبل از بستن رخداد چه کاری لازم است؟",opts:["فرض کنیم مشکل برای همیشه حل شده","پاک کردن لاگ‌ها و تغییر IP همه دوربین‌ها","تغییر همه IPها بدون ثبت شواهد","علت را ثبت و ضبط را دوباره آزمایش کن"],a:3,why:"ریستارت ممکن است فقط نشانه را موقتاً رفع کند. علت و آزمون تأیید را مستند کن."}
+];
+function renderScenarioPicks(){ $("scenarioPicks").innerHTML=scenarios.map((s,i)=>'<button class="scenario-pick '+(i===state.scenario?"active":"")+'" data-scenario="'+i+'">'+(i+1)+". "+s.title+"</button>").join("");document.querySelectorAll("[data-scenario]").forEach(b=>b.addEventListener("click",()=>{state.scenario=Number(b.dataset.scenario);renderScenario()}))}
+function renderScenario(){const s=scenarios[state.scenario];$("scenarioCounter").textContent="سناریو "+persian(state.scenario+1)+" از "+persian(scenarios.length);$("scenarioTitle").textContent=s.title;$("scenarioText").textContent=s.text;$("scenarioChoices").innerHTML=s.opts.map((o,i)=>'<label class="choice"><input type="radio" name="scenarioAnswer" value="'+i+'"><span>'+o+'</span></label>').join("");$("scenarioFeedback").innerHTML=state.answered[state.scenario]===undefined?"":'<div class="output '+(state.answered[state.scenario]===s.a?"good":"bad")+'">'+(state.answered[state.scenario]===s.a?"پاسخ درست است. ":"پاسخ درست: "+s.opts[s.a]+". ")+s.why+"</div>";renderScenarioPicks()}
+$("scenarioChoices").addEventListener("change",e=>{if(e.target.name!=="scenarioAnswer")return;const s=scenarios[state.scenario],answer=Number(e.target.value),first=state.answered[state.scenario]===undefined;state.answered[state.scenario]=answer;if(answer===s.a&&first){state.score+=10;complete("trouble")}save();$("scenarioFeedback").innerHTML='<div class="output '+(answer===s.a?"good":"bad")+'">'+(answer===s.a?"آفرین؛ پاسخ درست است و ۱۰ امتیاز گرفتی.":"هنوز درست نیست. پاسخ بهتر: "+s.opts[s.a]+". ")+"<br>"+s.why+"</div>";});
+$("nextScenario").addEventListener("click",()=>{state.scenario=(state.scenario+1)%scenarios.length;renderScenario()});$("retryScenario").addEventListener("click",()=>{delete state.answered[state.scenario];renderScenario()});
+function renderTopologyDiagram(){
+ const eq=[...document.querySelectorAll("#equipmentChecks input:checked")].map(x=>x.value),links=[...document.querySelectorAll("#linkChecks input:checked")].map(x=>x.value);
+ const names={router:"روتر",switch:"سوئیچ PoE",switch2:"سوئیچ دوم",camera:"دوربین IP",nvr:"NVR",monitor:"مانیتور",ups:"UPS"};
+ const ep={"router-switch":["router","switch"],"switch-camera":["switch","camera"],"switch2-camera":["switch2","camera"],"switch-nvr":["switch","nvr"],"switch2-nvr":["switch2","nvr"],"nvr-monitor":["nvr","monitor"],"router-camera":["router","camera"],"switch-switch":["switch","switch2"]};
+ const labels={"router-switch":"روتر ↔ سوئیچ","switch-camera":"سوئیچ ↔ دوربین","switch2-camera":"سوئیچ دوم ↔ دوربین","switch-nvr":"سوئیچ ↔ NVR","switch2-nvr":"سوئیچ دوم ↔ NVR","nvr-monitor":"NVR ↔ مانیتور","router-camera":"روتر ↔ دوربین مستقیم","switch-switch":"سوئیچ PoE ↔ سوئیچ دوم"};
+ const valid=links.filter(id=>ep[id]&&ep[id][0]!==ep[id][1]&&ep[id].every(x=>eq.includes(x))),connected=new Set();valid.forEach(id=>ep[id].forEach(x=>connected.add(x)));
+ const edges=valid.map(id=>'<div class="node topology-edge" data-edge="'+id+'"><span>'+names[ep[id][0]]+'</span><span aria-hidden="true">↔</span><span>'+names[ep[id][1]]+'</span></div>').join("");
+ const isolated=eq.filter(id=>!connected.has(id));
+ $("topologyDiagram").innerHTML='<div class="topology-nodes">'+eq.map(id=>'<span class="node topology-device" data-device="'+id+'">'+names[id]+'</span>').join("")+'</div><div class="topology-edges">'+(edges||'<p class="muted">هنوز هیچ اتصال معتبر بین تجهیزات انتخاب نشده است.</p>')+'</div>'+(isolated.length?'<div class="output warn"><b>تجهیزات بدون اتصال انتخاب‌شده</b><p>'+isolated.map(x=>names[x]).join("، ")+'</p></div>':"");
+}
+$("checkTopology").addEventListener("click",()=>{
+ const eq=[...document.querySelectorAll("#equipmentChecks input:checked")].map(x=>x.value),links=[...document.querySelectorAll("#linkChecks input:checked")].map(x=>x.value),cams=Number($("camCount").value),ports=Number($("switchPorts").value),issues=[];
+ const ep={"router-switch":["router","switch"],"switch-camera":["switch","camera"],"switch2-camera":["switch2","camera"],"switch-nvr":["switch","nvr"],"switch2-nvr":["switch2","nvr"],"nvr-monitor":["nvr","monitor"],"router-camera":["router","camera"],"switch-switch":["switch","switch2"]};
+ const has=id=>links.includes(id)&&ep[id]&&ep[id].every(x=>eq.includes(x));
+ if(!eq.includes("switch"))issues.push("سوئیچ انتخاب نشده است.");
+ if(!eq.includes("camera"))issues.push("دوربین IP انتخاب نشده است.");
+ if(eq.includes("camera")&&!has("switch-camera")&&!has("switch2-camera"))issues.push("مسیر دوربین تا هیچ‌یک از سوئیچ‌ها کامل نیست؛ ارتباط تصویر برقرار نخواهد شد.");
+ if(has("switch2-camera")&&!has("switch-switch"))issues.push("دوربین به سوئیچ دوم متصل است اما لینک سوئیچ دوم به سوئیچ اصلی تعریف نشده است.");
+ if(eq.includes("switch2")&&!has("switch-switch"))issues.push("سوئیچ دوم انتخاب شده اما لینک بین دو سوئیچ تعریف نشده است.");
+ if(eq.includes("nvr")&&!has("switch-nvr")&&!has("switch2-nvr"))issues.push("اتصال سوئیچ به NVR تعریف نشده است؛ مسیر ضبط تصویر قطع است.");
+ if(has("switch2-nvr")&&!has("switch-switch"))issues.push("NVR به سوئیچ دوم متصل است اما لینک سوئیچ دوم به سوئیچ اصلی تعریف نشده است.");
+ if(eq.includes("monitor")&&eq.includes("nvr")&&!has("nvr-monitor"))issues.push("مانیتور به NVR متصل نشده است؛ خروجی نمایش بررسی شود.");
+ if(eq.includes("router")&&!has("router-switch"))issues.push("روتر انتخاب شده اما اتصال روتر به سوئیچ تعریف نشده است.");
+ if(has("router-camera"))issues.push("اتصال مستقیم روتر به دوربین انتخاب شده؛ تناسب PoE، شبکه و سیاست دسترسی را بررسی کن.");
+ if(!Number.isInteger(cams)||cams<1||cams>256)issues.push("تعداد دوربین‌ها باید عدد صحیح بین ۱ تا ۲۵۶ باشد.");
+ const availableCameraPorts=ports*(eq.includes("switch2")&&has("switch-switch")?2:1); if(eq.includes("switch")&&Number.isInteger(cams)&&cams>availableCameraPorts)issues.push("تعداد دوربین‌ها ("+cams+") از ظرفیت پورت‌های سوئیچ‌های متصل ("+availableCameraPorts+") بیشتر است؛ ظرفیت uplink و پورت‌های رزرو را نیز حساب کن.");
+ if(!eq.includes("ups"))issues.push("UPS انتخاب نشده است؛ پایداری برق پشتیبان تأیید نشده است.");
+
+ renderTopologyDiagram(); const pass=issues.length===0;
+ output("topologyResult",(pass?"<b>بررسی اولیه موفق</b>":"<b>موارد قابل اصلاح یا بررسی</b>")+"<ul>"+(issues.length?issues.map(x=>"<li>"+x+"</li>").join(""):"<li>اتصال‌های اصلی در مدل انتخاب‌شده کامل‌اند.</li>")+"</ul><p class='help'>بررسی آموزشی است؛ VLAN، IP، ظرفیت uplink، کلاس PoE و امنیت باید جداگانه تأیید شوند.</p>",pass?"good":"warn");
+ if(pass)complete("topology");
+});
+document.querySelectorAll("#equipmentChecks input,#linkChecks input,#camCount,#switchPorts").forEach(el=>el.addEventListener("change",renderTopologyDiagram));
+function resetFaultVisuals(){const p=document.querySelector("#trouble .schematic-canvas");if(p)p.querySelectorAll(".schematic-node,.wire").forEach(el=>el.classList.remove("fault-fail","fault-warn"));}
+const faultCases={
+ "camera-power":{title:"بررسی تغذیه دوربین",fail:[".node-cam"],warn:[".node-switch"],text:"نشانه: دوربین خاموش یا غیرقابل دسترس است. LED پورت، بودجه PoE، فعال بودن PoE روی پورت، کابل و توان موردنیاز را بررسی کن.",next:"اگر پورت لینک ندارد کابل و اتصال را تست کن؛ اگر لینک هست ولی دوربین خاموش است، PoE و مصرف واقعی را با دیتاشیت تطبیق بده."},
+ "camera-link":{title:"بررسی لینک دوربین",fail:[".node-cam"],warn:[".node-switch"],text:"نشانه: لینک دوربین قطع است؛ کابل، سوکت، پورت سوئیچ یا مسیر میانی ممکن است ایراد داشته باشد.",next:"چراغ لینک، تستر کابل، پچ‌کورد سالم و سپس پورت جایگزین را آزمایش کن؛ هر بار فقط یک متغیر را تغییر بده."},
+ "switch-nvr":{title:"بررسی مسیر ضبط",fail:[".node-server"],warn:[".node-switch"],text:"دوربین‌ها روشن‌اند اما NVR تصویر نمی‌گیرد؛ لینک بین سوئیچ و NVR یا تنظیمات IP/VLAN ممکن است مشکل داشته باشد.",next:"لینک فیزیکی، IP/Subnet، VLAN و وضعیت کانال یا پروتکل دوربین در NVR را بررسی کن."},
+ "nvr-monitor":{title:"بررسی خروجی نمایش",fail:[".node-screen"],warn:[".node-server"],text:"مانیتور سیاه است اما ممکن است ضبط فعال باشد؛ این سناریو الزاماً خرابی شبکه نیست.",next:"ورودی مانیتور، کابل تصویر، وضوح خروجی NVR و وضعیت خود NVR را بررسی کن؛ از کلاینت شبکه تأیید کن ضبط ادامه دارد یا نه."},
+ "ip-conflict":{title:"بررسی تداخل IP",fail:[".node-cam"],warn:[".node-server"],text:"اتصال ناپایدار می‌تواند ناشی از IP تکراری باشد. این سناریو اسکن واقعی شبکه انجام نمی‌دهد.",next:"جدول DHCP/ARP و فهرست آدرس‌ها را بررسی کن؛ IP یکتا و رزروشده تنظیم کن و سپس اتصال و ضبط را دوباره آزمایش کن."},
+ "poe-budget":{title:"بررسی بودجه PoE",fail:[".node-cam"],warn:[".node-switch"],text:"خاموشی چند دوربین هنگام روشن‌شدن IR یا بار بالا می‌تواند ناشی از فراتر رفتن مصرف از بودجه واقعی سوئیچ باشد.",next:"مصرف حداکثری دوربین‌ها را از دیتاشیت جمع بزن و با بودجه قابل تخصیص سوئیچ مقایسه کن؛ تعداد پورت‌ها به‌تنهایی کافی نیست."}
+};
+$("runFaultSimulation").addEventListener("click",()=>{resetFaultVisuals();const sc=faultCases[$("faultType").value];sc.fail.forEach(sel=>document.querySelectorAll("#trouble .schematic-canvas "+sel).forEach(el=>el.classList.add("fault-fail")));sc.warn.forEach(sel=>document.querySelectorAll("#trouble .schematic-canvas "+sel).forEach(el=>el.classList.add("fault-warn")));output("faultResult","<b>"+sc.title+"</b><p>"+sc.text+"</p><p><b>آزمون بعدی:</b> "+sc.next+"</p><p class='help'>سناریوی آموزشی محلی است؛ به تجهیزات یا شبکه واقعی متصل نمی‌شود.</p>","warn");});
+$("resetFaultSimulation").addEventListener("click",()=>{resetFaultVisuals();$("faultResult").innerHTML="";$("faultType").value="camera-power";});
+$("runPoeSimulation").addEventListener("click",()=>{try{
+ const n=requiredNumber("poeCams","تعداد دوربین",{integer:true,min:1,max:4096});
+ const w=requiredNumber("poeWatts","توان هر دوربین",{min:Number.MIN_VALUE});
+ const budget=requiredNumber("poeBudget","بودجه PoE سوئیچ",{min:Number.MIN_VALUE});
+ const reserve=requiredNumber("poeReserve","حاشیه اطمینان",{min:0,max:100});
+ const len=requiredNumber("cableLength","طول کابل",{min:Number.MIN_VALUE});
+ const portLimit=Number($("poePortClass").value),type=$("cableType").value;
+ const base=n*w,total=base*(1+reserve/100),budgetOk=total<=budget,portOk=w<=portLimit;
+ const cableOk=len<=100&&type!=="cca",linkOk=len<=100;
+ const states=[budgetOk?"pass":"fail",budgetOk&&portOk?"pass":portOk?"warn":"fail",linkOk&&type!=="cca"?"pass":linkOk?"warn":"fail",budgetOk&&portOk&&cableOk?"pass":portOk&&linkOk?"warn":"fail"];
+ const nodes=[...document.querySelectorAll("#poe .schematic-node")],wires=[...document.querySelectorAll("#poe .schematic-canvas .wire")];
+ nodes.forEach((el,i)=>{el.classList.remove("sim-pass","sim-warn","sim-fail");el.classList.add("sim-"+states[i]);});
+ wires.forEach((el,i)=>{el.classList.remove("sim-pass","sim-warn","sim-fail");const a=states[Math.min(i,states.length-1)],b=states[Math.min(i+1,states.length-1)];el.classList.add("sim-"+(a==="fail"||b==="fail"?"fail":a==="warn"||b==="warn"?"warn":"pass"));});
+ const fmt=x=>persian(Math.round(x*10)/10);
+ const status=(ok,warn)=>ok?"مناسب":warn?"نیازمند بررسی":"نامناسب";
+ const issues=[];
+ if(!budgetOk)issues.push("بودجهٔ توان کافی نیست: مصرف با حاشیه "+fmt(total)+" وات است، اما سوئیچ "+fmt(budget)+" وات بودجه دارد.");
+ if(!portOk)issues.push("توان هر دوربین ("+fmt(w)+" وات) از سقف انتخابی پورت ("+fmt(portLimit)+" وات) بیشتر است؛ دوربین یا استاندارد پورت را بررسی کن.");
+ if(len>100)issues.push("طول "+fmt(len)+" متر از محدودهٔ معمول کانال Ethernet مسی (۱۰۰ متر) بیشتر است؛ مسیر جایگزین یا سوئیچ میانی را طراحی کن.");
+ else if(len>90)issues.push("طول "+fmt(len)+" متر به سقف معمول کانال نزدیک است؛ طول پچ‌کوردها، کیفیت کابل و شرایط نصب را هم حساب کن.");
+ if(type==="cca")issues.push("کابل CCA برای PoE پیشنهاد نمی‌شود؛ کابل مس تمام‌مس با مشخصات معتبر انتخاب کن.");
+ const allOk=budgetOk&&portOk&&cableOk;
+ $("poeSimulationResult").className="output "+(allOk?"good":budgetOk&&portOk?"warn":"bad");
+ $("poeSimulationResult").innerHTML="<b>نتیجهٔ شبیه‌سازی</b><div class='sim-grid'><div class='sim-stat'><span>مسیر توان</span><b class='sim-state'>"+status(budgetOk&&portOk,false)+"</b><span>مصرف کل با حاشیه: "+fmt(total)+" W</span></div><div class='sim-stat'><span>مسیر داده</span><b class='sim-state'>"+status(linkOk,type==="cca"||(len>90&&len<=100))+"</b><span>طول کابل: "+fmt(len)+" m · "+(type==="cca"?"CCA":type.toUpperCase())+"</span></div><div class='sim-stat'><span>توان خام دوربین‌ها</span><b>"+fmt(base)+" W</b><span>"+fmt(n)+" دوربین × "+fmt(w)+" W</span></div><div class='sim-stat'><span>حاشیه بودجه</span><b>"+fmt(budget-total)+" W</b><span>بودجه اسمی سوئیچ: "+fmt(budget)+" W</span></div></div>"+(issues.length?"<ul>"+issues.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"<p>در این مدل ساده، بودجهٔ کل، توان هر پورت و طول/نوع کابل با ورودی‌ها سازگارند.</p>")+"<p class='help'>مدل آموزشی است: افت واقعی کابل، کلاس PD/PSE، توان تحویلی واقعی، دما، کابل‌کشی و بار لحظه‌ای از روی این محاسبه قابل تأیید نیستند. نتیجهٔ نهایی باید با دیتاشیت تجهیزات سنجیده شود.</p>";
+ const note=document.querySelector("#poe .sim-note");if(note)note.textContent=allOk?"شبیه‌سازی محاسباتی انجام شد؛ وضعیت سبز یعنی سازگار با ورودی‌ها":"شبیه‌سازی محاسباتی انجام شد؛ وضعیت زرد/قرمز یعنی بررسی لازم است";
+}catch(e){const out=$("poeSimulationResult");out.className="output bad";out.textContent=e.message;}
+});
+$("calcPoe").addEventListener("click",()=>{try{const n=requiredNumber("poeCams","تعداد دوربین",{integer:true,min:1,max:4096}),w=requiredNumber("poeWatts","توان هر دوربین",{min:Number.MIN_VALUE}),budget=requiredNumber("poeBudget","بودجه PoE سوئیچ",{min:Number.MIN_VALUE}),r=requiredNumber("poeReserve","حاشیه اطمینان",{min:0,max:100}),len=requiredNumber("cableLength","طول کابل",{min:Number.MIN_VALUE}),type=$("cableType").value;const calc=CCTVCalculations.poe(n,w,r),base=calc.base,total=calc.total,ok=total<=budget,notes=[];if(len>100)notes.push("طول بیش از کانال استاندارد معمول Ethernet مسی است؛ راهکار فیبر/سوئیچ میانی یا طراحی مجدد را بررسی کن.");if(type==="cca")notes.push("کابل CCA برای PoE انتخاب مطمئنی نیست؛ کابل مس تمام‌مس و دارای مشخصات معتبر انتخاب کن.");if(total>budget)notes.push("بودجه PoE ناکافی است؛ مصرف واقعی، پورت‌های پرقدرت و حاشیه را با دیتاشیت مقایسه کن.");if(len>90&&len<=100)notes.push("طول دائمی لینک و پچ‌کوردها باید در محدوده استاندارد کانال باقی بماند.");output("poeResult","<div class='result-big'>"+persian(total)+" وات موردنیاز با حاشیه</div><p>مصرف پایه: "+persian(base)+" W · بودجه سوئیچ: "+persian(budget)+" W · اختلاف بودجه: "+persian(budget-total)+" W</p><div class='pill'>"+(ok?"بودجه اسمی کافی":"بودجه اسمی ناکافی")+"</div>"+(notes.length?"<ul>"+notes.map(n=>"<li>"+n+"</li>").join("")+"</ul>":"")+'<p class="help">این محاسبه مصرف واردشده را فرض می‌کند؛ توان قابل تحویل پورت/کل سوئیچ، کلاس PoE، افت کابل، دمای محیط و بار لحظه‌ای را از دیتاشیت بررسی کن.</p>',ok&&!notes.length?"good":ok?"warn":"bad");if(ok&&!notes.length)complete("poe")}catch(e){output("poeResult",e.message,"bad")}});
+$("calcSubnet").addEventListener("click",()=>{try{const address=latinDigits($("ipAddress").value.trim()),cidrRaw=latinDigits($("cidr").value);if(!cidrRaw.trim())throw Error("پیشوند CIDR را وارد کن.");const subnet=CCTVCalculations.subnet(address,cidrRaw),{ip,cidr,mask,network,broadcast,hostCount}=subnet,gateway=latinDigits($("gateway").value.trim()),other=latinDigits($("otherIp").value.trim()),warnings=[];if(cidr<=30&&(ip===network||ip===broadcast))warnings.push("آدرس واردشده، آدرس شبکه یا Broadcast است و معمولاً به میزبان اختصاص داده نمی‌شود.");if(gateway){const g=CCTVCalculations.ipv4ToNumber(gateway);if(((g&mask)>>>0)!==network)warnings.push("Gateway واردشده در subnet محاسبه‌شده نیست.");else if(g===network||g===broadcast)warnings.push("Gateway روی آدرس شبکه یا Broadcast قرار دارد.");}let otherLine="";if(other){const o=CCTVCalculations.ipv4ToNumber(other);otherLine="<p>IP دوم: <b>"+CCTVCalculations.ipv4ToText(o)+"</b> — "+((o&mask)>>>0===network?"در همین subnet":"در subnet دیگری")+"</p>";if(o===ip)warnings.push("IP دوربین دیگر با IP اصلی یکسان است؛ تداخل آدرس وجود دارد.");}output("subnetResult","<div class='grid'><div><span class='help'>Network</span><div><b>"+subnet.networkText+"/"+cidr+"</b></div></div><div><span class='help'>Subnet Mask</span><div><b>"+subnet.maskText+"</b></div></div><div><span class='help'>Broadcast</span><div><b>"+subnet.broadcastText+"</b></div></div><div><span class='help'>تعداد میزبان معمول</span><div><b>"+persian(hostCount)+"</b></div></div><div><span class='help'>اولین آدرس میزبان</span><div><b>"+subnet.firstText+"</b></div></div><div><span class='help'>آخرین آدرس میزبان</span><div><b>"+subnet.lastText+"</b></div></div></div>"+otherLine+(warnings.length?"<ul>"+warnings.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"<p>برای ورودی‌های اختیاری خطای آشکاری شناسایی نشد.</p>")+"<p class='help'>CIDRهای /31 و /32 کاربردهای ویژه دارند؛ برای طراحی شبکه دوربین، آدرس‌های رزروشده، VLAN، DHCP و سیاست‌های Gateway را هم بررسی کن.</p>",warnings.length?"warn":"good");if(!warnings.length)complete("subnet")}catch(e){output("subnetResult",e.message,"bad")}});
+$("calcStorage").addEventListener("click",()=>{const n=Number($("storageCams").value),rate=Number($("bitrate").value),days=Number($("recordDays").value),hours=Number($("recordHours").value),head=Number($("headroom").value),net=Number($("networkHeadroom").value);if(!(n>0&&rate>0&&days>0&&hours>0&&hours<=24&&head>=0&&net>=0)){output("storageResult","همه مقادیر باید معتبر و مثبت باشند؛ ساعت ضبط حداکثر ۲۴ است.","bad");return}const totalMbps=n*rate*(1+net/100),tb=n*rate*3600*hours*days/8/1e6*(1+head/100);output("storageResult","<div class='grid'><div><span class='help'>پهنای باند با حاشیه</span><div class='result-big'>"+persian(totalMbps)+" Mbps</div><span class='help'>حدود "+persian(totalMbps/1000)+" Gbps</span></div><div><span class='help'>فضای ذخیره‌سازی برآوردی</span><div class='result-big'>"+persian(tb)+" TB</div><span class='help'>با حاشیه "+persian(head)+"٪</span></div></div><p>Bitrate تجمعی پایه: "+persian(n*rate)+" Mbps</p><p class='help'>برآورد بر پایه واحد ده‌دهی و bitrate ثابت است؛ سربار پروتکل، صدای ضبط، نرخ متغیر، فرمت سازنده، ظرفیت قابل استفاده RAID و افت ظرفیت را لحاظ کن. برای ضبط حرکتی، ورودی ساعات ضبط صرفاً تخمین است.</p>", "good");complete("storage")});
+$("recommendCable").addEventListener("click",()=>{const d=Number($("distance").value),env=$("environment").value,bw=Number($("bandwidthNeed").value),poe=$("powerNeed").value;if(!(d>0)){output("cableResult","فاصله باید مثبت باشد.","bad");return}let title,why,notes=[];if(d>100){title="فیبر نوری + مبدل/سوئیچ دارای SFP";why="Ethernet مسی معمولاً برای کانال استاندارد تا ۱۰۰ متر طراحی می‌شود؛ فاصله بیشتر را با فیبر یا طراحی سوئیچ میانی پوشش بده.";if(poe==="yes")notes.push("فیبر برق PoE منتقل نمی‌کند؛ منبع برق محلی یا راهکار PoE extender/سوئیچ میانی مهندسی‌شده لازم است.");if(env==="outdoor")notes.push("نوع فیبر، حفاظت مسیر، ارت/صاعقه و تجهیزات بیرونی را با شرایط محیط هماهنگ کن.")}else if(env==="emi"||bw==="10000"){title="فیبر نوری ترجیح دارد؛ در مسیر کوتاه مسی هم باید EMC بررسی شود";why="فیبر در برابر تداخل الکترومغناطیسی مصون است و برای uplinkهای پرترافیک گزینه مناسبی است.";if(poe==="yes")notes.push("برای PoE روی فیبر، سوئیچ/مبدل محلی با منبع تغذیه مستقل نیاز است.")}else{title="کابل شبکه مس تمام‌مس Cat6 یا Cat5e معتبر";why="برای مسیر Ethernet کوتاه، کابل و کانکتور معتبر، تست‌شده و متناسب با سرعت لینک انتخاب کن.";if(poe==="yes")notes.push("کابل تمام‌مس با سطح مقطع و مشخصات معتبر برای PoE انتخاب کن؛ CCA توصیه نمی‌شود.");if(env==="outdoor")notes.push("کابل Outdoor مقاوم به UV/رطوبت، حفاظت مسیر و الزامات اتصال زمین/صاعقه را بررسی کن.")}if(d>90&&d<=100)notes.push("پچ‌کوردها نیز جزو طول کانال‌اند؛ حاشیه نصب را حفظ کن.");output("cableResult","<h3>"+title+"</h3><p>"+why+"</p>"+(notes.length?"<ul>"+notes.map(n=>"<li>"+n+"</li>").join("")+"</ul>":"")+"<p class='help'>پیشنهاد اولیه است؛ استاندارد نصب، نوع ترنسیور، بودجه لینک نوری و شرایط سازنده باید تأیید شوند.</p>","good");complete("cable")});
+$("scoreSecurity").addEventListener("click",()=>{const items=[...document.querySelectorAll("#securityChecks input")],max=items.reduce((s,x)=>s+Number(x.dataset.weight),0),score=items.filter(x=>x.checked).reduce((s,x)=>s+Number(x.dataset.weight),0),pct=Math.round(score/max*100),unchecked=items.filter(x=>!x.checked).map(x=>x.parentElement.textContent.trim());output("securityResult","<div class='result-big'>"+persian(pct)+"٪</div><p>"+(pct>=85?"وضعیت خوب در این چک‌لیست؛ بازبینی و آزمون دوره‌ای ادامه یابد.":pct>=60?"نیاز به اصلاح چند کنترل مهم وجود دارد.":"شکاف‌های مهم امنیتی باقی مانده‌اند؛ ابتدا کنترل‌های حیاتی را اصلاح کن.")+"</p>"+(unchecked.length?"<b>اقدامات باقی‌مانده:</b><ul>"+unchecked.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"همه موارد چک‌لیست انتخاب شده‌اند.")+"<p class='help'>این امتیاز گواهی امنیت یا آزمون نفوذ نیست؛ نتیجه به دامنه پروژه و شواهد اجرای واقعی وابسته است.</p>",pct>=85?"good":pct>=60?"warn":"bad");if(pct>=85)complete("security")});
+$("calcUps").addEventListener("click",()=>{try{
+ const loadW=requiredNumber("upsLoad","بار کل",{min:Number.MIN_VALUE});
+ const pf=requiredNumber("upsPf","ضریب توان",{min:0.1,max:1});
+ const batteryWh=requiredNumber("upsBattery","ظرفیت باتری",{min:Number.MIN_VALUE});
+ const efficiency=requiredNumber("upsEfficiency","بازده اینورتر",{min:1,max:100})/100;
+ const dod=requiredNumber("upsDod","عمق تخلیه مجاز",{min:1,max:100})/100;
+ const health=requiredNumber("upsAge","سلامت باتری",{min:1,max:100})/100;
+ const usableWh=batteryWh*efficiency*dod*health;
+ const minutes=usableWh/loadW*60;
+ const va=loadW/pf;
+ const kind=minutes<5?"bad":minutes<15?"warn":"good";
+ output("upsResult","<div class='result-big'>"+persian(minutes)+" دقیقه</div><p>انرژی اسمی باتری: "+persian(batteryWh)+" Wh · انرژی قابل استفاده برآوردی: "+persian(usableWh)+" Wh</p><p>بار اکتیو: "+persian(loadW)+" W · بار ظاهری برآوردی: "+persian(va)+" VA (با ضریب توان "+persian(pf)+")</p><p>فرض‌ها: بازده اینورتر "+persian(efficiency*100)+"٪، عمق تخلیه "+persian(dod*100)+"٪ و سلامت باتری "+persian(health*100)+"٪.</p><p class='help'>برآورد ساده است؛ افت ظرفیت در جریان بالا، ولتاژ قطع، دما، منحنی تخلیه و توان لحظه‌ای UPS می‌توانند زمان واقعی را کاهش دهند. ظرفیت VA/W دستگاه را جداگانه بررسی کن.</p>",kind);
+}catch(e){output("upsResult",e.message,"bad")}});
+$("calcLens").addEventListener("click",()=>{try{
+ const sensorW=requiredNumber("lensSensorW","عرض سنسور",{min:Number.MIN_VALUE});
+ const sensorH=requiredNumber("lensSensorH","ارتفاع سنسور",{min:Number.MIN_VALUE});
+ const focal=requiredNumber("lensFocal","فاصله کانونی",{min:Number.MIN_VALUE});
+ const distance=requiredNumber("lensDistance","فاصله سوژه",{min:Number.MIN_VALUE});
+ const pixelsX=requiredNumber("lensPixelsX","رزولوشن افقی",{min:1});
+ const pixelsY=requiredNumber("lensPixelsY","رزولوشن عمودی",{min:1});
+ const sceneW=requiredNumber("lensSceneW","عرض فضای هدف",{min:Number.MIN_VALUE});
+ const sceneH=requiredNumber("lensSceneH","عمق فضای هدف",{min:Number.MIN_VALUE});
+ const fovW=distance*sensorW/focal, fovH=distance*sensorH/focal;
+ const pxPerM=Math.min(pixelsX/sceneW,pixelsY/sceneH);
+ const dori=pxPerM>=250?"شناسایی":pxPerM>=125?"تشخیص هویت":pxPerM>=62.5?"مشاهده":pxPerM>=25?"تشخیص حضور":"کمتر از سطح تشخیص مرجع";
+ const fits=sceneW<=fovW&&sceneH<=fovH;
+ output("lensResult","<div class='grid'><div><span class='help'>عرض میدان دید تخمینی</span><div class='result-big'>"+persian(fovW)+" m</div></div><div><span class='help'>ارتفاع میدان دید تخمینی</span><div class='result-big'>"+persian(fovH)+" m</div></div><div><span class='help'>تراکم پیکسل روی فضای هدف</span><div class='result-big'>"+persian(pxPerM)+" px/m</div></div><div><span class='help'>رده مرجع DORI</span><div class='result-big'>"+dori+"</div></div></div><p>"+(fits?"ابعاد فضای هدف در میدان دید محاسبه‌شده جا می‌گیرند.":"فضای هدف از میدان دید تخمینی بزرگ‌تر است؛ فاصله، لنز یا تعداد دوربین‌ها را بازبینی کن.")+"</p><p class='help'>فرض هندسی ساده با لنز نازک و سنسور مستطیلی است. معیارهای مرجع DORI حدود 25/62.5/125/250 px/m هستند؛ جزئیات اپتیک، اعوجاج، نور، فشرده‌سازی و زاویه واقعی می‌توانند نتیجه میدانی را تغییر دهند.</p>",fits&&pxPerM>=25?"good":"warn");
+ const svg=$("lensCoverageSvg"),scale=12,sw=Math.min(240,Math.max(20,fovW*scale)),sh=Math.min(90,Math.max(10,fovH*scale));
+ svg.innerHTML="<rect x='20' y='20' width='"+sw+"' height='"+sh+"' rx='4' fill='#123149' stroke='#67e8f9'/><text x='20' y='125' fill='currentColor' font-size='10'>عرض ≈ "+persian(fovW)+" m · ارتفاع ≈ "+persian(fovH)+" m</text>";
+}catch(e){output("lensResult",e.message,"bad")}});
+$("calcAdvancedSecurity").addEventListener("click",()=>{try{
+ const controls=[...document.querySelectorAll("#advancedSecurityChecks input[data-security-control]")];
+ if(!controls.length)throw Error("کنترل‌های امنیتی در دسترس نیستند.");
+ const weights={"default-password":3,"remote-cloud":2,"https":1,"rtsp-auth":2,"rbac":2,"lockout":1,"segmentation":3,"firewall-acl":3,"port-security":2,"physical":1,"patching":3,"audit-logging":1,"backup-restore":3,"ports":2};
+ const max=controls.reduce((sum,el)=>sum+(weights[el.dataset.securityControl]||1),0);
+ const score=controls.filter(el=>el.checked).reduce((sum,el)=>sum+(weights[el.dataset.securityControl]||1),0);
+ const pct=Math.round(score/max*100);
+ const missing=controls.filter(el=>!el.checked);
+ const risk=[];
+ const has=id=>controls.some(el=>el.dataset.securityControl===id&&el.checked);
+ if(!has("default-password"))risk.push("رمز پیش‌فرض/ضعیف می‌تواند نقطه ورود اولیه باشد.");
+ if(!has("remote-cloud"))risk.push("سرویس‌های راه دور غیرضروری را بررسی و در صورت عدم نیاز غیرفعال کن.");
+ if(!has("segmentation"))risk.push("نبود جداسازی شبکه، حرکت جانبی مهاجم را آسان‌تر می‌کند.");
+  if(!has("firewall-acl"))risk.push("نبود قواعد محدودکننده Firewall/ACL می‌تواند ترافیک ناخواسته میان VLANها را مجاز کند.");
+ if(!has("patching"))risk.push("Firmware و آسیب‌پذیری‌های شناخته‌شده نیازمند بررسی‌اند.");
+ if(!has("ports"))risk.push("سطح سرویس‌ها و پورت‌های در دسترس باید محدود شود.");
+ const chain=risk.length?risk.join(" → "):"در کنترل‌های انتخاب‌شده زنجیره پرریسک آشکاری باقی نمانده؛ این به معنی تضمین امنیت نیست.";
+ output("advancedSecurityResult","<div class='result-big'>"+persian(pct)+"٪ امتیاز وزنی</div><p>"+(pct>=85?"وضعیت چک‌لیست مناسب‌تر است؛ آزمون و بازبینی دوره‌ای ادامه یابد.":pct>=60?"چند کنترل مهم هنوز نیازمند تکمیل‌اند.":"شکاف‌های مهم امنیتی باقی مانده‌اند.")+"</p><p><b>زنجیره حمله/ریسک‌های محتمل:</b> "+chain+"</p>"+(missing.length?"<b>کنترل‌های تکمیل‌نشده:</b><ul>"+missing.map(el=>"<li>"+el.parentElement.textContent.trim()+"</li>").join("")+"</ul>":"<p>تمام کنترل‌های این چک‌لیست انتخاب شده‌اند.</p>")+"<p class='help'>این چک‌لیست ارزیابی واقعی پیکربندی یا آزمون نفوذ نیست؛ هر کنترل را با شواهد دستگاه و معماری واقعی تأیید کن.</p>",pct>=85?"good":pct>=60?"warn":"bad");
+}catch(e){output("advancedSecurityResult",e.message,"bad")}});
+$("runSwitchFeatureSim").addEventListener("click",()=>{try{
+ const checked=id=>$(id).checked;
+ const loop=checked("swLoopInjected"),rstp=checked("swRstp"),multicast=checked("swMulticast"),igmp=checked("swIgmp"),qos=checked("swQos"),isolation=checked("swIsolation"),storm=checked("swStorm");
+ const issues=[];
+ if(loop&&!rstp)issues.push("حلقه لایه دوم بدون RSTP می‌تواند باعث طوفان Broadcast و ناپایداری شبکه شود.");
+ else if(loop)issues.push("حلقه تزریق شده است؛ RSTP فعال است اما وضعیت پورت‌ها و زمان همگرایی باید بررسی شود.");
+ if(multicast&&!igmp)issues.push("بدون IGMP snooping، ترافیک Multicast ممکن است به پورت‌های غیرنیازمند پخش شود.");
+ if(!qos)issues.push("QoS تنظیم نشده؛ در ازدحام، ترافیک حساس به تأخیر ممکن است افت کند.");
+ if(!isolation)issues.push("Port isolation فعال نیست؛ ارتباط مستقیم بین پورت‌ها را با VLAN/ACL بررسی کن.");
+ if(!storm)issues.push("Storm control فعال نیست؛ Broadcast/Multicast غیرعادی می‌تواند منابع سوئیچ را مصرف کند.");
+ const ping=isolation?"Ping دوربین‌به‌دوربین: در مدل ایزولاسیون پورت، ارتباط مستقیم بین پورت‌های ایزوله باید مسدود باشد؛ با آزمون واقعی تأیید کن.":"Ping دوربین‌به‌دوربین: امکان ارتباط در سطح لایه ۲/۳ به VLAN، ACL و تنظیمات واقعی بستگی دارد؛ این مدل Ping واقعی اجرا نمی‌کند.";
+ const kind=loop&&!rstp?"bad":issues.length?"warn":"good";
+ output("switchFeaturesResult","<div class='result-big'>"+(kind==="good"?"وضعیت مناسب در مدل":kind==="warn"?"نیازمند بررسی":"ریسک بحرانی")+"</div><p>"+ping+"</p>"+(issues.length?"<b>نتایج تحلیل:</b><ul>"+issues.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"<p>با فرض ورودی‌های انتخاب‌شده، ریسک فعالی در این مدل ساده ثبت نشد.</p>")+"<p class='help'>این شبیه‌سازی محلی است؛ ترافیک واقعی ارسال نمی‌کند و جایگزین بررسی تنظیمات یا آزمون شبکه نیست.</p>",kind);
+}catch(e){output("switchFeaturesResult",e.message,"bad")}});
+let reportText="";
+$("buildReport").addEventListener("click",()=>{const name=$("projectName").value.trim()||"پروژه CCTV",n=Number($("projectCams").value),r=Number($("projectRate").value),days=Number($("projectDays").value),w=Number($("projectWatts").value),len=Number($("projectCable").value),hours=$("projectStorage").value==="motion"?12:24,security=$("projectSecurity").value;if(!(n>0&&r>0&&days>0&&w>0&&len>0)){output("capstoneResult","مقادیر پروژه باید مثبت باشند.","bad");return}const storageTb=n*r*3600*hours*days/8/1e6*1.15,bandwidth=n*r*1.25,poe=n*w*1.25,switches=Math.ceil(n/24),textReport="گزارش طراحی اولیه CCTV\nپروژه: "+name+"\nتاریخ: "+new Date().toLocaleDateString("fa-IR")+"\n\nورودی‌ها\n- دوربین: "+n+"\n- Bitrate هر دوربین: "+r+" Mbps\n- نگهداری: "+days+" روز، "+hours+" ساعت در روز (فرض محاسباتی)\n- توان هر دوربین: "+w+" W\n- میانگین کابل: "+len+" m\n- سطح امنیت هدف: "+security+"\n\nبرآوردها\n- پهنای باند با ۲۵٪ حاشیه: "+bandwidth.toFixed(2)+" Mbps\n- PoE با ۲۵٪ حاشیه: "+poe.toFixed(2)+" W\n- ذخیره‌سازی با ۱۵٪ حاشیه: "+storageTb.toFixed(2)+" TB\n- تعداد پورت دوربین: حداقل "+n+" پورت PoE؛ تعداد سوئیچ‌های ۲۴ پورتی صرفاً برآورد خام: "+switches+"\n- قطع Uplink: "+($("projectRedundantUplink").value==="yes"?n:0)+" دوربین در حال ضبط (برآورد مدل)\n- کابل: "+(len>100?"طول بیش از ۱۰۰ متر؛ فیبر یا سوئیچ میانی بررسی شود":"Ethernet مسی با طول کانال استاندارد قابل بررسی است")+"\n\nفهرست اولیه تجهیزات\n- "+n+" دوربین IP با bitrate/توان مطابق طراحی\n- حداقل "+n+" پورت PoE و بودجه توان واقعی حداقل "+poe.toFixed(2)+" وات به‌علاوه بررسی دیتاشیت\n- NVR با پشتیبانی از "+n+" کانال و پهنای باند ورودی کافی\n- فضای ذخیره‌سازی قابل استفاده حداقل "+storageTb.toFixed(2)+" TB پس از بررسی RAID/فرمت\n- روتر/Firewall، UPS، کابل و متعلقات نصب\n- مسیر uplink مناسب و VLAN/ACL طبق سیاست امنیت\n\nموارد تأیید پیش از خرید\n- تطبیق مصرف و کلاس PoE، bitrate و قابلیت NVR با دیتاشیت\n- محاسبه ظرفیت قابل استفاده RAID و نرخ واقعی ضبط\n- نقشه محل، میدان دید، نور شب، حریم خصوصی و الزامات قانونی\n- تست کابل، ارت/صاعقه، برق پشتیبان و بازیابی تنظیمات\n- محدودسازی دسترسی، تغییر رمز پیش‌فرض، Firmware و ثبت لاگ\n\nاین گزارش برآورد آموزشی است و نقشه اجرایی/قیمت‌نامه قطعی نیست.";reportText=textReport;output("capstoneResult","<h3>گزارش آماده است: "+escapeHTML(name)+"</h3><div class='grid'><div><span class='help'>پهنای باند با حاشیه</span><div class='result-big'>"+persian(bandwidth)+" Mbps</div></div><div><span class='help'>PoE با حاشیه</span><div class='result-big'>"+persian(poe)+" W</div></div><div><span class='help'>ذخیره‌سازی با حاشیه</span><div class='result-big'>"+persian(storageTb)+" TB</div></div><div><span class='help'>پورت‌های دوربین</span><div class='result-big'>"+persian(n)+"</div></div></div><p>از «ذخیره گزارش TXT» برای دریافت گزارش متنی یا «چاپ / ذخیره PDF» برای چاپ استفاده کن.</p><details><summary>نمایش گزارش</summary><pre style='white-space:pre-wrap;overflow-wrap:anywhere;font:12px/2 Tahoma,sans-serif'>"+escapeHTML(textReport)+"</pre></details>","good");complete("capstone")});
+$("downloadReport").addEventListener("click",()=>{if(!reportText){$("buildReport").click();if(!reportText)return}const blob=new Blob(["\ufeff"+reportText],{type:"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="cctv-design-report.txt";a.click();URL.revokeObjectURL(url)});
+$("printReport").addEventListener("click",()=>{if(!reportText){$("buildReport").click();if(!reportText)return}const w=window.open("","_blank");if(!w){output("capstoneResult","مرورگر بازشدن پنجره چاپ را مسدود کرد؛ اجازه pop-up بده یا گزارش TXT را ذخیره کن.","warn");return}w.document.write("<!doctype html><html lang='fa' dir='rtl'><meta charset='utf-8'><title>گزارش طراحی CCTV</title><style>body{font:14px/2 Tahoma,sans-serif;padding:24px;color:#111}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/2 Tahoma,sans-serif}</style><pre>"+escapeHTML(reportText)+"</pre><script>window.onload=()=>window.print()<\/script></html>");w.document.close()});
+$("resetProgress").addEventListener("click",()=>{if(!confirm("پیشرفت و امتیاز ذخیره‌شده در این مرورگر پاک شود؟"))return;state.completed.clear();state.score=0;state.answered={};removeStorage("cctv-workshops-completed");removeStorage("cctv-workshops-score");updateMetrics();renderScenario()});
+function simEscape(value){return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function simSetState(panel,status,focus){
+ panel.querySelectorAll(".schematic-node").forEach((node,index)=>{node.classList.remove("sim-pass","sim-warn","sim-fail");const target=focus&&focus.includes(index);node.classList.add(target&&status==="fail"?"sim-fail":target&&status==="warn"?"sim-warn":status==="fail"?"sim-warn":status==="warn"?"sim-warn":"sim-pass");});
+ panel.querySelectorAll(".wire").forEach((wire,index)=>{wire.classList.remove("sim-pass","sim-warn","sim-fail");wire.classList.add(status==="fail"&&focus&&focus.includes(index)?"sim-fail":status==="warn"?"sim-warn":status==="fail"?"sim-warn":"sim-pass");});
+}
+function simReadStatus(result){if(!result)return "warn";if(result.classList.contains("bad"))return "fail";if(result.classList.contains("warn"))return "warn";if(result.classList.contains("good"))return "pass";return "warn";}
+function runWorkshopSimulation(button){
+ const panel=button.closest(".lab-schematic"),workshop=button.closest("section[id]"),id=workshop&&workshop.id;
+ const config={trouble:{trigger:"runFaultSimulation",result:"faultResult",title:"آزمون عیب‌یابی"},topology:{trigger:"checkTopology",result:"topologyResult",title:"تحلیل توپولوژی"},subnet:{trigger:"calcSubnet",result:"subnetResult",title:"تحلیل آدرس و زیرشبکه"},storage:{trigger:"calcStorage",result:"storageResult",title:"تحلیل جریان داده و ضبط"},cable:{trigger:"recommendCable",result:"cableResult",title:"انتخاب مسیر انتقال"},security:{trigger:"scoreSecurity",result:"securityResult",title:"ارزیابی کنترل‌های امنیتی"},capstone:{trigger:"buildReport",result:"capstoneResult",title:"تحلیل یکپارچه طراحی"}}[id];
+ if(!config)return;
+ const trigger=$(config.trigger);if(trigger)trigger.click();
+ const result=$(config.result);let status=simReadStatus(result),details=result?result.textContent.replace(/\s+/g," ").trim():"",extra="",focus=[0,1,2,3];
+ if(id==="trouble"){
+  const fault=$("faultType").value,labels={"camera-power":"قطع یا کمبود توان PoE دوربین","camera-link":"قطع کابل دوربین تا سوئیچ","switch-nvr":"قطع مسیر سوئیچ تا NVR","nvr-monitor":"اختلال خروجی NVR تا نمایشگر","ip-conflict":"تداخل آدرس IP","poe-budget":"کمبود بودجه توان PoE"};
+  extra="سناریوی انتخاب‌شده: "+(labels[fault]||fault)+". مسیر مرتبط در نقشه مشخص شده؛ پس از اصلاح فرضی، همان آزمون را دوباره اجرا کن.";
+  focus={"camera-power":[0,1],"camera-link":[0,1],"switch-nvr":[1,2],"nvr-monitor":[2,3],"ip-conflict":[0,1,2],"poe-budget":[0,1]}[fault]||[0,1];
+ }else if(id==="topology"){
+  const cams=Number($("camCount").value),ports=Number($("switchPorts").value),selected=[...document.querySelectorAll("#linkChecks input:checked")].length;
+  extra="تعداد دوربین: "+cams+"؛ پورت قابل استفاده: "+ports+"؛ اتصال‌های علامت‌خورده: "+selected+". اتصال هر دو سر کابل و وجود تجهیزات انتخاب‌شده را بررسی کن.";
+ }else if(id==="subnet"){
+  extra="ورودی‌ها: IP="+$("ipAddress").value.trim()+"/"+$("cidr").value+"؛ Gateway="+($("gateway").value.trim()||"تعریف نشده")+"؛ IP دوم="+($("otherIp").value.trim()||"تعریف نشده")+". سازگاری زیرشبکه، آدرس تکراری و Gateway را در نتیجه تحلیل بررسی کن.";
+ }else if(id==="storage"){
+  const n=Number($("storageCams").value),rate=Number($("bitrate").value),days=Number($("recordDays").value),hours=Number($("recordHours").value);
+  extra="بار پایه تصویر: "+(n*rate).toFixed(2)+" Mbps؛ نگهداری: "+days+" روز؛ ضبط روزانه: "+hours+" ساعت. نتیجه را با ظرفیت ورودی NVR و ظرفیت قابل استفاده دیسک/RAID مقایسه کن.";
+ }else if(id==="cable"){
+  const d=Number($("distance").value),env=$("environment").value,bw=$("bandwidthNeed").value,power=$("powerNeed").value;
+  extra="فاصله: "+d+" متر؛ نیاز لینک: "+bw+" Mbps؛ PoE روی همان مسیر: "+(power==="yes"?"بله":"خیر")+"؛ محیط: "+({"indoor":"داخل ساختمان","outdoor":"فضای باز","emi":"دارای تداخل الکترومغناطیسی"}[env]||env)+". "+(d>100&&power==="yes"?"هشدار: فیبر برق PoE را منتقل نمی‌کند؛ برق محلی یا طراحی میانی لازم است.":d>100?"طول بیش از ۱۰۰ متر است؛ فیبر یا سوئیچ میانی مهندسی‌شده بررسی شود.":"طول کانال و کانکتورها را طبق استاندارد نصب کنترل کن.");
+  focus=d>100?[1,2]:env==="emi"||bw==="10000"?[2]:[0,1];if(d>100&&power==="yes")status="fail";else if(d>90||env==="emi"||bw==="10000")status="warn";
+ }else if(id==="security"){
+  extra="کنترل‌های تیک‌خورده: "+document.querySelectorAll("#securityChecks input:checked").length+" از "+document.querySelectorAll("#securityChecks input").length+". کنترل‌های باقی‌مانده را با اولویت مدیریت، جداسازی VLAN، ACL/Firewall و VPN اصلاح کن؛ این امتیاز جای آزمون امنیتی نیست.";
+ }else if(id==="capstone"){
+  const n=Number($("projectCams").value),w=Number($("projectWatts").value),d=Number($("projectCable").value),rate=Number($("projectRate").value);
+  extra="طرح "+($("projectName").value.trim()||"بدون نام")+"؛ دوربین‌ها: "+n+"؛ توان خام تجمیعی: "+(n*w).toFixed(2)+" W؛ bitrate خام: "+(n*rate).toFixed(2)+" Mbps؛ میانگین کابل: "+d+" متر. بودجه واقعی PoE، توان NVR و ظرفیت RAID باید با مشخصات تجهیزات تأیید شوند.";
+  if(d>100)status="fail";else if(d>90&&status==="pass")status="warn";
+ }
+ simSetState(panel,status,focus);panel.classList.add("sim-running");button.setAttribute("aria-pressed","true");button.textContent="↻ اجرای دوباره شبیه‌سازی";
+ let feedback=panel.querySelector(".sim-feedback");if(!feedback){feedback=document.createElement("div");feedback.className="output sim-feedback";feedback.setAttribute("aria-live","polite");panel.appendChild(feedback);}
+ const label=status==="pass"?"آزمون انجام شد":status==="fail"?"نیازمند اصلاح":"نیازمند بررسی";
+ const runCount=(Number(button.dataset.simRunCount)||0)+1;button.dataset.simRunCount=String(runCount);
+ feedback.className="output sim-feedback "+(status==="pass"?"good":status==="fail"?"bad":"warn");
+ feedback.innerHTML="<b>"+label+" — "+config.title+"</b><p>"+simEscape(extra)+"</p><p class='help'>نوبت اجرای شبیه‌سازی: "+runCount+"</p>"+(details?"<details><summary>جزئیات نتیجه محاسبه</summary><p>"+simEscape(details)+"</p></details>":"")+"<p class='help'>این شبیه‌سازی از ورودی‌های همین صفحه استفاده می‌کند؛ اتصال به تجهیزات واقعی ندارد.</p>";
+ const note=panel.querySelector(".sim-note");if(note)note.textContent="نتیجه بر اساس ورودی‌های فعلی محاسبه شد؛ تجهیزات واقعی متصل نیستند.";
+}
+document.querySelectorAll("[data-sim-toggle]").forEach(button=>button.addEventListener("click",()=>runWorkshopSimulation(button)));
+document.querySelectorAll("[data-sim-reset]").forEach(button=>button.addEventListener("click",()=>{const section=button.closest("section.workshop");const reset=section&&section.querySelector("[data-workshop-reset]");if(reset)reset.click();}));
+
+{
+ const resetSections=[...document.querySelectorAll("section.workshop")];
+ for(const resetSection of resetSections){
+  const resetHeading=resetSection.querySelector(":scope > .heading");
+  if(!resetHeading) continue;
+  const resetButton=resetSection.querySelector("[data-workshop-reset]");
+  if(!resetButton) continue;
+  resetButton.setAttribute("aria-label","بازنشانی مقادیر و نتیجه‌های "+(resetHeading.querySelector("h2")?.textContent||"این کارگاه"));
+  const resetResults=[...resetSection.querySelectorAll('[aria-live="polite"], .diagram')];
+  const resetInitialResults=new Map(resetResults.map(node=>[node,node.innerHTML]));
+  const resetNotes=[...resetSection.querySelectorAll(".sim-note")].map(node=>[node,node.textContent]);
+  const resetSimButtons=[...resetSection.querySelectorAll("[data-sim-toggle]")].map(node=>[node,node.textContent]);
+  resetButton.addEventListener("click",()=>{
+   resetSection.querySelectorAll("input,select,textarea").forEach(control=>{
+    if(control instanceof HTMLInputElement && (control.type==="checkbox"||control.type==="radio")) control.checked=control.defaultChecked;
+    else if(control instanceof HTMLSelectElement){
+     const defaults=[...control.options].filter(option=>option.defaultSelected);
+     if(defaults.length) control.value=defaults[0].value;
+     else if(control.options.length) control.selectedIndex=0;
+    }else control.value=control.defaultValue;
+    control.dispatchEvent(new Event("change",{bubbles:true}));
+   });
+   resetSection.querySelectorAll(".schematic-node,.wire").forEach(node=>node.classList.remove("sim-pass","sim-warn","sim-fail","fault-fail","fault-warn"));
+   resetSection.querySelectorAll(".sim-running").forEach(node=>node.classList.remove("sim-running"));
+   resetSection.querySelectorAll(".sim-feedback").forEach(node=>node.remove());
+   for(const [node,html] of resetInitialResults) if(node.isConnected) node.innerHTML=html;
+   for(const [node,value] of resetNotes) if(node.isConnected) node.textContent=value;
+   for(const [node,label] of resetSimButtons){node.setAttribute("aria-pressed","false");node.textContent=label;delete node.dataset.simRunCount;}
+   if(resetSection.id==="trouble"){
+    $("resetFaultSimulation")?.click();
+    $("retryScenario")?.click();
+    $("retryRealScenario")?.click();
+   }else if(resetSection.id==="topology") renderTopologyDiagram();
+   else if(resetSection.id==="poe"){
+    const out=$("poeSimulationResult");if(out)out.className="output";
+   }
+   resetButton.textContent="✓ مقادیر و نتیجه‌ها بازنشانی شد";
+   window.setTimeout(()=>{resetButton.textContent="↺ بازنشانی مقادیر و نتیجه‌ها"},1400);
+  });
+ }
+}
+
+renderTopologyDiagram();renderScenarioPicks();renderScenario();updateMetrics();
+})();
+</script>
+<script type="module" src="./assets/js/sim/ui/calculators.js"></script>
+<script type="module" src="./assets/js/sim/ui/real-simulator.js"></script>
+<script type="module" src="./assets/js/sim/ui/topology-scenario-io.js"></script>
+
+
+<script src="./js/pwa-register.js"></script>
+<script type="module" src="./assets/js/sim/poe-reference-ui.js"></script>
+
+
+
+<script src="./js/custom-select.js?v=20261018-runtime1" defer></script>
+</body></html>
