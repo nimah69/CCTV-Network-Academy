@@ -21,6 +21,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ -f fonts/Vazirmatn-Variable.woff2 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          src = Path("fonts/Vazirmatn-Variable.woff2")
+          out = Path("exports/source-txt/fonts__Vazirmatn-Variable_woff2_base64.txt")
+          out.write_text(base64.b64encode(src.read_bytes()).decode("ascii") + "\n", encoding="ascii")
+          print("Font Base64 export created")
+          PY
+          fi
           python3 - <<'PY'
           from pathlib import Path
           import hashlib, json
@@ -59,16 +69,6 @@ jobs:
           (root / "MANIFEST.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           print(f"Manifest created for {len(rows)} TXT files")
           PY
-          if [ -f fonts/Vazirmatn-Variable.woff2 ]; then
-            python3 - <<'PY'
-          from pathlib import Path
-          import base64
-          src = Path("fonts/Vazirmatn-Variable.woff2")
-          out = Path("exports/source-txt/fonts__Vazirmatn-Variable_woff2_base64.txt")
-          out.write_text(base64.b64encode(src.read_bytes()).decode("ascii") + "\n", encoding="ascii")
-          print("Font Base64 export created")
-          PY
-          fi
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
